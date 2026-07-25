@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quant Macro & Crypto Terminal | Landing Page</title>
+    <title>Quant Macro Terminal - Select Asset</title>
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -25,120 +25,276 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Prompt', sans-serif; background-color: var(--bg-dark); color: var(--text-main); padding: 20px; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
-        .container { max-width: 1200px; margin: 0 auto; width: 100%; }
+        body { 
+            font-family: 'Prompt', sans-serif; 
+            background-color: var(--bg-dark); 
+            color: var(--text-main); 
+            padding: 20px; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
 
-        /* Top Header Navigation */
-        .navbar {
+        .container { max-width: 1400px; margin: 0 auto; width: 100%; }
+
+        /* Header Bar */
+        .header-nav {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 16px 24px; background: var(--bg-panel); border: 1px solid var(--border-color);
-            border-radius: 12px; margin-bottom: 30px;
+            background: var(--bg-panel); padding: 16px 28px; border-radius: 14px;
+            border: 1px solid var(--border-color); margin-bottom: 30px; flex-wrap: wrap; gap: 12px;
         }
-        .logo { font-size: 1.2rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 10px; }
-        .logo i { color: var(--accent-purple); }
-
-        .status-badge {
-            font-size: 0.75rem; background: rgba(8, 153, 129, 0.15); color: var(--accent-green);
-            padding: 6px 12px; border-radius: 20px; border: 1px solid var(--accent-green); font-weight: 600;
-            display: flex; align-items: center; gap: 6px;
+        .logo-title {
+            font-weight: 700; color: #fff; font-size: 1.25rem; display: flex; align-items: center; gap: 10px;
         }
-        .status-dot { width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%; animation: pulse 1.5s infinite; }
+        .nav-links { display: flex; gap: 12px; flex-wrap: wrap; }
+        .nav-btn {
+            background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color);
+            padding: 10px 18px; border-radius: 8px; text-decoration: none; font-size: 0.88rem; font-weight: 600;
+            display: flex; align-items: center; gap: 8px; transition: all 0.2s ease;
+        }
+        .nav-btn:hover { border-color: var(--accent-purple); color: #fff; transform: translateY(-2px); }
 
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(1.2); }
-            100% { opacity: 1; transform: scale(1); }
+        /* Hero Banner */
+        .hero-banner {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(15, 23, 42, 0.6) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 36px 28px;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .hero-title { font-size: 1.8rem; font-weight: 700; color: #fff; margin-bottom: 10px; }
+        .hero-subtitle { color: var(--text-muted); font-size: 0.95rem; max-width: 650px; margin: 0 auto; line-height: 1.6; }
+
+        /* Section Title */
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        /* Hero Section */
-        .hero { text-align: center; margin: 40px 0 50px 0; }
-        .hero h1 { font-size: 2.4rem; font-weight: 700; color: #fff; margin-bottom: 12px; }
-        .hero p { color: var(--text-muted); font-size: 1rem; max-width: 650px; margin: 0 auto 24px auto; line-height: 1.6; }
-
-        /* Module Grid */
-        .grid-modules { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 40px; }
-        .module-card {
-            background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 16px;
-            padding: 28px; transition: all 0.3s ease; text-decoration: none; color: var(--text-main);
-            display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden;
+        /* Asset Grid Cards */
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
         }
-        .module-card:hover { transform: translateY(-5px); border-color: var(--accent-purple); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15); }
-        .module-card.primary { border-color: var(--accent-purple); background: linear-gradient(145deg, var(--bg-panel), rgba(139, 92, 246, 0.08)); }
-        
-        .icon-box {
-            width: 50px; height: 50px; border-radius: 12px; background: rgba(255,255,255,0.05);
-            display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 20px;
+        .asset-card-link { text-decoration: none; }
+        .asset-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-        .module-card.primary .icon-box { background: var(--accent-purple); color: #fff; }
-
-        .card-title { font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
-        .card-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; }
-        
-        .card-action {
-            font-size: 0.85rem; font-weight: 600; color: var(--accent-cyan); display: flex; align-items: center; gap: 8px;
+        .asset-card:hover {
+            border-color: var(--accent-purple);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.2);
+            background: var(--bg-card);
         }
-        .module-card:hover .card-action i { transform: translateX(5px); transition: 0.2s; }
+        .asset-icon-box {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; margin-bottom: 14px;
+        }
+        .asset-name { color: #fff; font-size: 1.15rem; font-weight: 700; margin-bottom: 6px; }
+        .asset-desc { color: var(--text-muted); font-size: 0.82rem; line-height: 1.4; }
+        .asset-tag {
+            margin-top: 14px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-purple);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
 
-        /* Footer */
-        footer { text-align: center; font-size: 0.8rem; color: var(--text-muted); padding: 20px 0; border-top: 1px solid var(--border-color); }
+        /* Additional Hub Tools Grid */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .tool-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .tool-card:hover {
+            border-color: var(--accent-cyan);
+            background: var(--bg-card);
+            transform: translateY(-2px);
+        }
+        .tool-icon {
+            font-size: 1.8rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .tool-info h4 { color: #fff; font-size: 1rem; margin-bottom: 4px; }
+        .tool-info p { color: var(--text-muted); font-size: 0.8rem; }
+
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            padding: 20px 0;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Navbar -->
-        <nav class="navbar">
-            <div class="logo">
-                <i class="fa-solid fa-chart-network"></i>
-                QUANT MACRO TERMINAL
+        <!-- Header Nav -->
+        <header class="header-nav">
+            <div class="logo-title">
+                <i class="fa-solid fa-chart-pie" style="color:var(--accent-purple);"></i> QUANT MACRO TERMINAL
             </div>
-            <div class="status-badge">
-                <span class="status-dot"></span> SYSTEM ONLINE
+            
+            <div class="nav-links">
+                <a href="economic_calendar.html" class="nav-btn"><i class="fa-solid fa-calendar-check" style="color:var(--accent-amber);"></i> ปฏิทินข่าว</a>
+                <a href="news_dashboard.html" class="nav-btn"><i class="fa-solid fa-newspaper" style="color:var(--accent-cyan);"></i> ศูนย์ข่าวสาร</a>
             </div>
-        </nav>
+        </header>
 
         <!-- Hero Section -->
-        <section class="hero">
-            <h1>ศูนย์รวมระบบวิเคราะห์การเทรด Quant & Macro Intelligence</h1>
-            <p>ยกระดับการตัดสินใจเทรดด้วยสถิติเชิงปริมาณ (Quant), ข้อมูลปัจจัยพื้นฐานมหภาค (Macro Data) และระบบประเมินความผันผวนจาก AI แบบ Real-time</p>
-        </section>
+        <div class="hero-banner">
+            <h1 class="hero-title">เลือกรอบการวิเคราะห์สินทรัพย์ (Asset Analysis)</h1>
+            <p class="hero-subtitle">เลือก สินทรัพย์/คู่เงิน ที่ต้องการวิเคราะห์ เพื่อส่งข้อมูลไปยัง Dynamic Quant Dashboard ระบบจะปรับกราฟ Real-time, คะแนน Multi-Score, Key Levels และมุมมอง AI Trader ทั้ง 5 คนให้อัตโนมัติ</p>
+        </div>
 
-        <!-- Modules Section -->
-        <div class="grid-modules">
-            <!-- Module 1: Main Dashboard (Primary Hub) -->
-            <a href="macro_crypto_dashboard.html" class="module-card primary">
-                <div>
-                    <div class="icon-box"><i class="fa-solid fa-gauge-high"></i></div>
-                    <div class="card-title">Macro & Crypto Dashboard</div>
-                    <div class="card-desc">ศูนย์ควบคุมหลักสำหรับ Trader รวม S&R Strength Score, สัญญาณ AI Signal, เครื่องมือคำนวณ Lot Size & Risk Management และ Macro Liquidity Overview</div>
+        <!-- Asset Selection Section -->
+        <div class="section-title">
+            <i class="fa-solid fa-cubes" style="color:var(--accent-purple);"></i> สินทรัพย์ที่รองรับการวิเคราะห์
+        </div>
+
+        <div class="asset-grid">
+            
+            <!-- Gold -->
+            <a href="macro_crypto_dashboard.html?asset=gold" class="asset-card-link">
+                <div class="asset-card">
+                    <div class="asset-icon-box" style="color:#ff9800;">
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                    <div class="asset-name">GOLD (XAUUSD)</div>
+                    <div class="asset-desc">วิเคราะห์ราคาทองคำแท่ง ฟิวเจอร์ส และโมเมนตัม Safe Haven</div>
+                    <span class="asset-tag">คลิกเพื่อเข้าดูแดชบอร์ด</span>
                 </div>
-                <div class="card-action">เข้าสู่ Dashboard หลัก <i class="fa-solid fa-arrow-right"></i></div>
             </a>
 
-            <!-- Module 2: Economic Calendar -->
-            <a href="economic_calendar.html" class="module-card">
-                <div>
-                    <div class="icon-box" style="color:var(--accent-amber);"><i class="fa-solid fa-calendar-check"></i></div>
-                    <div class="card-title">Economic Calendar & AI Forecast</div>
-                    <div class="card-desc">ปฏิทินข่าวเศรษฐกิจเชิงลึก คาดการณ์ความผันผวน (Quant Volatility), Target Prices สินทรัพย์แบบ Scenario-based และมุมมองจัดเต็มจาก 7 สถาบันชั้นนำ</div>
+            <!-- Bitcoin -->
+            <a href="macro_crypto_dashboard.html?asset=btc" class="asset-card-link">
+                <div class="asset-card">
+                    <div class="asset-icon-box" style="color:#f7931a;">
+                        <i class="fa-brands fa-bitcoin"></i>
+                    </div>
+                    <div class="asset-name">BITCOIN (BTC)</div>
+                    <div class="asset-desc">วิเคราะห์พี่ใหญ่ Crypto สภาพคล่อง On-chain และ ETF Flow</div>
+                    <span class="asset-tag">คลิกเพื่อเข้าดูแดชบอร์ด</span>
                 </div>
-                <div class="card-action" style="color:var(--accent-amber);">ดูปฏิทินข่าว & การคาดการณ์ <i class="fa-solid fa-arrow-right"></i></div>
             </a>
 
-            <!-- Module 3: News Dashboard -->
-            <a href="news_dashboard.html" class="module-card">
-                <div>
-                    <div class="icon-box" style="color:var(--accent-cyan);"><i class="fa-solid fa-newspaper"></i></div>
-                    <div class="card-title">Asset News Intelligence</div>
-                    <div class="card-desc">ศูนย์รวมข่าวสารแยกรายสินทรัพย์ (BTC, GOLD, DXY, SPX) วิเคราะห์ Sentiment ข่าวที่มีผลต่อราคาโดยตรง พร้อมระบบคัดกรองขยะข่าวสาร</div>
+            <!-- DXY -->
+            <a href="macro_crypto_dashboard.html?asset=dxy" class="asset-card-link">
+                <div class="asset-card">
+                    <div class="asset-icon-box" style="color:#089981;">
+                        <i class="fa-solid fa-dollar-sign"></i>
+                    </div>
+                    <div class="asset-name">DXY INDEX</div>
+                    <div class="asset-desc">ดัชนีความแข็งแกร่งเงินดอลลาร์ และนโยบายการเงิน Fed</div>
+                    <span class="asset-tag">คลิกเพื่อเข้าดูแดชบอร์ด</span>
                 </div>
-                <div class="card-action" style="color:var(--accent-cyan);">เข้าสู่ศูนย์ข่าว Asset News <i class="fa-solid fa-arrow-right"></i></div>
+            </a>
+
+            <!-- S&P 500 -->
+            <a href="macro_crypto_dashboard.html?asset=spx" class="asset-card-link">
+                <div class="asset-card">
+                    <div class="asset-icon-box" style="color:#2962ff;">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <div class="asset-name">S&P 500 (SPX)</div>
+                    <div class="asset-desc">ดัชนีหุ้นสหรัฐฯ 500 บริษัท วิเคราะห์ Risk-On / Risk-Off</div>
+                    <span class="asset-tag">คลิกเพื่อเข้าดูแดชบอร์ด</span>
+                </div>
+            </a>
+
+            <!-- EUR/USD -->
+            <a href="macro_crypto_dashboard.html?asset=eurusd" class="asset-card-link">
+                <div class="asset-card">
+                    <div class="asset-icon-box" style="color:#00b8d4;">
+                        <i class="fa-solid fa-euro-sign"></i>
+                    </div>
+                    <div class="asset-name">EUR / USD</div>
+                    <div class="asset-desc">คู่เงินหลักตลาด Forex การเปรียบเทียบ ECB vs FED</div>
+                    <span class="asset-tag">คลิกเพื่อเข้าดูแดชบอร์ด</span>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- Additional Features -->
+        <div class="section-title">
+            <i class="fa-solid fa-toolbox" style="color:var(--accent-cyan);"></i> เครื่องมือและศูนย์ข้อมูลเพิ่มเติม
+        </div>
+
+        <div class="tools-grid">
+            <a href="economic_calendar.html" class="tool-card">
+                <div class="tool-icon" style="color:var(--accent-amber);">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <div class="tool-info">
+                    <h4>Economic Calendar</h4>
+                    <p>ติดตามตัวเลขเศรษฐกิจสำคัญ CPI, NFP, FED Rate</p>
+                </div>
+            </a>
+
+            <a href="news_dashboard.html" class="tool-card">
+                <div class="tool-icon" style="color:var(--accent-cyan);">
+                    <i class="fa-solid fa-newspaper"></i>
+                </div>
+                <div class="tool-info">
+                    <h4>Macro News Hub</h4>
+                    <p>อัปเดตข่าวสารเศรษฐกิจมหภาค และข่าวคริปโต 24/7</p>
+                </div>
             </a>
         </div>
+
     </div>
 
     <footer>
-        <p>&copy; 2026 Quant Macro Trading Terminal. Powered by AI & High-Frequency Data Models.</p>
+        <p>© Quant Multi-Asset Dashboard System • Powered by Dynamic Trading Engine</p>
     </footer>
 
 </body>
