@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Macro & Crypto Main Command Terminal</title>
+    <title>Quant Macro & Crypto Main Command Center</title>
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -26,9 +26,9 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Prompt', sans-serif; background-color: var(--bg-dark); color: var(--text-main); padding: 20px; min-height: 100vh; }
-        .container { max-width: 1600px; margin: 0 auto; }
+        .container { max-width: 1650px; margin: 0 auto; }
 
-        /* Central Navigation Bar (กดกระจายออกไปหน้าอื่นได้สะดวก) */
+        /* Header Navigation */
         .header-nav {
             display: flex; justify-content: space-between; align-items: center;
             background: var(--bg-panel); padding: 14px 24px; border-radius: 12px;
@@ -43,20 +43,43 @@
         .nav-btn:hover { border-color: var(--accent-purple); color: #fff; }
         .nav-btn.active { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); }
 
-        /* Market Ticker Row */
-        .ticker-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 20px; }
-        .ticker-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; }
-        .ticker-title { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; display: flex; justify-content: space-between; }
-        .ticker-val { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; font-weight: 700; margin-top: 6px; }
-
-        /* Main Dashboard Grid */
-        .dashboard-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
-        @media(max-width: 1100px) { .dashboard-layout { grid-template-columns: 1fr; } }
+        /* Dashboard Layout Grid */
+        .main-layout { display: grid; grid-template-columns: 2.2fr 1fr; gap: 20px; }
+        @media(max-width: 1200px) { .main-layout { grid-template-columns: 1fr; } }
 
         .panel-box { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-        .panel-title { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .panel-title { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
 
-        /* Risk & Position Calculator */
+        /* Multi-Score Grid */
+        .score-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px; }
+        .score-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; text-align: center; position: relative; }
+        .score-title { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
+        .score-val { font-family: 'JetBrains Mono', monospace; font-size: 1.6rem; font-weight: 700; }
+        .progress-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; margin-top: 8px; }
+        .progress-bar-fill { height: 100%; border-radius: 3px; }
+
+        /* Real-Time Chart Controls & Container */
+        .chart-controls { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+        .chart-tab-btn {
+            background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted);
+            padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .chart-tab-btn:hover, .chart-tab-btn.active { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); }
+        .chart-wrapper { height: 500px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); }
+
+        /* 5 AI Trader Personas Section */
+        .ai-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+        .ai-card {
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px;
+            padding: 16px; border-top: 3px solid var(--accent-purple); position: relative;
+        }
+        .ai-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .ai-name { font-weight: 700; font-size: 0.9rem; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .ai-style { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 700; background: rgba(255,255,255,0.08); color: var(--accent-cyan); }
+        .ai-bias { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; }
+        .ai-desc { font-size: 0.8rem; color: var(--text-main); line-height: 1.5; }
+
+        /* Calculator Controls */
         .calc-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .form-group { display: flex; flex-direction: column; gap: 6px; }
         .form-group label { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
@@ -67,27 +90,19 @@
         .form-control:focus { border-color: var(--accent-purple); }
         .calc-res-box { background: rgba(139, 92, 246, 0.1); border: 1px solid var(--accent-purple); border-radius: 8px; padding: 14px; margin-top: 14px; text-align: center; }
 
-        /* Technical & S&R Score Table */
-        .sr-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        .sr-table th { text-align: left; padding: 10px; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
-        .sr-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-family: 'JetBrains Mono', monospace; }
-
-        .badge-signal { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
-        .bg-bullish { background: rgba(8, 153, 129, 0.2); color: var(--accent-green); }
-        .bg-bearish { background: rgba(242, 54, 69, 0.2); color: var(--accent-red); }
-
-        /* Progress Bar */
-        .progress-bar-bg { width: 100%; height: 8px; background: var(--bg-card); border-radius: 4px; overflow: hidden; margin-top: 4px; }
-        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); border-radius: 4px; }
+        /* Badges */
+        .badge-buy { color: var(--accent-green); }
+        .badge-sell { color: var(--accent-red); }
+        .badge-neutral { color: var(--accent-amber); }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Main Navigation Bar (ศูนย์กลางการกดออกไปหน้าอื่นๆ) -->
+        <!-- Navigation Header -->
         <header class="header-nav">
             <div style="font-weight: 700; color: #fff; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-gauge-high" style="color:var(--accent-purple);"></i> MAIN COMMAND TERMINAL
+                <i class="fa-solid fa-gauge-high" style="color:var(--accent-purple);"></i> QUANT MACRO & CRYPTO COMMAND TERMINAL
             </div>
             
             <div class="nav-links">
@@ -98,113 +113,138 @@
             </div>
         </header>
 
-        <!-- Ticker Row -->
-        <div class="ticker-grid">
-            <div class="ticker-card">
-                <div class="ticker-title">BITCOIN (BTC/USD) <span style="color:var(--accent-green);"><i class="fa-solid fa-caret-up"></i> +2.4%</span></div>
-                <div class="ticker-val" style="color:#fff;">$67,420.00</div>
+        <!-- Multi-Dimensional Score Dashboard -->
+        <div class="score-grid">
+            <div class="score-card">
+                <div class="score-title">S&R STRENGTH SCORE</div>
+                <div class="score-val" style="color:var(--accent-cyan);">88/100</div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 88%; background: var(--accent-cyan);"></div></div>
             </div>
-            <div class="ticker-card">
-                <div class="ticker-title">GOLD (XAU/USD) <span style="color:var(--accent-green);"><i class="fa-solid fa-caret-up"></i> +0.8%</span></div>
-                <div class="ticker-val" style="color:#fff;">$2,418.50</div>
+            <div class="score-card">
+                <div class="score-title">MACRO LIQUIDITY SCORE</div>
+                <div class="score-val" style="color:var(--accent-green);">76/100</div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 76%; background: var(--accent-green);"></div></div>
             </div>
-            <div class="ticker-card">
-                <div class="ticker-title">US DOLLAR INDEX (DXY) <span style="color:var(--accent-red);"><i class="fa-solid fa-caret-down"></i> -0.35%</span></div>
-                <div class="ticker-val" style="color:var(--accent-red);">104.12</div>
+            <div class="score-card">
+                <div class="score-title">AI CONSENSUS SCORE</div>
+                <div class="score-val" style="color:var(--accent-purple);">84% BUY</div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 84%; background: var(--accent-purple);"></div></div>
             </div>
-            <div class="ticker-card">
-                <div class="ticker-title">S&P 500 INDEX <span style="color:var(--accent-green);"><i class="fa-solid fa-caret-up"></i> +0.45%</span></div>
-                <div class="ticker-val" style="color:#fff;">5,615.30</div>
+            <div class="score-card">
+                <div class="score-title">MARKET SENTIMENT</div>
+                <div class="score-val" style="color:var(--accent-amber);">72 (Greed)</div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 72%; background: var(--accent-amber);"></div></div>
+            </div>
+            <div class="score-card">
+                <div class="score-title">QUANT RISK INDEX</div>
+                <div class="score-val" style="color:var(--accent-red);">LOW (32%)</div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 32%; background: var(--accent-red);"></div></div>
             </div>
         </div>
 
-        <!-- Dashboard Layout -->
-        <div class="dashboard-layout">
+        <!-- Main Layout -->
+        <div class="main-layout">
             
-            <!-- Left Column: Technicals, S&R Score & AI Signals -->
+            <!-- Left Column: TradingView Live Chart & 5 AI Traders Analysis -->
             <div>
-                <!-- Panel 1: S&R Strength Score & Market Bias -->
+                <!-- Real-Time TradingView Chart Panel -->
                 <div class="panel-box">
                     <div class="panel-title">
-                        <i class="fa-solid fa-layer-group" style="color:var(--accent-cyan);"></i> 
-                        Support & Resistance Strength Score (S&R Analytics)
+                        <span><i class="fa-solid fa-chart-candlestick" style="color:var(--accent-purple);"></i> Real-Time Interactive Chart</span>
+                        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">TradingView Powered Engine</span>
                     </div>
-                    
-                    <table class="sr-table">
-                        <thead>
-                            <tr>
-                                <th>สินทรัพย์</th>
-                                <th>แนวรับสำคัญ (Support)</th>
-                                <th>แนวต้านสำคัญ (Resistance)</th>
-                                <th>S&R Score</th>
-                                <th>AI Signal Bias</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>GOLD (XAUUSD)</strong></td>
-                                <td style="color:var(--accent-green);">$2,395 / $2,380</td>
-                                <td style="color:var(--accent-red);">$2,435 / $2,450</td>
-                                <td>
-                                    <strong>88/100 (Strong)</strong>
-                                    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 88%;"></div></div>
-                                </td>
-                                <td><span class="badge-signal bg-bullish">STRONG BUY</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>BITCOIN (BTC)</strong></td>
-                                <td style="color:var(--accent-green);">$64,500 / $62,000</td>
-                                <td style="color:var(--accent-red);">$68,500 / $70,000</td>
-                                <td>
-                                    <strong>75/100 (Moderate)</strong>
-                                    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 75%;"></div></div>
-                                </td>
-                                <td><span class="badge-signal bg-bullish">BULLISH ACCUMULATE</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>DXY INDEX</strong></td>
-                                <td style="color:var(--accent-green);">103.80 / 103.20</td>
-                                <td style="color:var(--accent-red);">104.80 / 105.30</td>
-                                <td>
-                                    <strong>82/100 (Strong)</strong>
-                                    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 82%;"></div></div>
-                                </td>
-                                <td><span class="badge-signal bg-bearish">BEARISH BREAKDOWN</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                    <!-- Asset Ticker Switcher Buttons -->
+                    <div class="chart-controls">
+                        <button class="chart-tab-btn active" onclick="changeChartSymbol('OANDA:XAUUSD', this)"><i class="fa-solid fa-coins"></i> GOLD (XAUUSD)</button>
+                        <button class="chart-tab-btn" onclick="changeChartSymbol('BINANCE:BTCUSDT', this)"><i class="fa-brands fa-bitcoin"></i> BITCOIN (BTCUSDT)</button>
+                        <button class="chart-tab-btn" onclick="changeChartSymbol('CAPITALCOM:DXY', this)"><i class="fa-solid fa-dollar-sign"></i> DXY INDEX</button>
+                        <button class="chart-tab-btn" onclick="changeChartSymbol('FOREXCOM:SPXUSD', this)"><i class="fa-solid fa-chart-line"></i> S&P 500</button>
+                    </div>
+
+                    <!-- TradingView Widget Container -->
+                    <div class="chart-wrapper">
+                        <div id="tradingview_widget_container" style="height:100%; width:100%;"></div>
+                    </div>
                 </div>
 
-                <!-- Panel 2: Macro Liquidity & Market Sentiment -->
+                <!-- 5 AI Trader Personas Analysis Panel -->
                 <div class="panel-box">
                     <div class="panel-title">
-                        <i class="fa-solid fa-globe" style="color:var(--accent-blue);"></i>
-                        Macro Liquidity & Fed Rate Probabilities
+                        <span><i class="fa-solid fa-brain" style="color:var(--accent-cyan);"></i> วิเคราะห์เจาะลึก 5 สไตล์จาก 5 AI Trader Experts</span>
+                        <span style="font-size:0.75rem; color:var(--accent-green);"><i class="fa-solid fa-rotate"></i> Live Consensus Updated</span>
                     </div>
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:14px;">
-                        <div style="background:var(--bg-card); padding:14px; border-radius:8px; border:1px solid var(--border-color);">
-                            <div style="font-size:0.75rem; color:var(--text-muted);">Crypto Fear & Greed Index</div>
-                            <div style="font-size:1.4rem; font-weight:700; color:var(--accent-green); margin-top:4px;">72 (Greed)</div>
+
+                    <div class="ai-grid">
+                        <!-- AI 1: Quant Analyst -->
+                        <div class="ai-card" style="border-top-color: var(--accent-purple);">
+                            <div class="ai-header">
+                                <div class="ai-name"><i class="fa-solid fa-calculator" style="color:var(--accent-purple);"></i> AI 1: Quant Specialist</div>
+                                <span class="ai-style">Quant / Z-Score</span>
+                            </div>
+                            <div class="ai-bias badge-buy">🟢 BULLISH (Confidence: 88%)</div>
+                            <div class="ai-desc">
+                                "สถิติ Z-Score อยู่ในโซน Mean Reversion ด้านล่าง (+1.8 Sigma) พร้อม Volatility Compression ที่บีบตัวแน่น คาดว่าจะเกิดการ Breakout พุ่งขึ้นใน 24-48 ชม."
+                            </div>
                         </div>
-                        <div style="background:var(--bg-card); padding:14px; border-radius:8px; border:1px solid var(--border-color);">
-                            <div style="font-size:0.75rem; color:var(--text-muted);">Fed Rate Cut Probability (Sep)</div>
-                            <div style="font-size:1.4rem; font-weight:700; color:var(--accent-cyan); margin-top:4px;">92.5%</div>
+
+                        <!-- AI 2: SMC / ICT Master -->
+                        <div class="ai-card" style="border-top-color: var(--accent-cyan);">
+                            <div class="ai-header">
+                                <div class="ai-name"><i class="fa-solid fa-fingerprint" style="color:var(--accent-cyan);"></i> AI 2: SMC Liquidity Master</div>
+                                <span class="ai-style">Smart Money / ICT</span>
+                            </div>
+                            <div class="ai-bias badge-buy">🟢 BUY AT FVG ZONE</div>
+                            <div class="ai-desc">
+                                "เกิดการ Sweep Liquidity ด้านล่างเรียบร้อย ราคาเด้งสร้าง Market Structure Shift (MSS) แนะนำรอตั้งรับที่ช่องว่าง Fair Value Gap (FVG) และ Order Block"
+                            </div>
                         </div>
-                        <div style="background:var(--bg-card); padding:14px; border-radius:8px; border:1px solid var(--border-color);">
-                            <div style="font-size:0.75rem; color:var(--text-muted);">US 10Y Treasury Yield</div>
-                            <div style="font-size:1.4rem; font-weight:700; color:var(--accent-amber); margin-top:4px;">4.21% (-1.2%)</div>
+
+                        <!-- AI 3: Price Action Specialist -->
+                        <div class="ai-card" style="border-top-color: var(--accent-amber);">
+                            <div class="ai-header">
+                                <div class="ai-name"><i class="fa-solid fa-chart-line" style="color:var(--accent-amber);"></i> AI 3: Price Action Expert</div>
+                                <span class="ai-style">Market Structure</span>
+                            </div>
+                            <div class="ai-bias badge-buy">🟢 BULLISH CONTINUATION</div>
+                            <div class="ai-desc">
+                                "กราฟทำ Higher High และ Higher Low ยกฐานอย่างเป็นระบบ แท่งเทียน H4 ยืนเหนือแนวต้านสำคัญดั้งเดิมเปลี่ยนเป็นแนวรับ (Resistance Turn Support)"
+                            </div>
+                        </div>
+
+                        <!-- AI 4: Macro & Orderflow Strategist -->
+                        <div class="ai-card" style="border-top-color: var(--accent-blue);">
+                            <div class="ai-header">
+                                <div class="ai-name"><i class="fa-solid fa-globe" style="color:var(--accent-blue);"></i> AI 4: Macro & Flow Analyst</div>
+                                <span class="ai-style">Macro Liquidity</span>
+                            </div>
+                            <div class="ai-bias badge-buy">🟢 MACRO TAILWIND</div>
+                            <div class="ai-desc">
+                                "ดัชนีดอลลาร์ (DXY) ปรับตัวลงพร้อม US 10Y Yield ร่วงหลุดแนวรับ สภาพคล่องฝั่ง Fed เร่งตัวขึ้น ส่งแรงหนุนมหาศาลเข้าสู่ ทองคำ และ Crypto"
+                            </div>
+                        </div>
+
+                        <!-- AI 5: Algo & Momentum System -->
+                        <div class="ai-card" style="border-top-color: var(--accent-green);">
+                            <div class="ai-header">
+                                <div class="ai-name"><i class="fa-solid fa-robot" style="color:var(--accent-green);"></i> AI 5: Algo Trend System</div>
+                                <span class="ai-style">Trend Following</span>
+                            </div>
+                            <div class="ai-bias badge-buy">🟢 STRONG BUY SIGNAL</div>
+                            <div class="ai-desc">
+                                "เส้น EMA 20, 50, 200 เรียงตัวเป็น Golden Cross สมบูรณ์แบบ ดัชนี Supertrend เป็นสีเขียว พร้อมวอลุ่มเทรดฝั่งซื้อสูงกว่าค่าเฉลี่ย 20 วันถึง 45%"
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Column: Quant Tools & Position Calculator -->
+            <!-- Right Column: Quant Lot Calculator & Quick Action Checklists -->
             <div>
-                <!-- Interactive Calculator Widget -->
+                <!-- Position & Risk Calculator Panel -->
                 <div class="panel-box">
                     <div class="panel-title">
-                        <i class="fa-solid fa-calculator" style="color:var(--accent-purple);"></i>
-                        Quant Lot Size & Risk Calculator
+                        <span><i class="fa-solid fa-calculator" style="color:var(--accent-purple);"></i> Risk & Position Calculator</span>
                     </div>
 
                     <div class="calc-form">
@@ -217,11 +257,11 @@
                             <input type="number" id="riskPercent" class="form-control" value="1.0" step="0.1">
                         </div>
                         <div class="form-group">
-                            <label>ระยะ Stop Loss (Pips/Pts)</label>
+                            <label>ระยะ SL (Pips/Points)</label>
                             <input type="number" id="stopLoss" class="form-control" value="300">
                         </div>
                         <div class="form-group">
-                            <label>เลือกประเภทสินทรัพย์</label>
+                            <label>ประเภทสินทรัพย์</label>
                             <select id="assetType" class="form-control">
                                 <option value="gold">GOLD (1 Lot = $10/Pip)</option>
                                 <option value="forex">Forex (1 Lot = $10/Pip)</option>
@@ -231,7 +271,7 @@
                     </div>
 
                     <button onclick="calculateRisk()" style="width:100%; margin-top:14px; background:var(--accent-purple); color:#fff; border:none; padding:10px; border-radius:6px; font-weight:700; cursor:pointer;">
-                        คำนวณขนาด Lot Size
+                        คำนวณ Lot Size
                     </button>
 
                     <div class="calc-res-box">
@@ -241,17 +281,45 @@
                     </div>
                 </div>
 
-                <!-- Quick Macro Checklist -->
+                <!-- Strategic Levels Summary Panel -->
                 <div class="panel-box">
                     <div class="panel-title">
-                        <i class="fa-solid fa-clipboard-check" style="color:var(--accent-green);"></i>
-                        Trade Entry Checklist
+                        <span><i class="fa-solid fa-bullseye" style="color:var(--accent-amber);"></i> Key Quant Levels Today</span>
                     </div>
-                    <div style="font-size:0.83rem; color:var(--text-main); line-height:1.8;">
-                        <div><i class="fa-solid fa-check" style="color:var(--accent-green);"></i> ตรวจสอบข่าวปฏิทินเศรษฐกิจช่วง 1-2 ชม.</div>
-                        <div><i class="fa-solid fa-check" style="color:var(--accent-green);"></i> S&R Score สอดคล้องกับ Trend หลัก</div>
-                        <div><i class="fa-solid fa-check" style="color:var(--accent-green);"></i> คำนวณ Lot Size และวาง SL ชัดเจน</div>
-                        <div><i class="fa-solid fa-check" style="color:var(--accent-green);"></i> Risk : Reward Ratio อย่างน้อย 1 : 1.5</div>
+                    <div style="font-size:0.83rem; line-height:2.0; font-family:'JetBrains Mono', monospace;">
+                        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed var(--border-color);">
+                            <span style="color:var(--text-muted);">Major Resistance 2:</span>
+                            <span style="color:var(--accent-red); font-weight:700;">$2,450.00</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed var(--border-color);">
+                            <span style="color:var(--text-muted);">Major Resistance 1:</span>
+                            <span style="color:var(--accent-red); font-weight:700;">$2,435.00</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed var(--border-color); background:rgba(139,92,246,0.1); padding:0 4px;">
+                            <span style="color:#fff;">Pivot / Current:</span>
+                            <span style="color:var(--accent-cyan); font-weight:700;">$2,418.50</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; border-bottom:1px dashed var(--border-color);">
+                            <span style="color:var(--text-muted);">Major Support 1:</span>
+                            <span style="color:var(--accent-green); font-weight:700;">$2,395.00</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:var(--text-muted);">Major Support 2:</span>
+                            <span style="color:var(--accent-green); font-weight:700;">$2,380.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Execution Rules Checklist Panel -->
+                <div class="panel-box">
+                    <div class="panel-title">
+                        <span><i class="fa-solid fa-shield-halved" style="color:var(--accent-green);"></i> Entry Guard Checklist</span>
+                    </div>
+                    <div style="font-size:0.83rem; color:var(--text-main); line-height:1.9;">
+                        <div><i class="fa-solid fa-square-check" style="color:var(--accent-green);"></i> AI Consensus > 70% ให้ทิศทางเดียวกัน</div>
+                        <div><i class="fa-solid fa-square-check" style="color:var(--accent-green);"></i> ไม่มีข่าวปฏิทินเศรษฐกิจแดงใน 1 ชม.</div>
+                        <div><i class="fa-solid fa-square-check" style="color:var(--accent-green);"></i> คำนวณ Lot Size เสี่ยงไม่เกิน 1-2%</div>
+                        <div><i class="fa-solid fa-square-check" style="color:var(--accent-green);"></i> วาง Stop Loss หลังแนว Liquidity Sweep</div>
                     </div>
                 </div>
             </div>
@@ -259,8 +327,37 @@
         </div>
     </div>
 
-    <script>
-        // Risk & Position Calculator Logic
+    <!-- TradingView Embed Script -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+        let currentWidget = null;
+
+        function loadTradingViewChart(symbolName) {
+            document.getElementById('tradingview_widget_container').innerHTML = '';
+            
+            new TradingView.widget({
+                "autosize": true,
+                "symbol": symbolName,
+                "interval": "60",
+                "timezone": "Asia/Bangkok",
+                "theme": "dark",
+                "style": "1",
+                "locale": "th_TH",
+                "toolbar_bg": "#151924",
+                "enable_publishing": false,
+                "hide_side_toolbar": false,
+                "allow_symbol_change": true,
+                "container_id": "tradingview_widget_container"
+            });
+        }
+
+        function changeChartSymbol(symbolName, btnElement) {
+            document.querySelectorAll('.chart-tab-btn').forEach(b => b.classList.remove('active'));
+            if(btnElement) btnElement.classList.add('active');
+            loadTradingViewChart(symbolName);
+        }
+
+        // Risk Calculator Logic
         function calculateRisk() {
             const balance = parseFloat(document.getElementById('balance').value) || 0;
             const riskPercent = parseFloat(document.getElementById('riskPercent').value) || 0;
@@ -271,10 +368,8 @@
             let lotSize = 0;
 
             if (assetType === 'gold' || assetType === 'forex') {
-                // Standard 1 Lot = $10 per Pip
                 lotSize = riskAmount / (stopLoss * 10);
             } else if (assetType === 'btc') {
-                // BTC Position size
                 lotSize = riskAmount / stopLoss;
             }
 
@@ -282,8 +377,11 @@
             document.getElementById('resAmount').innerText = "$" + riskAmount.toFixed(2);
         }
 
-        // Auto Run on Load
-        window.addEventListener('DOMContentLoaded', calculateRisk);
+        // Initial Load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadTradingViewChart('OANDA:XAUUSD');
+            calculateRisk();
+        });
     </script>
 </body>
 </html>
