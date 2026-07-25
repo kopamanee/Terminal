@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Macro & Crypto Detailed Analysis Dashboard</title>
+    <title>AI Consensus & Technical Debate Desk</title>
     <!-- Google Fonts & FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,26 +16,26 @@
             --border-color: #2a2e39;
             --text-main: #d1d4dc;
             --text-muted: #787b86;
-            --accent-blue: #2962ff;
             --accent-purple: #8b5cf6;
             --accent-green: #089981;
             --accent-red: #f23645;
             --accent-amber: #ff9800;
+            --accent-blue: #2962ff;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Prompt', 'JetBrains Mono', sans-serif;
+            font-family: 'Prompt', sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-main);
-            min-height: 100vh;
             padding: 20px;
+            min-height: 100vh;
         }
 
         .container { max-width: 1400px; margin: 0 auto; }
 
-        /* Top Header Navigation */
-        .dash-header {
+        /* Navigation Header */
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -44,6 +44,8 @@
             border-radius: 12px;
             border: 1px solid var(--border-color);
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .back-btn {
@@ -63,304 +65,451 @@
 
         .back-btn:hover { background: var(--accent-purple); color: #fff; }
 
-        .symbol-title-box { display: flex; align-items: center; gap: 12px; }
-        .symbol-title-box h1 { font-size: 1.5rem; font-weight: 700; color: #fff; }
+        .symbol-selector {
+            display: flex;
+            gap: 8px;
+            background: var(--bg-dark);
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
 
-        /* Main Grid Layout */
-        .dash-grid {
+        .sym-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 6px 14px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sym-btn.active { background: var(--accent-purple); color: #fff; }
+
+        /* Consensus Bar */
+        .consensus-bar {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(41, 98, 255, 0.1));
+            border: 1px solid var(--accent-purple);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .consensus-title { font-size: 1.1rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .consensus-score-box { text-align: right; }
+        .consensus-badge { padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; }
+
+        /* Experts Grid */
+        .experts-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 20px;
         }
 
-        @media (max-width: 1024px) { .dash-grid { grid-template-columns: 1fr; } }
-
-        .card {
+        .expert-card {
             background: var(--bg-panel);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 20px;
-            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: transform 0.2s, border-color 0.2s;
         }
 
-        .card-title {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--accent-purple);
-            margin-bottom: 16px;
+        .expert-card:hover { transform: translateY(-4px); border-color: var(--accent-purple); }
+
+        .expert-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: 10px;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        /* Score Cards Grid */
-        .score-board {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .score-box {
+        .expert-info { display: flex; align-items: center; gap: 12px; }
+        .expert-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
             background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 14px;
-            text-align: center;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
         }
 
-        .score-box span { font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 6px; }
-        .score-box h3 { font-size: 1.3rem; font-family: 'JetBrains Mono', monospace; }
+        .expert-name { font-weight: 700; font-size: 0.95rem; color: #fff; }
+        .expert-style { font-size: 0.72rem; color: var(--text-muted); }
 
-        /* Chart Frame */
-        .chart-box {
-            height: 480px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-
-        /* Timeframe Grid */
-        .tf-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-
-        @media (max-width: 768px) { .tf-grid { grid-template-columns: 1fr; } }
-
-        .tf-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 14px;
-        }
-
-        .tf-badge {
+        .signal-tag {
+            padding: 4px 10px;
+            border-radius: 6px;
             font-size: 0.75rem;
             font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 4px;
             font-family: 'JetBrains Mono', monospace;
-            display: inline-block;
-            margin-bottom: 8px;
         }
 
-        .level-item {
+        .bg-bullish { background: rgba(8, 153, 129, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .bg-bearish { background: rgba(242, 54, 69, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
+        .bg-neutral { background: rgba(255, 152, 0, 0.2); color: var(--accent-amber); border: 1px solid var(--accent-amber); }
+
+        .section-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--accent-purple);
+            text-transform: uppercase;
+            margin-top: 12px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .analysis-text { font-size: 0.82rem; line-height: 1.5; color: var(--text-main); }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 12px 0;
             background: var(--bg-card);
-            border-left: 4px solid var(--accent-blue);
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
         }
 
-        .level-item.res { border-left-color: var(--accent-red); }
-        .level-item.sup { border-left-color: var(--accent-green); }
+        .level-box { display: flex; flex-direction: column; }
+        .level-label { font-size: 0.68rem; color: var(--text-muted); margin-bottom: 2px; }
 
-        .level-header { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; }
-        .level-price { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; margin: 4px 0; }
-        .level-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
+        .pro-con-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border-color);
+            font-size: 0.75rem;
+        }
+
+        .pro-list { color: var(--accent-green); }
+        .con-list { color: var(--accent-red); }
+        .pro-con-item { margin-bottom: 4px; line-height: 1.3; }
+
+        @media (max-width: 768px) {
+            .experts-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Top Nav Header -->
-        <header class="dash-header">
-            <div class="symbol-title-box">
-                <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> กลับ Terminal</a>
-                <h1 id="dash-symbol-name">BTC / USDT - AI MACRO DASHBOARD</h1>
+        <!-- Header -->
+        <header class="header">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> กลับ Pro Terminal</a>
+                <a href="news_dashboard.html" class="back-btn"><i class="fa-solid fa-newspaper"></i> ศูนย์ข่าว AI</a>
             </div>
-            <div>
-                <span style="font-size: 0.8rem; color: var(--text-muted);">สถานะวิเคราะห์ล่าสุด: <strong style="color: var(--accent-green);">REALTIME READY</strong></span>
+
+            <div class="symbol-selector">
+                <button class="sym-btn active" id="btn-btc" onclick="selectSymbol('BTCUSDT')">BTC/USDT</button>
+                <button class="sym-btn" id="btn-gold" onclick="selectSymbol('GOLD')">GOLD (XAU)</button>
+                <button class="sym-btn" id="btn-dxy" onclick="selectSymbol('DXY')">DXY INDEX</button>
             </div>
         </header>
 
-        <!-- Scores Breakdown Bar -->
-        <div class="score-board">
-            <div class="score-box" style="border-color: var(--accent-purple);">
-                <span>OVERALL CONFIDENCE</span>
-                <h3 style="color: var(--accent-purple);" id="sc-overall">8.8 / 10</h3>
+        <!-- Consensus Bar -->
+        <div class="consensus-bar">
+            <div>
+                <div class="consensus-title">
+                    <i class="fa-solid fa-users-viewfinder" style="color: var(--accent-purple); font-size: 1.4rem;"></i>
+                    <span>ผลฉันทามติ 4 AI Experts Panel (<span id="active-sym-text">BTCUSDT</span>)</span>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;" id="consensus-desc">
+                    กำลังประมวลผลการลงมติจาก AI 4 รูปแบบระบบการเทรด...
+                </p>
             </div>
-            <div class="score-box">
-                <span>NEWS & MACRO SCORE</span>
-                <h3 style="color: var(--accent-amber);" id="sc-news">7.8 / 10</h3>
-            </div>
-            <div class="score-box">
-                <span>TECHNICAL INDICATORS</span>
-                <h3 style="color: var(--accent-blue);" id="sc-tech">9.0 / 10</h3>
-            </div>
-            <div class="score-box">
-                <span>STRUCTURE & LIQUIDITY</span>
-                <h3 style="color: var(--accent-green);" id="sc-struct">9.5 / 10</h3>
+            <div class="consensus-score-box">
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">CONSENSUS SIGNAL</div>
+                <span class="consensus-badge bg-bullish" id="consensus-badge">BULLISH CONSENSUS (3/4)</span>
             </div>
         </div>
 
-        <!-- Main Workspace Grid -->
-        <div class="dash-grid">
-            
-            <!-- Left Column: Chart & Multi-TF -->
-            <div>
-                <!-- Interactive Chart -->
-                <div class="card">
-                    <div class="card-title"><i class="fa-solid fa-chart-candlestick"></i> กราฟราคา และ อินดิเคเตอร์เทคนิค</div>
-                    <div class="chart-box" id="tv_dashboard_chart"></div>
-                </div>
-
-                <!-- Multi-Timeframe Analysis (H1, M15, M5) -->
-                <div class="card">
-                    <div class="card-title"><i class="fa-solid fa-layer-group"></i> เจาะลึกโครงสร้างราคา 3 TIMEFRAMES (H1 / M15 / M5)</div>
-                    <div class="tf-grid">
-                        <div class="tf-card">
-                            <span class="tf-badge" style="background: rgba(41, 98, 255, 0.2); color: var(--accent-blue);">H1 TIMEFRAME</span>
-                            <h4 style="font-size: 0.9rem; margin-bottom: 6px;" id="tf-h1-title">BULLISH STRUCTURE</h4>
-                            <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;" id="tf-h1-text">-</p>
-                        </div>
-                        <div class="tf-card">
-                            <span class="tf-badge" style="background: rgba(255, 152, 0, 0.2); color: var(--accent-amber);">M15 TIMEFRAME</span>
-                            <h4 style="font-size: 0.9rem; margin-bottom: 6px;" id="tf-m15-title">PULLBACK SETUP</h4>
-                            <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;" id="tf-m15-text">-</p>
-                        </div>
-                        <div class="tf-card">
-                            <span class="tf-badge" style="background: rgba(8, 153, 129, 0.2); color: var(--accent-green);">M5 TIMEFRAME</span>
-                            <h4 style="font-size: 0.9rem; margin-bottom: 6px;" id="tf-m5-title">SCALP TRIGGER</h4>
-                            <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;" id="tf-m5-text">-</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column: Synthesis, Levels & Reasons -->
-            <div>
-                <!-- AI Synthesis -->
-                <div class="card">
-                    <div class="card-title"><i class="fa-solid fa-brain"></i> บทวิเคราะห์รวบยอด (Macro + Technical)</div>
-                    <div style="font-size: 0.85rem; line-height: 1.6; color: var(--text-main);" id="synthesis-detail-text">
-                        กำลังโหลดข้อมูล...
-                    </div>
-                </div>
-
-                <!-- Support & Resistance Analysis -->
-                <div class="card">
-                    <div class="card-title"><i class="fa-solid fa-arrows-up-down"></i> แนวรับ-แนวต้าน พร้อมคะแนน & เหตุผล</div>
-                    
-                    <!-- R1 -->
-                    <div class="level-item res">
-                        <div class="level-header">
-                            <span style="color: var(--accent-red);">แนวต้านสำคัญ (R1)</span>
-                            <span id="r1-score-tag">คะแนน: 8.5/10</span>
-                        </div>
-                        <div class="level-price" style="color: var(--accent-red);" id="r1-price-tag">$0</div>
-                        <div class="level-desc" id="r1-reason-tag">-</div>
-                    </div>
-
-                    <!-- S1 -->
-                    <div class="level-item sup">
-                        <div class="level-header">
-                            <span style="color: var(--accent-green);">แนวรับสำคัญ (S1)</span>
-                            <span id="s1-score-tag">คะแนน: 9.5/10</span>
-                        </div>
-                        <div class="level-price" style="color: var(--accent-green);" id="s1-price-tag">$0</div>
-                        <div class="level-desc" id="s1-reason-tag">-</div>
-                    </div>
-                </div>
-            </div>
-
+        <!-- 4 AI Experts Cards Grid -->
+        <div class="experts-grid" id="experts-container">
+            <!-- Dynamic Injection via JavaScript -->
         </div>
     </div>
 
-    <!-- TradingView SDK -->
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        // Database
-        const db = {
+        // Experts Database with Multi-Perspective Technical Analysis
+        const expertData = {
             'BTCUSDT': {
-                name: 'BTC / USDT (Bitcoin)',
-                tvSymbol: 'BINANCE:BTCUSDT',
-                overall: '8.8 / 10', news: '7.8 / 10', tech: '9.0 / 10', struct: '9.5 / 10',
-                h1Title: 'BULLISH CONTINUATION', h1Text: 'โครงสร้างราคาสร้าง Higher High และ Higher Low ชัดเจน ยืนเหนือเส้น EMA 200 ใน Timeframe H1',
-                m15Title: 'DEMAND PULLBACK', m15Text: 'เกิดการย่อตัวลงมาทดสอบ Fair Value Gap (FVG) และก้อน Order Block ที่ $66,200',
-                m5Title: 'CHOCH ENTRY TRIGGER', m5Text: 'เกิดสัญญาณ Change of Character ใน M5 พร้อมแรงปฏิเสธราคา (Rejection) เหมาะตั้ง Stop Loss แคบ',
-                synthesis: '📌 <strong>มุมมองมหภาค & ข่าวสาร:</strong> เม็ดเงินสถาบันไหลเข้าสู่กองทุน Bitcoin Spot ETF อย่างต่อเนื่อง และดัชนีดอลลาร์ผ่อนคลายตัวลง<br><br>📌 <strong>มุมมองเทคนิค:</strong> โครงสร้างราคายังรักษายอดคลื่นขาขึ้นได้สมบูรณ์ การย่อตัวมองเป็นโอกาสสะสมฝั่ง Buy ตามแนวรับ Order Block',
-                r1: { price: '$68,500', score: '8.5/10', reason: 'ตรงกับจุด Fibonacci Retracement 0.618 และ High เดิมของสัปดาห์' },
-                s1: { price: '$66,200', score: '9.5/10', reason: '🔥 **Demand Zone หนานา:** เป็นก้อนซื้อสะสม Order Block ที่มี Volume สลับแลกเปลี่ยนสูงที่สุด' }
+                symbol: 'BTCUSDT',
+                consensus: 'BULLISH CONSENSUS (3/4)',
+                consensusClass: 'bg-bullish',
+                consensusDesc: '3 ใน 4 ของ AI Experts สอดคล้องกันว่าโครงสร้างตลาดยังคงเน้นฝั่ง BUY โดยมีเพียง AI-Scalp ที่เตือนระวังแรงขายทำกำไรระยะสั้น',
+                experts: [
+                    {
+                        name: 'AI-SMC "Nexus"',
+                        avatar: '🎯',
+                        style: 'Smart Money Concepts / ICT',
+                        signal: 'BULLISH',
+                        signalClass: 'bg-bullish',
+                        avatarColor: 'var(--accent-purple)',
+                        analysis: 'ราคาทำ **CHoCH (Change of Character)** ชัดเจนบน H4 และลงมา Sweep Liquidity ฝั่ง Sell-side ก่อนเกิด Rejection แท่งเขียวสวยงาม เกิด FVG สดใหม่รองรับด้านล่าง',
+                        support: '$64,200 (Demand / OB)',
+                        resistance: '$68,500 (Liquidity Pool)',
+                        strengths: ['เกิด Bullish Order Block ชัดเจน', 'Liquidity ด้านล่างถูก Sweep หมดแล้ว'],
+                        weaknesses: ['ต้องรอการ Confirm แท่งปิดบน M15 อีกครั้ง', 'RR จะแย่หากเข้าซื้อช้าเกินไป']
+                    },
+                    {
+                        name: 'AI-Quant "Alpha"',
+                        avatar: '📊',
+                        style: 'Momentum & Trend Following',
+                        signal: 'BULLISH',
+                        signalClass: 'bg-bullish',
+                        avatarColor: 'var(--accent-blue)',
+                        analysis: 'เส้น **EMA 20 ตัดขึ้นเหนือ EMA 50 บน Timeframe H1** พร้อมกับค่า RSI อยู่ที่ 58 (Bullish Zone) โดย Volume Profile ชี้ว่ายืนเหนือ Node ราคาส่งสำคัญได้สำเร็จ',
+                        support: '$65,000 (EMA 20 H1)',
+                        resistance: '$67,800 (VPVR Peak)',
+                        strengths: ['เทรนด์หลัก โมเมนตัมเป็นบวกชัดเจน', ' Volume สะสมหนาแน่นบริบทดันราคา'],
+                        weaknesses: ['ค่า Stochastic เริ่มเข้าใกล้ Overbought', 'ระวังเกิด Bearish Divergence']
+                    },
+                    {
+                        name: 'AI-Scalp "Flash"',
+                        avatar: '⚡',
+                        style: 'Scalping / Orderflow (M5-M15)',
+                        signal: 'NEUTRAL / CAUTION',
+                        signalClass: 'bg-neutral',
+                        avatarColor: 'var(--accent-amber)',
+                        analysis: 'ระยะสั้น M5 ราคาชนแนวต้านทดสอบครั้งที่ 3 แต่ Delta Volume เริ่มแผ่วลง มีโอกาสพักตัวกลับมาทดสอบ VWAP ก่อนเลือกทางอีกครั้ง',
+                        support: '$65,400 (VWAP M15)',
+                        resistance: '$66,500 (Local High)',
+                        strengths: ['ตั้ง Stop Loss ได้แคบมาก (Risk ต่ำ)', 'เห็นการปฏิเสธราคาบน M5 ชัด'],
+                        weaknesses: ['สู้กับเทรนด์หลัก อาจโดนกวาด SL', 'ค่า สเปรด / ค่าธรรมเนียมกินกำไร']
+                    },
+                    {
+                        name: 'AI-Macro "Titan"',
+                        avatar: '🐘',
+                        style: 'Structural Swing Trade (D1/W1)',
+                        signal: 'BULLISH',
+                        signalClass: 'bg-bullish',
+                        avatarColor: 'var(--accent-green)',
+                        analysis: 'กราฟวัน (Daily) ทำโครงสร้าง **Higher High / Higher Low** สมบูรณ์แบบ ตราบใดที่ไม่หลุดหลุมเดิม ภาพรวมยังคงมองการทำ New High ในสัปดาห์นี้',
+                        support: '$62,500 (Daily Swing Low)',
+                        resistance: '$70,000 (Psychological)',
+                        strengths: ['ทิศทางแน่นอน ไม่โดนหลอกโดย Noise ย่อย', 'อัตรารอบกำไร (RRR) สูงมาก'],
+                        weaknesses: ['ต้องถือตำแหน่งนาน และใช้ SL กว้าง', 'ทนความผันผวนระหว่างวันสูง']
+                    }
+                ]
             },
             'GOLD': {
-                name: 'GOLD (XAU / USD)',
-                tvSymbol: 'TVC:GOLD',
-                overall: '8.2 / 10', news: '8.5 / 10', tech: '8.0 / 10', struct: '8.2 / 10',
-                h1Title: 'SIDEWAY HIGH SETUP', h1Text: 'แกว่งตัวสะสมกำลังในกรอบกว้าง $2,390 - $2,430 ยังไม่เสียทรงขาขึ้นภาพใหญ่',
-                m15Title: 'LIQUIDITY SWEEP', m15Text: 'มีการกวาด Liquidity ขอบล่างบริเวณ $2,398 แล้วมีแรงซื้อสวนกลับทันที',
-                m5Title: 'WAIT FOR BREAKOUT', m5Text: 'รอแท่งเทียน M5 ปิดทะลุ High ย่อย เพื่อยืนยันการขึ้นต่อ',
-                synthesis: '📌 <strong>มุมมองมหภาค & ข่าวสาร:</strong> ได้รับแรงหนุนจากความต้องการสินทรัพย์ปลอดภัยจากภาวะสงครามและความเสี่ยงการเมืองโลก<br><br>📌 <strong>มุมมองเทคนิค:</strong> ราคายังทรงตัวเหนือแนวรับสำคัญได้ดี ย่อ Buy ที่ขอบล่างกรอบ Sideway มีความเสี่ยงต่ำกว่า',
-                r1: { price: '$2,430.00', score: '8.8/10', reason: 'กรอบแนวต้านบนของ Sideway Channel ก่อนไปทดสอบ High เดิม' },
-                s1: { price: '$2,390.00', score: '9.2/10', reason: '🔥 **จุดรับแข็งแกร่ง:** เส้น Trendline ขาขึ้น + EMA 200' }
+                symbol: 'GOLD (XAU/USD)',
+                consensus: 'MIXED / NEUTRAL (2/4)',
+                consensusClass: 'bg-neutral',
+                consensusDesc: 'AI Panel มีมุมมองขัดแย้งกัน สาย Macro และ SMC ให้ซื้อตามเทรนด์ แต่สาย Scalp และ Indicator เตือนระวังแรงขายแนวต้านใหญ่',
+                experts: [
+                    {
+                        name: 'AI-SMC "Nexus"',
+                        avatar: '🎯',
+                        style: 'Smart Money Concepts / ICT',
+                        signal: 'BULLISH',
+                        signalClass: 'bg-bullish',
+                        avatarColor: 'var(--accent-purple)',
+                        analysis: 'ราคาทองคำทิ้งไส้กวาด Equal Lows แถว $2,380 แล้วพุ่งกลับขึ้นมาทันที บ่งบอกว่า Smart Money เข้าเก็บของเพื่อดันต่อหา Liquidity ด้านบน',
+                        support: '$2,385 (Bullish FVG)',
+                        resistance: '$2,430 (Buy-side Liquidity)',
+                        strengths: ['เกิด Stop Hunt สมบูรณ์แบบ', 'โครงสร้างขาขึ้นยังไม่เสีย'],
+                        weaknesses: ['ความผันผวนของข่าวเศรษฐกิจสูง']
+                    },
+                    {
+                        name: 'AI-Quant "Alpha"',
+                        avatar: '📊',
+                        style: 'Momentum & Trend Following',
+                        signal: 'BEARISH',
+                        signalClass: 'bg-bearish',
+                        avatarColor: 'var(--accent-blue)',
+                        analysis: 'เกิด **Bearish Divergence บน RSI H4** ชัดเจน ราคาทำ High ใหม่แต่ RSI ไม่ทำ High ตาม แสดงถึงแรงซื้อที่เริ่มหมดพลัง',
+                        support: '$2,370 (EMA 200 H4)',
+                        resistance: '$2,425 (Recent High)',
+                        strengths: ['สัญญาณเตือนย่อตัวแม่นยำสูง', 'RSI อยู่ในภาวะ Overbought'],
+                        weaknesses: ['อาจย่อสั้นๆ แล้วบินต่อตามเทรนด์หลัก']
+                    },
+                    {
+                        name: 'AI-Scalp "Flash"',
+                        avatar: '⚡',
+                        style: 'Scalping / Orderflow (M5-M15)',
+                        signal: 'BEARISH',
+                        signalClass: 'bg-bearish',
+                        avatarColor: 'var(--accent-amber)',
+                        analysis: ' M15 เกิดรูปแบบ Double Top และมีแรง Sell Order Flow ไหลเข้ามาหนาแน่น เหมาะกับการเปิด Short สั้นๆ ย่อกินรอบ 40-60 ปิ๊ป',
+                        support: '$2,395 (M15 Support)',
+                        resistance: '$2,415 (Scalp Pivot)',
+                        strengths: ['จบออเดอร์ไว ไม่ต้องถือข้ามคืน', 'จังหวะเข้าชัดเจน'],
+                        weaknesses: ['สวนเทรนด์ใหญ่ ต้องเคร่งครัด SL']
+                    },
+                    {
+                        name: 'AI-Macro "Titan"',
+                        avatar: '🐘',
+                        style: 'Structural Swing Trade (D1/W1)',
+                        signal: 'BULLISH',
+                        signalClass: 'bg-bullish',
+                        avatarColor: 'var(--accent-green)',
+                        analysis: ' ภาพรวมสัปดาห์ทองคำเป็น Safe Haven ได้รับปัจจัยบวกจากแนวโน้มการลดดอกเบี้ย ภาพใหญ่เน้นย่อ Buy เท่านั้น',
+                        support: '$2,350 (Major Support)',
+                        resistance: '$2,450 (All Time High)',
+                        strengths: ['ปลอดภัยตามทิศทางเม็ดเงินโลก', 'เทรนด์แข็งแกร่งมาก'],
+                        weaknesses: ['จุดเข้าสม่ำเสมอยากเพราะราคาอยู่สูง']
+                    }
+                ]
             },
             'DXY': {
-                name: 'DXY (US Dollar Index)',
-                tvSymbol: 'CAPITALCOM:DXY',
-                overall: '7.9 / 10', news: '8.2 / 10', tech: '7.8 / 10', struct: '7.6 / 10',
-                h1Title: 'BEARISH STRUCTURE', h1Text: 'ทำ Lower Low ต่อเนื่อง โครงสร้างหลุดแนวรับสำคัญระยะกลาง',
-                m15Title: 'BOUNCE TO SELL', m15Text: 'การดีดตัวขึ้นมาเป็นเพียงการ Re-test โซน Supply เพื่อลงต่อ',
-                m5Title: 'REJECTION CONFIRMED', m5Text: 'เกิดไส้เทียนด้านบนยาว (Upper Wick) แสดงแรงขายกดราคาลงมา',
-                synthesis: '📌 <strong>มุมมองมหภาค & ข่าวสาร:</strong> ตลาดคาดการณ์ธนาคารกลางปรับลดดอกเบี้ยลงต่อเนื่อง กดดันค่าเงินดอลลาร์<br><br>📌 <strong>มุมมองเทคนิค:</strong> กราฟอยู่ในแนวโน้มขาลงชัดเจน เน้นเปิดสัญญา Sell เมื่อราคาเด้งทดสอบแนวต้าน',
-                r1: { price: '102.10', score: '8.5/10', reason: 'Supply Zone + เส้นแนวโน้มขาลงใน Timeframe ใหญ่' },
-                s1: { price: '100.80', score: '9.0/10', reason: '🔥 **แนวรับสถิติ:** จุด Low เดิมของปีก่อนหน้า' }
-            },
-            'USOIL': {
-                name: 'US OIL (WTI Crude)',
-                tvSymbol: 'TVC:USOIL',
-                overall: '7.5 / 10', news: '7.0 / 10', tech: '7.8 / 10', struct: '7.7 / 10',
-                h1Title: 'RANGE BOUND', h1Text: 'วิ่งอยู่ในกรอบแกว่งตัว $76.50 - $80.00 ไร้ทิศทางเบรกเอาท์ชัดเจน',
-                m15Title: 'DOUBLE BOTTOM', m15Text: 'สร้างฐานรูปแบบดับเบิ้ลโบททอมบริเวณขอบล่างของกรอบ',
-                m5Title: 'SCALP BUY TRIGGER', m5Text: 'เกิดสัญญาณ Bullish Divergence ใน RSI ย่อย M5',
-                synthesis: '📌 <strong>มุมมองมหภาค & ข่าวสาร:</strong> ตลาดกังวลเกี่ยวกับอุปสงค์พลังงานตามสภาวะเศรษฐกิจชะลอตัว<br><br>📌 <strong>มุมมองเทคนิค:</strong> เหมาะกับการเทรดสั้นแบบ Swing ในกรอบแนวรับ-แนวต้าน',
-                r1: { price: '$80.00', score: '8.2/10', reason: 'ด่านแนวต้านตัวเลขกลม $80 + แนวปะทะ MA200' },
-                s1: { price: '$76.50', score: '8.9/10', reason: '🔥 **แนวรับฐานกรอบ:** จุดดีดตัวกลับแรงสถิติเดิม' }
+                symbol: 'DXY INDEX',
+                consensus: 'BEARISH CONSENSUS (3/4)',
+                consensusClass: 'bg-bearish',
+                consensusDesc: 'AI ส่วนใหญ่เห็นตรงกันว่าดอลลาร์อยู่ในเทรนด์ขาลง ซึ่งเป็นปัจจัยบวกโดยตรงต่อทั้ง Bitcoin และทองคำ',
+                experts: [
+                    {
+                        name: 'AI-SMC "Nexus"',
+                        avatar: '🎯',
+                        style: 'Smart Money Concepts / ICT',
+                        signal: 'BEARISH',
+                        signalClass: 'bg-bearish',
+                        avatarColor: 'var(--accent-purple)',
+                        analysis: 'หลุด **Market Structure (BOS)** ฝั่งขาลงบน D1 ชัดเจน เด้งขึ้นมาเพียงเพื่อ Fill FVG แล้วมีแรงขายกดลงต่อทันที',
+                        support: '103.50 (Sell-side Target)',
+                        resistance: '104.80 (Bearish OB)',
+                        strengths: ['โครงสร้างขาลงชัดเจนมาก', 'ไม่มี Demand รองรับใกล้ๆ'],
+                        weaknesses: ['อาจมี Rebound สั้นๆ ตามข่าว']
+                    },
+                    {
+                        name: 'AI-Quant "Alpha"',
+                        avatar: '📊',
+                        style: 'Momentum & Trend Following',
+                        signal: 'BEARISH',
+                        signalClass: 'bg-bearish',
+                        avatarColor: 'var(--accent-blue)',
+                        analysis: 'EMA 20 Cross ต่ำกว่า EMA 50 ทั้งใน H1 และ H4 ค่า MACD อยู่ใต้เส้น Zero Line ตอกย้ำเทรนด์ฝั่งขาย',
+                        support: '103.80 (Lower Bollinger Band)',
+                        resistance: '104.60 (EMA 50 H4)',
+                        strengths: [' Indicator ทุกตัวชี้ลงเหมือนกัน', 'โมเมนตัมฝั่งขายครองตลาด'],
+                        weaknesses: ['RSI เริ่มเข้าเขต Oversold']
+                    },
+                    {
+                        name: 'AI-Scalp "Flash"',
+                        avatar: '⚡',
+                        style: 'Scalping / Orderflow (M5-M15)',
+                        signal: 'BULLISH / REBOUND',
+                        signalClass: 'bg-bullish',
+                        avatarColor: 'var(--accent-amber)',
+                        analysis: 'ระยะสั้น M15 ชนแนวรับสำคัญ และเกิด Bullish Pinbar อาจมีเด้งสั้นๆ ให้เทรดเดอร์ที่ลุยเทรดดอลลาร์เก็บรอบสั้นได้',
+                        support: '104.00 (Psychological Level)',
+                        resistance: '104.35 (M15 High)',
+                        strengths: ['เล่นรอบเด้ง Technical Rebound', 'จุด SL แคบมาก'],
+                        weaknesses: ['เป็นการสวนเทรนด์หลัก ความเสี่ยงสูง']
+                    },
+                    {
+                        name: 'AI-Macro "Titan"',
+                        avatar: '🐘',
+                        style: 'Structural Swing Trade (D1/W1)',
+                        signal: 'BEARISH',
+                        signalClass: 'bg-bearish',
+                        avatarColor: 'var(--accent-green)',
+                        analysis: ' นโยบายการเงินธนาคารกลางเริ่มผ่อนคลาย ค่าเงินดอลลาร์หลุดกรอบสะสมปีนี้ มุ่งหน้าลงหาแนวรับถัดไป',
+                        support: '102.50 (Yearly Support)',
+                        resistance: '105.50 (Major Resistance)',
+                        strengths: ['ทิศทางระดับ Macro สอดคล้องกับกราฟ', 'วินเรตสูงหากเข้าฝั่ง Sell'],
+                        weaknesses: ['ต้องกินเวลานานกว่าจะถึงเป้าหมาย']
+                    }
+                ]
             }
         };
 
-        // Get Query Parameter ?symbol=...
-        const urlParams = new URLSearchParams(window.location.search);
-        const activeSymbol = urlParams.get('symbol') || 'BTCUSDT';
-        const data = db[activeSymbol] || db['BTCUSDT'];
+        function renderDesk(symbolKey) {
+            const data = expertData[symbolKey] || expertData['BTCUSDT'];
+            
+            // Update Header/Consensus Bar
+            document.getElementById('active-sym-text').innerText = data.symbol;
+            document.getElementById('consensus-badge').innerText = data.consensus;
+            document.getElementById('consensus-badge').className = `consensus-badge ${data.consensusClass}`;
+            document.getElementById('consensus-desc').innerText = data.consensusDesc;
 
-        // Render Page Data
-        document.getElementById('dash-symbol-name').innerText = data.name + ' - AI MACRO DASHBOARD';
-        document.getElementById('sc-overall').innerText = data.overall;
-        document.getElementById('sc-news').innerText = data.news;
-        document.getElementById('sc-tech').innerText = data.tech;
-        document.getElementById('sc-struct').innerText = data.struct;
+            // Render Expert Cards
+            const container = document.getElementById('experts-container');
+            container.innerHTML = '';
 
-        document.getElementById('tf-h1-title').innerText = data.h1Title;
-        document.getElementById('tf-h1-text').innerText = data.h1Text;
-        document.getElementById('tf-m15-title').innerText = data.m15Title;
-        document.getElementById('tf-m15-text').innerText = data.m15Text;
-        document.getElementById('tf-m5-title').innerText = data.m5Title;
-        document.getElementById('tf-m5-text').innerText = data.m5Text;
+            data.experts.forEach(exp => {
+                const cardHTML = `
+                    <div class="expert-card">
+                        <div class="expert-header">
+                            <div class="expert-info">
+                                <div class="expert-avatar" style="border-color: ${exp.avatarColor};">
+                                    ${exp.avatar}
+                                </div>
+                                <div>
+                                    <div class="expert-name">${exp.name}</div>
+                                    <div class="expert-style">${exp.style}</div>
+                                </div>
+                            </div>
+                            <span class="signal-tag ${exp.signalClass}">${exp.signal}</span>
+                        </div>
 
-        document.getElementById('synthesis-detail-text').innerHTML = data.synthesis;
+                        <div class="section-title"><i class="fa-solid fa-magnifying-glass-chart"></i> มุมมองวิเคราะห์</div>
+                        <div class="analysis-text">${exp.analysis}</div>
 
-        document.getElementById('r1-score-tag').innerText = 'คะแนน: ' + data.r1.score;
-        document.getElementById('r1-price-tag').innerText = data.r1.price;
-        document.getElementById('r1-reason-tag').innerText = data.r1.reason;
+                        <div class="levels-grid">
+                            <div class="level-box">
+                                <span class="level-label"><i class="fa-solid fa-shield-halved" style="color: var(--accent-green);"></i> แนวรับ (Support)</span>
+                                <strong style="color: var(--accent-green);">${exp.support}</strong>
+                            </div>
+                            <div class="level-box">
+                                <span class="level-label"><i class="fa-solid fa-hand" style="color: var(--accent-red);"></i> แนวต้าน (Resistance)</span>
+                                <strong style="color: var(--accent-red);">${exp.resistance}</strong>
+                            </div>
+                        </div>
 
-        document.getElementById('s1-score-tag').innerText = 'คะแนน: ' + data.s1.score;
-        document.getElementById('s1-price-tag').innerText = data.s1.price;
-        document.getElementById('s1-reason-tag').innerText = data.s1.reason;
+                        <div class="pro-con-box">
+                            <div>
+                                <div style="font-weight: 700; color: var(--accent-green); margin-bottom: 4px;">💪 จุดแข็ง/ข้อดี</div>
+                                ${exp.strengths.map(s => `<div class="pro-con-item pro-list">• ${s}</div>`).join('')}
+                            </div>
+                            <div>
+                                <div style="font-weight: 700; color: var(--accent-red); margin-bottom: 4px;">⚠️ จุดอ่อน/ความเสี่ยง</div>
+                                ${exp.weaknesses.map(w => `<div class="pro-con-item con-list">• ${w}</div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHTML;
+            });
+        }
 
-        // Render Chart
-        new TradingView.widget({
-            "autosize": true,
-            "symbol": data.tvSymbol,
-            "interval": "60",
-            "timezone": "Asia/Bangkok",
-            "theme": "dark",
-            "style": "1",
-            "locale": "th_TH",
-            "container_id": "tv_dashboard_chart"
+        function selectSymbol(sym) {
+            document.querySelectorAll('.sym-btn').forEach(btn => btn.classList.remove('active'));
+            if(sym === 'BTCUSDT') document.getElementById('btn-btc').classList.add('active');
+            if(sym === 'GOLD') document.getElementById('btn-gold').classList.add('active');
+            if(sym === 'DXY') document.getElementById('btn-dxy').classList.add('active');
+
+            renderDesk(sym);
+        }
+
+        // Auto read URL query parameter e.g., macro_crypto_dashboard.html?symbol=GOLD
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const symParam = urlParams.get('symbol') || 'BTCUSDT';
+            selectSymbol(symParam);
         });
     </script>
 </body>
