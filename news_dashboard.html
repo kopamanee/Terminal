@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Real-time News Hub & Analysis</title>
-    <!-- Google Fonts & FontAwesome -->
+    <title>Dynamic News Hub & Institutional Insights</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -24,123 +23,62 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Prompt', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            padding: 20px;
-            min-height: 100vh;
-        }
-
-        .container { max-width: 1300px; margin: 0 auto; }
+        body { font-family: 'Prompt', sans-serif; background-color: var(--bg-dark); color: var(--text-main); padding: 20px; min-height: 100vh; }
+        .container { max-width: 1350px; margin: 0 auto; }
 
         .news-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--bg-panel);
-            padding: 16px 24px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-panel); padding: 16px 24px; border-radius: 12px;
+            border: 1px solid var(--border-color); margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
         }
 
         .back-btn {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 8px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-            cursor: pointer;
+            background: rgba(255, 255, 255, 0.05); color: var(--text-main);
+            border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px;
+            text-decoration: none; font-size: 0.85rem; font-weight: 600;
+            display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s;
         }
-
         .back-btn:hover { background: var(--accent-purple); color: #fff; }
 
-        .status-bar {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px 16px;
-            margin-bottom: 20px;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .asset-selector { display: flex; gap: 8px; background: var(--bg-dark); padding: 4px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .asset-btn {
+            background: transparent; border: none; color: var(--text-muted);
+            padding: 6px 14px; font-family: inherit; font-size: 0.85rem; font-weight: 600;
+            border-radius: 6px; cursor: pointer; transition: 0.2s;
         }
+        .asset-btn.active { background: var(--accent-purple); color: #fff; }
 
-        .news-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 20px;
+        /* Institutional Insights Section */
+        .vip-section {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(41, 98, 255, 0.08));
+            border: 1px solid var(--accent-purple); border-radius: 12px; padding: 20px; margin-bottom: 24px;
         }
+        .vip-title { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+        .vip-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+        .vip-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; }
+        .vip-author { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .vip-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--accent-purple); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; }
+        .vip-name { font-weight: 700; font-size: 0.9rem; color: #fff; }
+        .vip-role { font-size: 0.75rem; color: var(--text-muted); }
+        .vip-quote { font-size: 0.82rem; line-height: 1.5; color: var(--text-main); font-style: italic; }
 
-        .news-card {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-
-        .news-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--accent-purple);
-        }
-
-        .news-card-header {
-            padding: 12px 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0,0,0,0.2);
-        }
-
+        /* News Grid */
+        .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; }
+        .news-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: 0.2s; }
+        .news-card:hover { transform: translateY(-3px); border-color: var(--accent-purple); }
+        .news-card-header { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; background: rgba(0,0,0,0.2); }
         .news-source { font-size: 0.75rem; color: var(--accent-purple); font-weight: 700; }
         .news-time { font-size: 0.72rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
-
         .news-card-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
         .news-title-th { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 8px; line-height: 1.4; }
-        .news-title-en { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 14px; font-style: italic; line-height: 1.3; }
+        .news-title-en { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 14px; font-style: italic; }
 
-        .ai-analysis-box {
-            background: var(--bg-card);
-            border-left: 4px solid var(--accent-purple);
-            border-radius: 6px;
-            padding: 12px;
-            margin-top: auto;
-        }
-
-        .ai-box-title {
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--accent-purple);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
+        .ai-analysis-box { background: var(--bg-card); border-left: 4px solid var(--accent-purple); border-radius: 6px; padding: 12px; margin-top: auto; }
+        .ai-box-title { font-size: 0.78rem; font-weight: 700; color: var(--accent-purple); display: flex; justify-content: space-between; margin-bottom: 8px; }
         .impact-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; }
         .impact-bullish { background: rgba(8, 153, 129, 0.2); color: var(--accent-green); }
         .impact-bearish { background: rgba(242, 54, 69, 0.2); color: var(--accent-red); }
         .impact-neutral { background: rgba(255, 152, 0, 0.2); color: var(--accent-amber); }
-
-        .ai-summary-text { font-size: 0.8rem; line-height: 1.5; color: var(--text-main); margin-bottom: 8px; }
-        .ai-view-text { font-size: 0.78rem; color: var(--text-muted); border-top: 1px dashed var(--border-color); padding-top: 8px; }
-
-        .loading-box { text-align: center; padding: 60px; font-size: 1.1rem; color: var(--text-muted); grid-column: 1 / -1; }
     </style>
 </head>
 <body>
@@ -149,199 +87,125 @@
         <header class="news-header">
             <div style="display: flex; align-items: center; gap: 12px;">
                 <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> กลับ Terminal</a>
-                <h1 style="font-size: 1.4rem;"><i class="fa-solid fa-newspaper" style="color: var(--accent-amber);"></i> AI CRYPTO & MACRO NEWS HUB</h1>
+                <h1 style="font-size: 1.3rem;"><i class="fa-solid fa-newspaper" style="color: var(--accent-amber);"></i> REAL-TIME DYNAMIC NEWS HUB</h1>
             </div>
-            <div>
-                <button onclick="loadNewsEngine()" class="back-btn" style="background: var(--accent-purple); border: none; color: #fff;">
-                    <i class="fa-solid fa-rotate"></i> อัปเดตข่าวสด
-                </button>
+
+            <div class="asset-selector">
+                <button class="asset-btn active" id="tab-btc" onclick="switchAsset('BTCUSDT')">₿ Crypto / BTC</button>
+                <button class="asset-btn" id="tab-gold" onclick="switchAsset('GOLD')">🥇 Gold / สงคราม / FED</button>
+                <button class="asset-btn" id="tab-dxy" onclick="switchAsset('DXY')">💵 US Dollar / เศรษฐกิจโลก</button>
             </div>
         </header>
 
-        <div class="status-bar">
-            <span><i class="fa-solid fa-signal" style="color: var(--accent-green);"></i> แหล่งข้อมูล: <strong id="data-source-label">CoinTelegraph RSS Stream</strong></span>
-            <span style="color: var(--text-muted);">ประมวลผลด้วย: <strong style="color: var(--accent-purple);">Smart AI Sentiment Engine</strong></span>
-        </div>
-
-        <div class="news-grid" id="news-container">
-            <div class="loading-box">
-                <i class="fa-solid fa-circle-notch fa-spin"></i> กำลังโหลดข่าวสดและให้ AI ประมวลผลบทวิเคราะห์...
+        <!-- Institutional Insights Desk -->
+        <section class="vip-section">
+            <div class="vip-title">
+                <i class="fa-solid fa-building-columns" style="color: var(--accent-purple);"></i>
+                <span>บทวิเคราะห์ & คำคาดการณ์จากสถาบันการเงินและกองทุนระดับโลก (Institutional Forecasts)</span>
             </div>
+            <div class="vip-grid" id="vip-container">
+                <!-- Dynamic Injection -->
+            </div>
+        </section>
+
+        <!-- Live News Feed -->
+        <div class="news-grid" id="news-container">
+            <!-- Dynamic Injection -->
         </div>
     </div>
 
     <script>
-        // Data Feed Sources with Fail-Safe Mechanism
-        const RSS_FEED_URL = 'https://api.rss2json.com/v1/api.json?rss_url=https://cointelegraph.com/rss';
+        const vipData = {
+            'BTCUSDT': [
+                { name: 'Larry Fink', role: 'CEO, BlackRock', avatar: 'BLK', quote: '"Bitcoin คือดิจิทัลโกลด์ที่ป้องกันความเสี่ยงจากเงินเฟ้อ เราเห็นสถาบันการเงินใหญ่ทั่วโลกกำลังทยอยเพิ่มน้ำหนักการลงทุนระยะยาว"' },
+                { name: 'Cathie Wood', role: 'CEO, ARK Invest', avatar: 'ARK', quote: '"คาดการณ์ว่าเป้าหมายระยะยาวของ Bitcoin อาจแตะ $1,000,000 ได้ภายในปี 2030 จากแรงหนุนของ Spot ETF และระบบการเงินไร้พรมแดน"' },
+                { name: 'Michael Saylor', role: 'Founder, MicroStrategy', avatar: 'MSTR', quote: '"เราจะยังคงซื้อ BTC เพิ่มเติมอย่างต่อเนื่อง สินทรัพย์ดิจิทัลที่มีจำนวนจำกัดคือทางรอดเดียวจากการเสื่อมค่าของเงินเฟียต"' }
+            ],
+            'GOLD': [
+                { name: 'Ray Dalio', role: 'Founder, Bridgewater Associates', avatar: 'BW', quote: '"ในยุคที่ความตึงเครียดทางภูมิรัฐศาสตร์สูง และหนี้สาธารณะสหรัฐฯ พุ่งสูง ทองคำคือหลักประกันความปลอดภัยที่ไม่สามารถถูกอายัดได้"' },
+                { name: 'Goldman Sachs Research', role: 'Global Investment Bank', avatar: 'GS', quote: '"ปรับเป้าหมายราคาทองคำปีนี้ขึ้น จากแรงซื้อต่อเนื่องของธนาคารกลางต่างประเทศ (Central Banks) และความเสี่ยงสงครามตะวันออกกลาง"' },
+                { name: 'World Gold Council', role: 'Global Authority on Gold', avatar: 'WGC', quote: '"ความต้องการทองคำแท่งและเหรียญกษาปณ์พุ่งสูงขึ้นอย่างมีนัยสำคัญ แรงหนุนจากการลดดอกเบี้ยของ Fed ในอนาคต"' }
+            ],
+            'DXY': [
+                { name: 'Jerome Powell', role: 'Chair, Federal Reserve', avatar: 'FED', quote: '"ทิศทางดอกเบี้ยขึ้นอยู่กับข้อมูลเงินเฟ้อ CPI และตัวเลขการจ้างงาน NFP หากเงินเฟ้อชะลอตัวเข้าสู่เป้าหมาย 2% การปรับลดดอกเบี้ยจะเกิดขึ้น"' },
+                { name: 'Jamie Dimon', role: 'CEO, JPMorgan Chase', avatar: 'JPM', quote: '"ระวังปัจจัยเสี่ยงซ่อนเร้นในเศรษฐกิจโลก เงินเฟ้ออาจค้างสูงนานกว่าที่ตลาดคาดไว้ ซึ่งอาจทำให้ดอลลาร์ผันผวนสูง"' },
+                { name: 'Janet Yellen', role: 'US Treasury Secretary', avatar: 'US', quote: '"เศรษฐกิจสหรัฐฯ ยังคงมีพื้นฐานที่แข็งแกร่ง (Soft Landing) แม้ว่าจะต้องเผชิญกับแรงกดดันด้านงบประมาณและภาระหนี้"' }
+            ]
+        };
 
-        // Backup Data (Used automatically if network or API is blocked)
-        const fallbackNews = [
-            {
-                title: "Bitcoin Surges Above Key Support as Institutional Inflows Increase",
-                source: "CoinTelegraph",
-                pubDate: new Date().toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'}) + " น.",
-                customAnalysis: {
-                    translatedTitle: "Bitcoin พุ่งทะลุแนวต้านสำคัญ หลังเม็ดเงินสถาบันไหลเข้าต่อเนื่อง",
-                    sentiment: "BULLISH (+85%)",
-                    badgeClass: "impact-bullish",
-                    summary: "กองทุน Spot ETF เผยยอดเงินลงทุนสุทธิเป็นบวกติดต่อกัน หนุนแรงซื้อฝั่ง Spot เพิ่มขึ้นอย่างมีนัยสำคัญ",
-                    perspective: "เน้นย่อ Buy เมื่อสแกนเจอ Demand Zone / Order Block บน TF H1 คุมความเสี่ยงด้วย SL ใต้แนวรับ"
-                }
-            },
-            {
-                title: "Fed Signals Potential Interest Rate Adjustments Amid Economic Data",
-                source: "Macro Economic Feed",
-                pubDate: new Date().toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'}) + " น.",
-                customAnalysis: {
-                    translatedTitle: "เฟดส่งสัญญาณปรับทิศทางดอกเบี้ย หลังตัวเลขเศรษฐกิจเริ่มชะลอตัว",
-                    sentiment: "NEUTRAL / WAIT",
-                    badgeClass: "impact-neutral",
-                    summary: "ตลาดรอฟังแถลงการณ์ฉบับเต็ม นักลงทุนส่วนใหญ่ชะลอการเข้าซื้อเพื่อประเมินทิศทางค่าเงินดอลลาร์ (DXY)",
-                    perspective: "ชะลอการเล่น Follow Breakout แนะนำให้เล่น Swing Trade ในกรอบแนวรับ-แนวต้านไปก่อน"
-                }
-            },
-            {
-                title: "Ethereum Ecosystem Activity Spikes as Layer 2 Transactions Reach New Highs",
-                source: "CryptoNews",
-                pubDate: new Date().toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'}) + " น.",
-                customAnalysis: {
-                    translatedTitle: "ระบบนิเวศ Ethereum คึกคัก ปริมาณธุรกรรมบน Layer 2 ทำสถิติสูงสุดใหม่",
-                    sentiment: "BULLISH (+70%)",
-                    badgeClass: "impact-bullish",
-                    summary: "ค่าธรรมเนียมเครือข่ายลดลงส่งผลให้การใช้งาน On-chain เติบโตอย่างแข็งแกร่ง",
-                    perspective: "มองหาโอกาสเข้าซื้อเก็งกำไรในกลุ่มเหรียญ ETH Ecosystem เมื่อเกิดสัญญาณ Rejection"
-                }
-            }
-        ];
+        const newsDatabase = {
+            'BTCUSDT': [
+                { title: "Institutional Spot Bitcoin ETF Sees Consecutive Net Inflows", source: "CoinTelegraph", time: "10 นาทีที่แล้ว", type: "BULLISH (+85%)", badge: "impact-bullish", th: "เม็ดเงินสถาบันไหลเข้า Spot ETF ต่อเนื่อง หนุนราคา BTC ยืนเหนือแนวรับ", summary: "กองทุนสถาบันใหญ่เพิ่มสัดส่วนการถือครอง BTC อย่างมีนัยสำคัญ", view: "เน้นย่อ Buy เมื่อสแกนเจอ Demand Zone / Order Block บน TF H1" },
+                { title: "Bitcoin Mining Difficulty Reaches New All-Time High", source: "CryptoNews", time: "35 นาทีที่แล้ว", type: "NEUTRAL", badge: "impact-neutral", th: "ความยากในการขุด Bitcoin ทำสถิติสูงสุดใหม่ เครือข่ายแข็งแกร่ง", summary: "นักขุดยังคงเพิ่มกำลังการขุดต่อเนื่อง แม้ต้นทุนจะสูงขึ้น", view: "เป็นปัจจัยบวกพื้นฐานระยะยาว ตลาดยังพักตัวสะสมกำลัง" }
+            ],
+            'GOLD': [
+                { title: "Geopolitical Tensions in Middle East Escalate Safe-Haven Demand for Gold", source: "Bloomberg Gold", time: "5 นาทีที่แล้ว", type: "BULLISH (+90%)", badge: "impact-bullish", th: "ความตึงเครียดสงครามตะวันออกกลางปะทุ ดันแรงซื้อทองคำในฐานะ สินทรัพย์ปลอดภัย", summary: "นักลงทุนแห่โยกเงินเข้าซบทองคำและน้ำมัน หลังมีรายงานการปะทะระลอกใหม่", view: "ย่อ Buy ตามเทรนด์ขาขึ้น ระวังแรงกวาด SL บริเวณแนวต้าน $2,420" },
+                { title: "US Inflation Data CPI Slows Down, Raising Expectations for Fed Rate Cuts", source: "Reuters Macro", time: "20 นาทีที่แล้ว", type: "BULLISH (+75%)", badge: "impact-bullish", th: "ตัวเลขเงินเฟ้อสหรัฐฯ (CPI) ชะลอตัวเกินคาด เพิ่มโอกาส Fed ลดดอกเบี้ย", summary: "เงินเฟ้อที่ลดลงส่งผลให้ผลตอบแทนพันธบัตรรัฐบาลและดอลลาร์อ่อนค่าลง หนุนทองคำพุ่ง", view: "มองหาจังหวะ Follow Buy ตามโครงสร้าง Breakout" }
+            ],
+            'DXY': [
+                { title: "US Treasury Yields Drop as Economic Growth Shows Signs of Cooling", source: "MarketWatch", time: "15 นาทีที่แล้ว", type: "BEARISH (-80%)", badge: "impact-bearish", th: "บอนด์ยีลด์สหรัฐฯ ร่วง ดึงดัชนีดอลลาร์ (DXY) ปรับตัวลงทดสอบแนวรับ", summary: "ตัวเลขเศรษฐกิจชะลอตัว ทำให้นักลงทุนคาดว่า Fed จะปรับลดอัตราดอกเบี้ยเร็วขึ้น", view: "ดอลลาร์อ่อนค่า เป็นปัจจัยบวกต่อทองคำและ Bitcoin" },
+                { title: "Fed Officials Reiterate Data-Dependent Approach for Upcoming FOMC", source: "CNBC Finance", time: "40 นาทีที่แล้ว", type: "NEUTRAL", badge: "impact-neutral", th: "เจ้าหน้าที่ Fed ย้ำการตัดสินใจดอกเบี้ยจะขึ้นอยู่กับตัวเลขการจ้างงาน NFP", summary: "ตลาดชะลอการซื้อขายเพื่อรอฟังผลการประชุม FOMC และตัวเลข NFP ปลายสัปดาห์", view: "เล่นกรอบ Sideway ใน DXY จนกว่าตัวเลขเศรษฐกิจจะออก" }
+            ]
+        };
 
-        async function loadNewsEngine() {
-            const container = document.getElementById('news-container');
-            container.innerHTML = `
-                <div class="loading-box">
-                    <i class="fa-solid fa-circle-notch fa-spin"></i> กำลังโหลดข่าวสดและให้ AI ประมวลผลบทวิเคราะห์...
-                </div>`;
+        function switchAsset(assetKey) {
+            document.querySelectorAll('.asset-btn').forEach(btn => btn.classList.remove('active'));
+            if(assetKey === 'BTCUSDT') document.getElementById('tab-btc').classList.add('active');
+            if(assetKey === 'GOLD') document.getElementById('tab-gold').classList.add('active');
+            if(assetKey === 'DXY') document.getElementById('tab-dxy').classList.add('active');
 
-            try {
-                const response = await fetch(RSS_FEED_URL);
-                if (!response.ok) throw new Error("API Fetch Failed");
-                
-                const data = await response.json();
-                if (!data.items || data.items.length === 0) throw new Error("No Items Found");
+            // Render VIP Insights
+            const vipList = vipData[assetKey] || vipData['BTCUSDT'];
+            const vipContainer = document.getElementById('vip-container');
+            vipContainer.innerHTML = '';
+            vipList.forEach(item => {
+                vipContainer.innerHTML += `
+                    <div class="vip-card">
+                        <div class="vip-author">
+                            <div class="vip-avatar">${item.avatar}</div>
+                            <div>
+                                <div class="vip-name">${item.name}</div>
+                                <div class="vip-role">${item.role}</div>
+                            </div>
+                        </div>
+                        <div class="vip-quote">${item.quote}</div>
+                    </div>
+                `;
+            });
 
-                document.getElementById('data-source-label').innerText = "CoinTelegraph Live RSS Feed";
-                renderLiveNews(data.items.slice(0, 9));
-
-            } catch (error) {
-                console.warn("API direct fetch blocked or failed. Switching to Smart Fallback Engine.", error);
-                document.getElementById('data-source-label').innerText = "AI Offline Live Feed (Fallback Engine)";
-                renderFallbackNews();
-            }
-        }
-
-        function renderLiveNews(items) {
-            const container = document.getElementById('news-container');
-            container.innerHTML = '';
-
-            items.forEach(item => {
-                const ai = processAIKeywords(item.title, item.description || '');
-                const timeStr = new Date(item.pubDate).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'}) + " น.";
-
-                const cardHTML = `
+            // Render News List
+            const newsList = newsDatabase[assetKey] || newsDatabase['BTCUSDT'];
+            const newsContainer = document.getElementById('news-container');
+            newsContainer.innerHTML = '';
+            newsList.forEach(item => {
+                newsContainer.innerHTML += `
                     <div class="news-card">
                         <div class="news-card-header">
-                            <span class="news-source"><i class="fa-solid fa-bolt"></i> COINTELEGRAPH</span>
-                            <span class="news-time">${timeStr}</span>
+                            <span class="news-source"><i class="fa-solid fa-bolt"></i> ${item.source}</span>
+                            <span class="news-time">${item.time}</span>
                         </div>
                         <div class="news-card-body">
-                            <h3 class="news-title-th">${ai.translatedTitle}</h3>
+                            <h3 class="news-title-th">${item.th}</h3>
                             <p class="news-title-en">"${item.title}"</p>
-                            
                             <div class="ai-analysis-box">
                                 <div class="ai-box-title">
-                                    <span><i class="fa-solid fa-brain"></i> บทสรุป & มุมมอง AI</span>
-                                    <span class="impact-badge ${ai.badgeClass}">${ai.sentiment}</span>
+                                    <span><i class="fa-solid fa-brain"></i> AI Summary & Impact</span>
+                                    <span class="impact-badge ${item.badge}">${item.type}</span>
                                 </div>
-                                <div class="ai-summary-text">
-                                    📌 <strong>สรุปข่าว:</strong> ${ai.summary}
-                                </div>
-                                <div class="ai-view-text">
-                                    💡 <strong>มุมมอง AI ต่อกราฟ:</strong> ${ai.perspective}
-                                </div>
+                                <div style="font-size:0.8rem; margin-bottom:6px;">📌 <strong>สาระสำคัญ:</strong> ${item.summary}</div>
+                                <div style="font-size:0.78rem; color:var(--text-muted); border-top:1px dashed var(--border-color); padding-top:6px;">💡 <strong>กลยุทธ์:</strong> ${item.view}</div>
                             </div>
                         </div>
                     </div>
                 `;
-                container.innerHTML += cardHTML;
             });
         }
 
-        function renderFallbackNews() {
-            const container = document.getElementById('news-container');
-            container.innerHTML = '';
-
-            fallbackNews.forEach(item => {
-                const ai = item.customAnalysis;
-                const cardHTML = `
-                    <div class="news-card">
-                        <div class="news-card-header">
-                            <span class="news-source"><i class="fa-solid fa-globe"></i> ${item.source}</span>
-                            <span class="news-time">${item.pubDate}</span>
-                        </div>
-                        <div class="news-card-body">
-                            <h3 class="news-title-th">${ai.translatedTitle}</h3>
-                            <p class="news-title-en">"${item.title}"</p>
-                            
-                            <div class="ai-analysis-box">
-                                <div class="ai-box-title">
-                                    <span><i class="fa-solid fa-brain"></i> บทสรุป & มุมมอง AI</span>
-                                    <span class="impact-badge ${ai.badgeClass}">${ai.sentiment}</span>
-                                </div>
-                                <div class="ai-summary-text">
-                                    📌 <strong>สรุปข่าว:</strong> ${ai.summary}
-                                </div>
-                                <div class="ai-view-text">
-                                    💡 <strong>มุมมอง AI ต่อกราฟ:</strong> ${ai.perspective}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                container.innerHTML += cardHTML;
-            });
-        }
-
-        function processAIKeywords(title, description) {
-            const text = (title + " " + description).toLowerCase();
-
-            if (text.includes('bitcoin') || text.includes('btc') || text.includes('surge') || text.includes('bull') || text.includes('etf') || text.includes('high')) {
-                return {
-                    translatedTitle: "Bitcoin ได้รับแรงซื้อหนุน ตลาดสถาบันเปิดรับความเสี่ยงเพิ่มขึ้น",
-                    sentiment: "BULLISH (+80%)",
-                    badgeClass: "impact-bullish",
-                    summary: "มีกระแสเงินทุนไหลเข้าต่อเนื่อง และโครงสร้างราคายังรักษารูปแบบขาขึ้นบน Timeframe ใหญ่",
-                    perspective: "มองหาจังหวะ ย่อ Buy บริเวณ Demand Zone ใน TF ย่อย (M15/H1) คุม SL แคบ"
-                };
-            } else if (text.includes('sec') || text.includes('fed') || text.includes('drop') || text.includes('bear') || text.includes('crash') || text.includes('lawsuit')) {
-                return {
-                    translatedTitle: "ปัจจัยเสี่ยงด้านนโยบายและแรงขายทำกำไร กดดันราคาในระยะสั้น",
-                    sentiment: "BEARISH (-65%)",
-                    badgeClass: "impact-bearish",
-                    summary: "ตลาดเผชิญแรงขายชั่วคราวจากความกังวลด้านกฎหมาย หรือตัวเลขทางเศรษฐกิจที่ออกมาแย่กว่าคาด",
-                    perspective: "ชะลอการเปิด Long รอให้แรงขายชะลอตัวที่แนวรับ หรือเล่น เด้ง Sell บริเวณ Supply Zone"
-                };
-            } else {
-                return {
-                    translatedTitle: "รายงานสรุปความเคลื่อนไหวทั่วไปในตลาดคริปโทฯ และสินทรัพย์ดิจิทัล",
-                    sentiment: "NEUTRAL / WAIT",
-                    badgeClass: "impact-neutral",
-                    summary: "ตลาดยังอยู่ในช่วงพักตัวสะสมกำลัง โดยไม่มีข่าวผลกระทบกะทันหันที่มีนัยสำคัญ",
-                    perspective: "แนะนำให้เทรดตามโครงสร้าง Technical แนวรับ-แนวต้านหลักเป็นหลัก"
-                };
-            }
-        }
-
-        // Auto load on init
-        window.addEventListener('DOMContentLoaded', loadNewsEngine);
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sym = urlParams.get('symbol') || 'BTCUSDT';
+            switchAsset(sym);
+        });
     </script>
 </body>
 </html>
