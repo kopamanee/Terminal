@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+html_content = '''<!DOCTYPE html>
 <html lang="th" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quant Asset Terminal & AI Analytics (Institutional Edition)</title>
+    <title>Quant Asset Terminal & AI Analytics (Institutional Edition v2)</title>
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -55,18 +55,48 @@
         }
         .back-btn:hover { border-color: var(--accent-purple); color: #fff; }
 
-        /* NEW FEATURE 5: High-Impact News & Risk Guard Banner */
+        /* Dynamic Market & Risk Guard Banner */
         .risk-banner {
-            background: linear-gradient(90deg, rgba(242, 54, 69, 0.15) 0%, rgba(255, 152, 0, 0.15) 100%);
-            border: 1px solid var(--accent-red); border-radius: 12px; padding: 14px 20px;
+            border-radius: 12px; padding: 14px 20px;
             margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+            transition: all 0.3s ease;
         }
+        
+        /* State 1: Weekend Closed (Forex/Gold/SPX) */
+        .risk-banner.weekend-closed {
+            background: rgba(41, 98, 255, 0.08);
+            border: 1px solid rgba(41, 98, 255, 0.4);
+        }
+        .risk-banner.weekend-closed .risk-icon { color: var(--accent-blue); animation: none; }
+        .risk-banner.weekend-closed .risk-badge {
+            background: rgba(41, 98, 255, 0.2); color: #60a5fa; border: 1px solid var(--accent-blue);
+        }
+
+        /* State 2: Weekend Crypto (24/7) */
+        .risk-banner.crypto-weekend {
+            background: rgba(255, 152, 0, 0.08);
+            border: 1px solid rgba(255, 152, 0, 0.4);
+        }
+        .risk-banner.crypto-weekend .risk-icon { color: var(--accent-amber); animation: none; }
+        .risk-banner.crypto-weekend .risk-badge {
+            background: rgba(255, 152, 0, 0.2); color: var(--accent-amber); border: 1px solid var(--accent-amber);
+        }
+
+        /* State 3: Weekday Active News Warning */
+        .risk-banner.weekday-warning {
+            background: linear-gradient(90deg, rgba(242, 54, 69, 0.15) 0%, rgba(255, 152, 0, 0.15) 100%);
+            border: 1px solid var(--accent-red);
+        }
+        .risk-banner.weekday-warning .risk-icon { color: var(--accent-red); animation: pulse 2s infinite; }
+        .risk-banner.weekday-warning .risk-badge {
+            background: rgba(242, 54, 69, 0.25); color: var(--accent-red); border: 1px solid var(--accent-red);
+        }
+
         .risk-info { display: flex; align-items: center; gap: 14px; }
-        .risk-icon { font-size: 1.8rem; color: var(--accent-red); animation: pulse 2s infinite; }
+        .risk-icon { font-size: 1.8rem; }
         .risk-title { font-weight: 700; color: #fff; font-size: 0.95rem; }
         .risk-desc { font-size: 0.82rem; color: var(--text-muted); }
         .risk-badge {
-            background: rgba(242, 54, 69, 0.25); color: var(--accent-red); border: 1px solid var(--accent-red);
             padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.82rem;
             font-family: 'JetBrains Mono', monospace;
         }
@@ -160,7 +190,7 @@
         .entry-item span { color: var(--text-muted); display: block; font-size: 0.73rem; }
         .entry-item strong { color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.92rem; }
 
-        /* NEW FEATURE 1 & 4 COMPONENTS */
+        /* Quant Data Boxes */
         .quant-data-box {
             background: var(--bg-card); border: 1px solid var(--border-color);
             border-radius: 10px; padding: 14px; margin-bottom: 12px;
@@ -170,12 +200,12 @@
         .quant-data-row span { color: var(--text-muted); }
         .quant-data-row strong { font-family: 'JetBrains Mono', monospace; color: #fff; }
 
-        /* NEW FEATURE 3: Sentiment & Positioning Bar */
+        /* Sentiment Bar */
         .sentiment-container { margin-top: 10px; }
         .sentiment-bar-bg { height: 12px; background: var(--accent-red); border-radius: 6px; overflow: hidden; display: flex; margin: 8px 0; }
         .sentiment-bar-fill { height: 100%; background: var(--accent-green); transition: width 0.3s; }
 
-        /* NEW FEATURE 2: Correlation Table */
+        /* Correlation Table */
         .corr-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .corr-table th { text-align: left; color: var(--text-muted); padding: 8px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
         .corr-table td { padding: 10px 8px; border-bottom: 1px solid var(--border-color); font-family: 'JetBrains Mono', monospace; }
@@ -212,19 +242,19 @@
             <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> เลือกสินทรัพย์อื่น</a>
         </div>
 
-        <!-- NEW FEATURE 5: Macro Economic Catalyst & High-Impact Risk Guard -->
-        <div class="risk-banner">
+        <!-- DYNAMIC REAL-TIME RISK GUARD & MARKET STATUS BANNER -->
+        <div class="risk-banner" id="riskBanner">
             <div class="risk-info">
-                <i class="fa-solid fa-shield-cat risk-icon"></i>
+                <i class="fa-solid fa-clock risk-icon" id="riskIcon"></i>
                 <div>
-                    <div class="risk-title" id="nextNewsText">เหตุการณ์ถัดไป: US Core CPI (อีก 2 ชั่วโมง 15 นาที)</div>
-                    <div class="risk-desc" id="newsImpactText">สถิติความผันผวนย้อนหลัง: High Impact (เฉลี่ยแกว่ง ±220 pips)</div>
+                    <div class="risk-title" id="nextNewsText">กำลังตรวจสอบสถานะตลาด...</div>
+                    <div class="risk-desc" id="newsImpactText">กำลังโหลดข้อมูลปฏิทินเศรษฐกิจ...</div>
                 </div>
             </div>
-            <div class="risk-badge" id="riskGuardText">⚠️ คำแนะนำ: ลด Lot Size ลง 30% ก่อนข่าวออก</div>
+            <div class="risk-badge" id="riskGuardText">ตรวจสอบระบบ...</div>
         </div>
 
-        <!-- Macro Metrics Overview (Original 4 Cards) -->
+        <!-- Macro Metrics Overview -->
         <div class="metrics-grid">
             <div class="metric-card">
                 <div class="metric-info">
@@ -262,9 +292,9 @@
         <!-- Main Dashboard Grid -->
         <div class="dashboard-grid">
             
-            <!-- Left Side: Interactive Chart & Timeframe Matrix & NEW Order Flow Heatmap -->
+            <!-- Left Side: Interactive Chart & Timeframe Matrix & Order Flow Heatmap -->
             <div>
-                <!-- Real-Time TradingView Chart (Original) -->
+                <!-- Real-Time TradingView Chart -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title"><i class="fa-solid fa-chart-candlestick" style="color:var(--accent-cyan);"></i> กราฟราคา Real-Time & Key Structure</div>
@@ -272,7 +302,7 @@
                     <div class="chart-container" id="tv_chart_container"></div>
                 </div>
 
-                <!-- Multi-Timeframe Candlestick & Pattern Analysis (Original) -->
+                <!-- Multi-Timeframe Candlestick & Pattern Analysis -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title"><i class="fa-solid fa-layer-group" style="color:var(--accent-purple);"></i> วิเคราะห์พฤติกรรมแท่งเทียน & Pattern (H1, H4, Day)</div>
@@ -304,7 +334,7 @@
                     </div>
                 </div>
 
-                <!-- NEW FEATURE 1: Order Flow & Liquidity Pool Heatmap -->
+                <!-- Order Flow & Liquidity Pool Heatmap -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title"><i class="fa-solid fa-water" style="color:var(--accent-cyan);"></i> Order Flow & Liquidity Pool Heatmap (Smart Money)</div>
@@ -327,9 +357,9 @@
 
             </div>
 
-            <!-- Right Side: Support/Resistance, Entry Score & NEW Options Volatility -->
+            <!-- Right Side: Support/Resistance, Entry Score & Options Volatility -->
             <div>
-                <!-- Support & Resistance Strength Rating (Original) -->
+                <!-- Support & Resistance Strength Rating -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title"><i class="fa-solid fa-shield-halved" style="color:var(--accent-amber);"></i> ความแข็งแกร่งแนวรับ-แนวต้าน</div>
@@ -383,7 +413,7 @@
                         </div>
                     </div>
 
-                    <!-- Trade Setup & Entry Score Box (Original) -->
+                    <!-- Trade Setup & Entry Score Box -->
                     <div class="entry-card">
                         <div class="entry-header">
                             <div style="font-weight:700; color:#fff;"><i class="fa-solid fa-bullseye" style="color:var(--accent-cyan);"></i> คะแนนจุดน่าสนใจเข้าซื้อขาย</div>
@@ -411,7 +441,7 @@
 
                 </div>
 
-                <!-- NEW FEATURE 4: Options Implied Expected Move & Volatility Bands -->
+                <!-- Options Implied Expected Move & Volatility Bands -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title"><i class="fa-solid fa-chart-line-down" style="color:var(--accent-purple);"></i> กรอบคาดการณ์ราคาจาก Options (Expected Move)</div>
@@ -436,10 +466,10 @@
 
         </div>
 
-        <!-- NEW ROW GRID: FEATURE 2 & FEATURE 3 -->
+        <!-- TWO COL GRID: CORRELATION & SENTIMENT -->
         <div class="two-col-grid">
             
-            <!-- NEW FEATURE 2: Intermarket Lead-Lag & Correlation Matrix -->
+            <!-- Intermarket Lead-Lag & Correlation Matrix -->
             <div class="card" style="margin-bottom: 0;">
                 <div class="card-header">
                     <div class="card-title"><i class="fa-solid fa-diagram-project" style="color:var(--accent-blue);"></i> Intermarket Lead-Lag Correlation</div>
@@ -472,7 +502,7 @@
                 </table>
             </div>
 
-            <!-- NEW FEATURE 3: Crowd Sentiment & Retail Positioning -->
+            <!-- Crowd Sentiment & Retail Positioning -->
             <div class="card" style="margin-bottom: 0;">
                 <div class="card-header">
                     <div class="card-title"><i class="fa-solid fa-users-slash" style="color:var(--accent-amber);"></i> Crowd Sentiment & Retail Positioning</div>
@@ -500,7 +530,7 @@
 
         </div>
 
-        <!-- Lower Section: AI Council Opinions (Original 5 AI Cards - Complete) -->
+        <!-- Lower Section: AI Council Opinions -->
         <div class="card" style="margin-top: 20px;">
             <div class="card-header">
                 <div class="card-title"><i class="fa-solid fa-users-gear" style="color:var(--accent-cyan);"></i> มุมมองจาก AI Quant Council ทั้ง 5 มุมมอง</div>
@@ -578,17 +608,22 @@
 
     </div>
 
-    <!-- JavaScript Data & Real-Time Chart Loader -->
+    <!-- JavaScript Engine -->
     <script>
-        // Expanded Full Asset Database (Contains ALL Original + ALL 5 New Features)
+        // Expanded Full Asset Database
         const assetDatabase = {
             gold: {
                 name: "GOLD (XAUUSD)",
                 sub: "ทองคำแท่งและสปอตโฟลว์ - Safe Haven Asset",
                 icon: "fa-solid fa-coins",
                 symbol: "OANDA:XAUUSD",
+                isCrypto: false,
                 
-                // Original Metrics
+                // Weekday News Config (Used automatically on Mon-Fri)
+                weekdayNews: "US Core CPI (ประกาศเวลา 19:30 น.)",
+                weekdayImpact: "สถิติความผันผวนย้อนหลัง: High Impact (เฉลี่ยแกว่ง ±220 pips)",
+                weekdayRisk: "⚠️ คำแนะนำ: ลด Lot Size ลง 30% ก่อนข่าวออก",
+
                 quantScore: "+85 / 100", quantBadge: "STRONG BULLISH",
                 liquidityText: "$1.2B Inflow", liquidityBadge: "HIGH POSITIVE",
                 macroRegimeText: "DXY Softening", macroBadge: "SUPPORTIVE",
@@ -607,10 +642,6 @@
                 ai4Badge: "SAFE", ai4Text: "Risk/Reward อยู่ที่ 1:2.5 วาง SL ใต้ S2 ได้กรอบควบคุมความเสี่ยงดี",
                 ai5Badge: "BUY 85%", ai5Text: "ระบบ Quant ประมวลผลคะแนนสุทธิได้ +85/100 แนะนำกลยุทธ์ฝั่งซื้อ",
 
-                // NEW 5 FEATURES DATA
-                nextNews: "เหตุการณ์ถัดไป: US Core CPI (อีก 2 ชั่วโมง 15 นาที)",
-                newsImpact: "สถิติความผันผวนย้อนหลัง: High Impact (เฉลี่ยแกว่ง ±220 pips)",
-                riskGuard: "⚠️ คำแนะนำ: ลด Lot Size ลง 30% ก่อนข่าวออก",
                 cvd: "+$142M (Aggressive Buying Inflow)",
                 liquidityZone: "2,365 - 2,368 (2.4k Lots Stop Loss Sweep)",
                 orderClusters: "2,425.00 (Heavy Limit Ask Stack)",
@@ -629,7 +660,12 @@
                 sub: "บิตคอยน์ สภาพคล่อง On-Chain และ ETF Flow",
                 icon: "fa-brands fa-bitcoin",
                 symbol: "BINANCE:BTCUSDT",
+                isCrypto: true,
                 
+                weekdayNews: "FOMC Minutes Policy Release",
+                weekdayImpact: "สถิติความผันผวนย้อนหลัง: Extreme Impact (เฉลี่ยแกว่ง ±$1,500)",
+                weekdayRisk: "🔒 คำแนะนำ: ขยับ SL มาบังทุน (Breakeven)",
+
                 quantScore: "+88 / 100", quantBadge: "STRONG BULLISH",
                 liquidityText: "+$420M ETF Net", liquidityBadge: "VERY HIGH",
                 macroRegimeText: "Risk-On Mode", macroBadge: "BULLISH",
@@ -648,9 +684,6 @@
                 ai4Badge: "SAFE", ai4Text: "R:R คุ้มค่าที่ 1:3.0 ความผันผวนเริ่มบีบตัวพร้อมเลือกทาง",
                 ai5Badge: "STRONG BUY", ai5Text: "คะแนน Quant อยู่ที่ 88/100 สัญญาณฝั่ง Bullish มีความได้เปรียบสูง",
 
-                nextNews: "เหตุการณ์ถัดไป: FOMC Minutes (อีก 18 ชั่วโมง 40 นาที)",
-                newsImpact: "สถิติความผันผวนย้อนหลัง: Extreme Impact (เฉลี่ยแกว่ง ±$1,500)",
-                riskGuard: "🔒 คำแนะนำ: ขยับ SL มาบังทุน (Breakeven)",
                 cvd: "+$380M (Institutional Spot Absorption)",
                 liquidityZone: "$62,800 (Short Liquidations Sweep Pool)",
                 orderClusters: "$67,000 (Short Liquidation Wall)",
@@ -669,7 +702,12 @@
                 sub: "ดัชนีเงินดอลลาร์สหรัฐฯ & นโยบายการเงิน Fed",
                 icon: "fa-solid fa-dollar-sign",
                 symbol: "CAPITALCOM:DXY",
+                isCrypto: false,
                 
+                weekdayNews: "US Retail Sales Data",
+                weekdayImpact: "สถิติความผันผวนย้อนหลัง: Medium Impact (เฉลี่ยแกว่ง ±0.40 pt)",
+                weekdayRisk: "🟢 สถานะปกติ: เทรดตามสัญญาณเทคนิคได้",
+
                 quantScore: "-82 / 100", quantBadge: "STRONG BEARISH",
                 liquidityText: "USD Outflow", liquidityBadge: "NEGATIVE",
                 macroRegimeText: "Rate Cut Expectation", macroBadge: "BEARISH",
@@ -688,9 +726,6 @@
                 ai4Badge: "SAFE", ai4Text: "สเกล R:R อยู่ที่ 1:2.2 เหมาะกับการคุมความเสี่ยงฝั่ง Sell",
                 ai5Badge: "SELL 82%", ai5Text: "คะแนน Quant สรุปเป็น Bearish (-82 คะแนน) หนุนสินทรัพย์เสี่ยงขึ้น",
 
-                nextNews: "เหตุการณ์ถัดไป: US Retail Sales (พรุ่งนี้ 19:30 น.)",
-                newsImpact: "สถิติความผันผวนย้อนหลัง: Medium Impact (เฉลี่ยแกว่ง ±0.40 pt)",
-                riskGuard: "🟢 สถานะปกติ: เทรดตามสัญญาณเทคนิคได้",
                 cvd: "-$95M (Aggressive Institutional Selling)",
                 liquidityZone: "104.80 (Sell Stop Liquidity Sweep)",
                 orderClusters: "105.40 (Heavy Institutional Buy Barrier)",
@@ -709,7 +744,12 @@
                 sub: "ดัชนีหุ้นสหรัฐฯ 500 บริษัท - Risk-On Benchmark",
                 icon: "fa-solid fa-chart-line",
                 symbol: "FOREXCOM:SPXUSD",
-                
+                isCrypto: false,
+
+                weekdayNews: "US Industrial Production Index",
+                weekdayImpact: "สถิติความผันผวนย้อนหลัง: High Impact (เฉลี่ยแกว่ง ±45 pts)",
+                weekdayRisk: "⚠️ คำแนะนำ: หลีกเลี่ยงการไล่ราคาซื้อที่แนวต้าน R1",
+
                 quantScore: "+84 / 100", quantBadge: "BULLISH",
                 liquidityText: "Tech Inflow", liquidityBadge: "POSITIVE",
                 macroRegimeText: "Earnings Growth", macroBadge: "STABLE",
@@ -728,9 +768,6 @@
                 ai4Badge: "SAFE", ai4Text: "บริหาร Margin ให้ดีเนื่องจากดัชนีอยู่ระดับ High",
                 ai5Badge: "BUY 84%", ai5Text: "คะแนน Quant รวม 84/100 แนะนำกลยุทธ์ตั้งรับ Buy ที่แนวรับ",
 
-                nextNews: "เหตุการณ์ถัดไป: Big Tech Earnings Call (อีก 4 ชั่วโมง 30 นาที)",
-                newsImpact: "สถิติความผันผวนย้อนหลัง: High Impact (เฉลี่ยแกว่ง ±45 pts)",
-                riskGuard: "⚠️ คำแนะนำ: หลีกเลี่ยงการไล่ราคาซื้อที่แนวต้าน R1",
                 cvd: "+$210M (Institutional Block Inflow)",
                 liquidityZone: "5,460 (Demand Stop Sweep Zone)",
                 orderClusters: "5,580 (Call Option Wall Barrier)",
@@ -749,7 +786,12 @@
                 sub: "คู่เงินหลักตลาด Forex - ECB vs FED Liquidity",
                 icon: "fa-solid fa-euro-sign",
                 symbol: "FX:EURUSD",
-                
+                isCrypto: false,
+
+                weekdayNews: "ECB President Monetary Speech",
+                weekdayImpact: "สถิติความผันผวนย้อนหลัง: Medium-High Impact (เฉลี่ยแกว่ง ±50 pips)",
+                weekdayRisk: "🟢 สถานะปกติ: เฝ้าระวังช่วงคำแถลงการณ์",
+
                 quantScore: "+80 / 100", quantBadge: "MODERATE BULLISH",
                 liquidityText: "Forex Volume Normal", liquidityBadge: "NEUTRAL",
                 macroRegimeText: "ECB vs FED Divergence", macroBadge: "BALANCED",
@@ -768,9 +810,6 @@
                 ai4Badge: "SAFE", ai4Text: "ความผันผวนระดับปานกลาง Risk/Reward 1:2.0 ถือว่าปลอดภัย",
                 ai5Badge: "BUY 80%", ai5Text: "คะแนน Quant +80 คะแนน สัญญาณฝั่ง Long ได้เปรียบระยะสั้น",
 
-                nextNews: "เหตุการณ์ถัดไป: ECB Rate Speech (อีก 6 ชั่วโมง 10 นาที)",
-                newsImpact: "สถิติความผันผวนย้อนหลัง: Medium-High Impact (เฉลี่ยแกว่ง ±50 pips)",
-                riskGuard: "🟢 สถานะปกติ: เฝ้าระวังช่วงคำแถลงการณ์",
                 cvd: "+$65M (Mild Institutional Buying)",
                 liquidityZone: "1.0825 (Buy Stop Liquidity Pool)",
                 orderClusters: "1.0920 (Supply Barrier)",
@@ -808,7 +847,45 @@
             }
         }
 
-        // DOM Load & Complete Dynamic Population
+        // DYNAMIC REAL-TIME RISK & MARKET STATUS EVALUATOR
+        function updateRiskBanner(data) {
+            const now = new Date();
+            const dayOfWeek = now.getDay(); // 0 = Sun, 6 = Sat
+            const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+
+            const banner = document.getElementById('riskBanner');
+            const icon = document.getElementById('riskIcon');
+            const nextNewsText = document.getElementById('nextNewsText');
+            const newsImpactText = document.getElementById('newsImpactText');
+            const riskGuardText = document.getElementById('riskGuardText');
+
+            if (isWeekend) {
+                if (data.isCrypto) {
+                    // Weekend Crypto Mode (24/7 Market)
+                    banner.className = 'risk-banner crypto-weekend';
+                    icon.className = 'fa-solid fa-bolt risk-icon';
+                    nextNewsText.innerText = 'ตลาด Crypto เปิดทำการ 24/7 (สภาวะสุดสัปดาห์ / Weekend Liquidity)';
+                    newsImpactText.innerText = 'ไม่มีประกาศตัวเลขเศรษฐกิจสหรัฐฯ ในวันเสาร์-อาทิตย์ — ระวังราคาสวิงกิน Stop จากวอลุ่มบาง';
+                    riskGuardText.innerText = '⚡ คำแนะนำ: ระวัง Fakeout ในวันหยุด';
+                } else {
+                    // Weekend Closed Mode (Gold, Forex, Indices)
+                    banner.className = 'risk-banner weekend-closed';
+                    icon.className = 'fa-solid fa-moon risk-icon';
+                    nextNewsText.innerText = 'ตลาดปิดทำการช่วงวันหยุดสุดสัปดาห์ (Weekend Closed)';
+                    newsImpactText.innerText = 'ไม่มีการประกาศข่าวเศรษฐกิจในวันเสาร์-อาทิตย์ — ตลาดการเงินเปิดทำการอีกครั้งเช้าวันจันทร์';
+                    riskGuardText.innerText = '🟢 สถานะ: ตลาดปิด (ไม่มีความเสี่ยงผันผวน)';
+                }
+            } else {
+                // Weekday Mode (Mon-Fri)
+                banner.className = 'risk-banner weekday-warning';
+                icon.className = 'fa-solid fa-shield-cat risk-icon';
+                nextNewsText.innerText = 'เหตุการณ์ถัดไป: ' + data.weekdayNews;
+                newsImpactText.innerText = data.weekdayImpact;
+                riskGuardText.innerText = data.weekdayRisk;
+            }
+        }
+
+        // DOM Load & Dynamic Population
         document.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const assetKey = urlParams.get('asset') || 'gold';
@@ -819,7 +896,10 @@
             document.getElementById('assetSub').innerText = data.sub;
             document.getElementById('assetIcon').className = data.icon + " asset-icon";
 
-            // Original Macro Metrics
+            // Dynamic Risk Guard & Market Status Engine
+            updateRiskBanner(data);
+
+            // Metrics
             document.getElementById('quantScoreText').innerText = data.quantScore;
             document.getElementById('quantScoreBadge').innerText = data.quantBadge;
             document.getElementById('liquidityText').innerText = data.liquidityText;
@@ -829,7 +909,7 @@
             document.getElementById('volatilityText').innerText = data.volatilityText;
             document.getElementById('volatilityBadge').innerText = data.volBadge;
 
-            // Original Support & Resistance Levels
+            // Support & Resistance
             document.getElementById('valR2').innerText = data.r2;
             document.getElementById('stR2').innerText = data.stR2;
             document.getElementById('barR2').style.width = data.barR2;
@@ -846,7 +926,7 @@
             document.getElementById('stS2').innerText = data.stS2;
             document.getElementById('barS2').style.width = data.barS2;
 
-            // Original Timeframes & Patterns
+            // Timeframes & Patterns
             document.getElementById('h1Candle').innerText = data.h1Candle;
             document.getElementById('h1Pattern').innerText = data.h1Pattern;
             document.getElementById('h1Score').innerText = data.h1Score;
@@ -859,29 +939,24 @@
             document.getElementById('dayPattern').innerText = data.dayPattern;
             document.getElementById('dayScore').innerText = data.dayScore;
 
-            // Original Entry Setup Score
+            // Trade Setup Score
             document.getElementById('setupScore').innerText = data.setupScore;
             document.getElementById('setupStrategy').innerText = data.setupStrategy;
             document.getElementById('setupEntry').innerText = data.setupEntry;
             document.getElementById('setupSL').innerText = data.setupSL;
             document.getElementById('setupTP').innerText = data.setupTP;
 
-            // NEW FEATURE 5: News & Risk Guard
-            document.getElementById('nextNewsText').innerText = data.nextNews;
-            document.getElementById('newsImpactText').innerText = data.newsImpact;
-            document.getElementById('riskGuardText').innerText = data.riskGuard;
-
-            // NEW FEATURE 1: Order Flow Heatmap
+            // Order Flow Heatmap
             document.getElementById('cvdText').innerText = data.cvd;
             document.getElementById('liquidityZoneText').innerText = data.liquidityZone;
             document.getElementById('orderClustersText').innerText = data.orderClusters;
 
-            // NEW FEATURE 4: Options Volatility & Expected Move
+            // Options Volatility & Expected Move
             document.getElementById('expDailyText').innerText = data.expDaily;
             document.getElementById('expWeeklyText').innerText = data.expWeekly;
             document.getElementById('ivRankText').innerText = data.ivRank;
 
-            // NEW FEATURE 2: Correlation Matrix
+            // Correlation Matrix
             document.getElementById('corrRow1Asset').innerText = data.corr1Asset;
             document.getElementById('corrRow1Val').innerText = data.corr1Val;
             document.getElementById('corrRow1Lag').innerText = data.corr1Lag;
@@ -894,14 +969,14 @@
             document.getElementById('corrRow3Val').innerText = data.corr3Val;
             document.getElementById('corrRow3Lag').innerText = data.corr3Lag;
 
-            // NEW FEATURE 3: Crowd Sentiment & Positioning
+            // Crowd Sentiment
             document.getElementById('retailLongPct').innerText = data.retailLongPct;
             document.getElementById('retailShortPct').innerText = data.retailShortPct;
             document.getElementById('retailLongBar').style.width = data.retailLongBar;
             document.getElementById('fundingRateText').innerText = data.fundingRate;
             document.getElementById('sentimentSignalText').innerText = data.sentimentSignal;
 
-            // Original AI Council
+            // AI Council
             document.getElementById('ai1Badge').innerText = data.ai1Badge;
             document.getElementById('ai1Text').innerText = data.ai1Text;
 
@@ -917,9 +992,15 @@
             document.getElementById('ai5Badge').innerText = data.ai5Badge;
             document.getElementById('ai5Text').innerText = data.ai5Text;
 
-            // Render Chart Real-time
+            // Render Chart
             renderTVChart(data.symbol);
         });
     </script>
 </body>
 </html>
+'''
+
+with open("macro_crypto_dashboard-v2.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print("Generated macro_crypto_dashboard-v2.html successfully.")
