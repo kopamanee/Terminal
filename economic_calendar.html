@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Macro Economic & Quant Forecast Terminal</title>
+    <title>AI Macro Economic & Quant Volatility Forecast</title>
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -26,9 +26,9 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Prompt', sans-serif; background-color: var(--bg-dark); color: var(--text-main); padding: 20px; min-height: 100vh; }
-        .container { max-width: 1450px; margin: 0 auto; }
+        .container { max-width: 1500px; margin: 0 auto; }
 
-        /* Header Navigation */
+        /* Header Navigation - Main Hub is macro_crypto_dashboard.html */
         .header {
             display: flex; justify-content: space-between; align-items: center;
             background: var(--bg-panel); padding: 16px 24px; border-radius: 12px;
@@ -41,310 +41,219 @@
             text-decoration: none; font-size: 0.85rem; font-weight: 600;
             display: flex; align-items: center; gap: 8px; transition: 0.2s;
         }
-        .nav-btn:hover { background: var(--accent-purple); color: #fff; }
+        .nav-btn:hover, .nav-btn.primary { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); }
 
-        /* Panel Box */
         .panel-box { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
 
-        /* Event Switcher Tabs */
+        /* Event Tabs */
         .event-tabs { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 20px; }
         .event-tab-btn {
             background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted);
-            padding: 10px 18px; border-radius: 8px; font-family: inherit; font-size: 0.88rem; font-weight: 600;
+            padding: 10px 18px; border-radius: 8px; font-size: 0.88rem; font-weight: 600;
             cursor: pointer; white-space: nowrap; transition: 0.2s; display: flex; align-items: center; gap: 8px;
         }
         .event-tab-btn.active { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); }
 
-        /* Event Highlight Cards Grid */
-        .event-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        /* Top Summary Cards Grid */
+        .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px; }
         .data-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; text-align: center; }
-        .data-card-title { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
-        .data-card-val { font-family: 'JetBrains Mono', monospace; font-size: 1.6rem; font-weight: 700; color: #fff; }
+        .data-card-title { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
+        .data-card-val { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: 700; }
 
-        /* AI Forecast Special Box */
-        .ai-forecast-box {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(0, 184, 212, 0.15));
-            border: 1.5px solid var(--accent-purple); border-radius: 12px; padding: 20px; margin-bottom: 24px;
+        /* Expected Volatility Box */
+        .volatility-box {
+            background: linear-gradient(135deg, rgba(41, 98, 255, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid var(--accent-blue); border-radius: 12px; padding: 20px; margin-bottom: 20px;
         }
+        .vol-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 12px; }
+        .vol-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; }
 
-        /* Institution Breakdown Table */
-        .inst-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 14px; }
-        .inst-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; }
-        .inst-name { font-weight: 700; color: #fff; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
-        .inst-forecast { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent-cyan); font-size: 1rem; }
-        .inst-comment { font-size: 0.8rem; color: var(--text-main); margin-top: 8px; line-height: 1.4; }
+        /* Instant Asset Impact Section */
+        .asset-impact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .asset-impact-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; border-top: 4px solid var(--accent-purple); }
+
+        /* Institution Analysis Grid */
+        .inst-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 14px; }
+        .inst-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; position: relative; }
+        .inst-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; font-weight: 700; text-transform: uppercase; }
 
         /* Scenario Grid */
-        .scenario-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-top: 14px; }
-        .scenario-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; }
-        .scen-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 12px; }
-        .scen-title { font-weight: 700; font-size: 0.95rem; }
-        .scen-prob { font-family: 'JetBrains Mono', monospace; padding: 3px 10px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; }
-
-        .impact-list { font-size: 0.82rem; line-height: 1.6; }
-        .impact-item { margin-bottom: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; }
-        .impact-asset { font-weight: 700; font-family: 'JetBrains Mono', monospace; margin-bottom: 2px; }
-
-        /* Upcoming List Table */
-        .event-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace; }
-        .event-table th, .event-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        .event-table th { background: rgba(0,0,0,0.3); color: var(--text-muted); font-weight: 600; }
+        .scenario-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 18px; margin-top: 14px; }
+        .scenario-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; }
+        .scen-target-box { background: rgba(0,0,0,0.3); border-radius: 6px; padding: 8px 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; margin-top: 8px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Header -->
+        <!-- Header Links back to Central Dashboard -->
         <header class="header">
             <div style="display: flex; align-items: center; gap: 12px;">
-                <a href="index.html" class="nav-btn"><i class="fa-solid fa-house"></i> หน้าหลัก Terminal</a>
-                <a href="macro_crypto_dashboard.html" class="nav-btn"><i class="fa-solid fa-chart-line"></i> กราฟ & เทคนิคอล</a>
-                <a href="news_dashboard.html" class="nav-btn"><i class="fa-solid fa-newspaper"></i> ศูนย์ข่าวตามสินทรัพย์</a>
+                <a href="macro_crypto_dashboard.html" class="nav-btn primary"><i class="fa-solid fa-gauge-high"></i> กลับหน้า Dashboardหลัก</a>
+                <a href="news_dashboard.html" class="nav-btn"><i class="fa-solid fa-newspaper"></i> ศูนย์ข่าว Asset News</a>
             </div>
             <div style="font-size: 0.85rem; font-weight: 600; color: var(--accent-cyan); display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-microchip"></i> QUANT MACRO ENGINE ACTIVE
+                <i class="fa-solid fa-bolt"></i> QUANT VOLATILITY ENGINE ACTIVE
             </div>
         </header>
 
-        <!-- Event Selection Tabs -->
+        <!-- News Switcher -->
         <div class="event-tabs">
             <button class="event-tab-btn active" onclick="switchEvent('cpi')"><i class="fa-solid fa-fire" style="color:var(--accent-red);"></i> US CPI YoY (เงินเฟ้อสหรัฐฯ)</button>
-            <button class="event-tab-btn" onclick="switchEvent('nfp')"><i class="fa-solid fa-users" style="color:var(--accent-blue);"></i> Non-Farm Payrolls (จ้างงานนอกภาคเกษตร)</button>
-            <button class="event-tab-btn" onclick="switchEvent('fomc')"><i class="fa-solid fa-building-columns" style="color:var(--accent-amber);"></i> FOMC Interest Rate (ดอกเบี้ยเฟด)</button>
+            <button class="event-tab-btn" onclick="switchEvent('nfp')"><i class="fa-solid fa-users" style="color:var(--accent-blue);"></i> Non-Farm Payrolls (จ้างงาน)</button>
+            <button class="event-tab-btn" onclick="switchEvent('fomc')"><i class="fa-solid fa-building-columns" style="color:var(--accent-amber);"></i> FOMC Interest Rate (ดอกเบี้ย Fed)</button>
         </div>
 
-        <!-- Event Details Top Summary -->
+        <!-- Section 1: Event Summary Numbers -->
         <div class="panel-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
-                <div>
-                    <h1 id="event-title" style="font-size: 1.3rem; color: #fff;">US CPI YoY (Consumer Price Index)</h1>
-                    <p id="event-date" style="font-size:0.8rem; color: var(--text-muted);">กำหนดการประกาศ: พุธนี้ เวลา 19:30 น. (เวลาไทย) | ความสำคัญ: 🔴 HIGH IMPACT</p>
-                </div>
+            <div style="margin-bottom:16px;">
+                <h1 id="event-title" style="font-size: 1.4rem; color: #fff;">US CPI YoY (Consumer Price Index)</h1>
+                <p id="event-date" style="font-size:0.83rem; color: var(--text-muted); margin-top:4px;">กำหนดการประกาศ: พุธนี้ เวลา 19:30 น. | ผลกระทบ: 🔴 HIGH VOLATILITY</p>
             </div>
 
-            <!-- Numbers Grid -->
-            <div class="event-summary-grid">
+            <div class="data-grid">
                 <div class="data-card">
                     <div class="data-card-title">ครั้งก่อน (PREVIOUS)</div>
                     <div class="data-card-val" id="val-prev" style="color: var(--text-muted);">3.3%</div>
                 </div>
                 <div class="data-card">
-                    <div class="data-card-title">ตลาดคาดการณ์ (CONSENSUS)</div>
+                    <div class="data-card-title">ตลาดคาด (CONSENSUS)</div>
                     <div class="data-card-val" id="val-consensus" style="color: var(--accent-amber);">3.1%</div>
                 </div>
                 <div class="data-card" style="border-color: var(--accent-purple);">
-                    <div class="data-card-title" style="color: var(--accent-purple); font-weight: 700;">AI QUANT FORECAST (นายคิดว่า)</div>
+                    <div class="data-card-title" style="color: var(--accent-purple);">AI QUANT FORECAST</div>
                     <div class="data-card-val" id="val-ai" style="color: var(--accent-cyan);">3.0%</div>
                 </div>
                 <div class="data-card">
-                    <div class="data-card-title">ระดับความมั่นใจ AI MODEL</div>
-                    <div class="data-card-val" id="val-confidence" style="color: var(--accent-green);">84%</div>
+                    <div class="data-card-title">AI CONFIDENCE SCORE</div>
+                    <div class="data-card-val" id="val-confidence" style="color: var(--accent-green);">86%</div>
                 </div>
-            </div>
-
-            <!-- AI Model Reason Explanation Box -->
-            <div class="ai-forecast-box">
-                <h3 style="font-size:0.95rem; color:#fff; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
-                    <i class="fa-solid fa-brain" style="color: var(--accent-purple);"></i>
-                    ทำไม AI ถึงคาดการณ์ตัวเลขนี้? (AI Quant Model Logic Breakdown)
-                </h3>
-                <p id="ai-logic-text" style="font-size:0.85rem; line-height:1.6; color:var(--text-main);">
-                    จากการนำดัชนีชี้นำ (Leading Indicators) เช่น Truflation Index (ที่ลดลงแตะ 2.8%), ราคาน้ำมันดิบ WTI ย่อตัว 4.2% ในเดือนที่ผ่านมา ประกอบกับ Manheim Used Vehicle Index ที่ปรับลดลง AI Model ประมวลผลว่ามีโอกาสสูงที่ CPI จะชะลอตัวลงลึกกว่าที่ตลาดคาดการณ์ไว้เล็กน้อย สู่ระดับ 3.0%
-                </p>
             </div>
         </div>
 
-        <!-- Institutional Analyst Views -->
+        <!-- Section 2: Instant Asset Impact Preview (สรุปผลกระทบต่อสินทรัพย์ทันที) -->
         <section class="panel-box">
-            <h3 style="font-size:0.95rem; color:#fff; display:flex; align-items:center; gap:8px;">
-                <i class="fa-solid fa-landmark" style="color:var(--accent-blue);"></i>
-                มุมมอง & ตัวเลขคาดการณ์จากสถาบันการเงินยักษ์ใหญ่ (Institutional Breakdown)
+            <h3 style="font-size:1rem; color:#fff; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-crosshairs" style="color:var(--accent-red);"></i> ผลกระทบทันทีหลังประกาศตัวเลข (Instant Asset Bias)
             </h3>
-            <div class="inst-grid" id="inst-container">
-                <!-- Dynamic Injected Institutions -->
+            <div class="asset-impact-grid" id="instant-impact-container">
+                <!-- Injected via JS -->
             </div>
         </section>
 
-        <!-- Multi-Scenario Probability Matrix & Asset Impact -->
+        <!-- Section 3: Volatility Statistics & Estimated Target Prices (สถิติการวิ่ง & เป้าหมายราคา) -->
+        <section class="volatility-box">
+            <h3 style="font-size:1rem; color:#fff; display:flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-chart-line" style="color:var(--accent-blue);"></i> สถิติการวิ่งเฉลี่ยย้อนหลัง & คาดการณ์ระยะแกว่งตัว (Expected Price Target Range)
+            </h3>
+            <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">คำนวณจากสถิติความผันผวน 12 ครั้งหลังสุด ในช่วง 1-4 ชั่วโมงแรกหลังประกาศข่าว</p>
+            
+            <div class="vol-grid" id="volatility-container">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- Section 4: Extended Institutional Analysis (วิเคราะห์สถาบันใหญ่จัดเต็ม) -->
         <section class="panel-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h3 style="font-size:0.95rem; color:#fff; display:flex; align-items:center; gap:8px;">
-                    <i class="fa-solid fa-code-branch" style="color:var(--accent-amber);"></i>
-                    3 ฉากทัศน์ความน่าจะเป็น & วิเคราะห์ผลกระทบรายสินทรัพย์ (Scenario & Asset Impact)
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap;">
+                <h3 style="font-size:1rem; color:#fff; display:flex; align-items:center; gap:8px;">
+                    <i class="fa-solid fa-landmark" style="color:var(--accent-amber);"></i> มุมมองและแบบจำลองราคาจากสถาบันการเงินยักษ์ใหญ่ (Institutional Models)
                 </h3>
+                <span style="font-size:0.78rem; color:var(--text-muted);">อัปเดตข้อมูลจาก 7 สำนักวิเคราะห์หลัก</span>
             </div>
-
-            <div class="scenario-grid" id="scenario-container">
-                <!-- Dynamic Injected Scenarios -->
+            
+            <div class="inst-grid" id="inst-container">
+                <!-- Injected via JS -->
             </div>
         </section>
 
-        <!-- General Economic Calendar Table -->
+        <!-- Section 5: Scenarios & Target Price Levels -->
         <section class="panel-box">
-            <h3 style="font-size:0.95rem; color:#fff; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
-                <i class="fa-solid fa-calendar-days" style="color:var(--accent-cyan);"></i>
-                ตารางตัวเลขเศรษฐกิจสำคัญสัปดาห์นี้ (Weekly Macro Calendar)
+            <h3 style="font-size:1rem; color:#fff; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-diagram-project" style="color:var(--accent-cyan);"></i> 3 ฉากทัศน์ความน่าจะเป็น & เป้าหมายราคาสินทรัพย์ (Scenario & Target Levels)
             </h3>
-            <div style="overflow-x:auto;">
-                <table class="event-table">
-                    <thead>
-                        <tr>
-                            <th>วัน / เวลา</th>
-                            <th>สกุลเงิน</th>
-                            <th>ตัวเลขเศรษฐกิจ (Event)</th>
-                            <th>ครั้งก่อน (Prev)</th>
-                            <th>ตลาดคาด (Consensus)</th>
-                            <th>AI คาด (AI Forecast)</th>
-                            <th>ระดับผลกระทบ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>อังคาร 21:00</td>
-                            <td>USD</td>
-                            <td>CB Consumer Confidence</td>
-                            <td>100.4</td>
-                            <td>99.5</td>
-                            <td><strong style="color:var(--accent-cyan)">98.8</strong></td>
-                            <td><span style="color:var(--accent-amber)">🟡 Medium</span></td>
-                        </tr>
-                        <tr>
-                            <td>พุธ 19:30</td>
-                            <td>USD</td>
-                            <td>US Core CPI MoM</td>
-                            <td>0.3%</td>
-                            <td>0.2%</td>
-                            <td><strong style="color:var(--accent-cyan)">0.2%</strong></td>
-                            <td><span style="color:var(--accent-red)">🔴 High Impact</span></td>
-                        </tr>
-                        <tr>
-                            <td>พฤหัสบดี 19:30</td>
-                            <td>USD</td>
-                            <td>Initial Jobless Claims</td>
-                            <td>227K</td>
-                            <td>230K</td>
-                            <td><strong style="color:var(--accent-cyan)">233K</strong></td>
-                            <td><span style="color:var(--accent-amber)">🟡 Medium</span></td>
-                        </tr>
-                        <tr>
-                            <td>ศุกร์ 19:30</td>
-                            <td>USD</td>
-                            <td>Core PCE Price Index MoM</td>
-                            <td>0.2%</td>
-                            <td>0.2%</td>
-                            <td><strong style="color:var(--accent-cyan)">0.1%</strong></td>
-                            <td><span style="color:var(--accent-red)">🔴 High Impact</span></td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="scenario-grid" id="scenario-container">
+                <!-- Injected via JS -->
             </div>
         </section>
     </div>
 
     <script>
-        const macroDatabase = {
+        const macroData = {
             'cpi': {
                 title: 'US CPI YoY (Consumer Price Index)',
-                date: 'กำหนดการประกาศ: พุธนี้ เวลา 19:30 น. (เวลาไทย) | ความสำคัญ: 🔴 HIGH IMPACT',
-                prev: '3.3%',
-                consensus: '3.1%',
-                aiForecast: '3.0%',
-                confidence: '84%',
-                logic: 'จากการนำดัชนีชี้นำ (Leading Indicators) เช่น Truflation Index (ที่ลดลงแตะ 2.8%), ราคาน้ำมันดิบ WTI ย่อตัว 4.2% ในเดือนที่ผ่านมา ประกอบกับ Manheim Used Vehicle Index ที่ปรับลดลง AI Model ประมวลผลว่ามีโอกาสสูงที่ CPI จะชะลอตัวลงลึกกว่าที่ตลาดคาดการณ์ไว้เล็กน้อย สู่ระดับ 3.0%',
-                institutions: [
-                    { name: 'Goldman Sachs', forecast: '3.1%', comment: 'มองว่าราคาพลังงานที่ย่อตัวลงจะช่วยกดเงินเฟ้อทั่วไป แต่เงินเฟ้อภาคบริการยังหนืดอยู่' },
-                    { name: 'JPMorgan', forecast: '3.0%', comment: 'คาดว่าค่าเช่าบ้าน (Shelter Inflation) เริ่มส่งผ่านการชะลอตัวเข้าสู่ตัวเลขจริงดัน CPI ลดลง' },
-                    { name: 'Morgan Stanley', forecast: '3.2%', comment: 'เตือนว่าเงินเฟ้อพื้นฐานอาจเซอร์ไพรส์ในฝั่งสูงเล็กน้อยจากราคาตั๋วเครื่องบินและประกันภัย' }
+                date: 'กำหนดการประกาศ: พุธนี้ เวลา 19:30 น. | ผลกระทบ: 🔴 HIGH VOLATILITY',
+                prev: '3.3%', consensus: '3.1%', aiForecast: '3.0%', confidence: '86%',
+                
+                // Instant Asset Impact Summary
+                instantImpact: [
+                    { asset: 'GOLD (XAUUSD)', status: '🟢 BULLISH FAVORABLE', detail: 'เงินเฟ้อชะลอตัวจะกดดัน Bond Yield ดันราคาทองคำทะลุแนวต้านแรกทันที' },
+                    { asset: 'BITCOIN (BTC)', status: '🟢 BULLISH RISK-ON', detail: 'สภาพคล่องไหลเข้าสินทรัพย์เสี่ยง หาก CPI ออกมา < 3.1%' },
+                    { asset: 'DXY INDEX', status: '🔴 BEARISH PRESSURE', detail: 'ดอลลาร์โดนเทขายจากคาดการณ์ Fed ลดดอกเบี้ยในรอบถัดไป' }
                 ],
+
+                // Volatility & Target Range Statistics
+                volatilityStats: [
+                    { asset: 'GOLD (XAUUSD)', avgMove: '220 - 350 Pips ($22 - $35)', targetUp: '$2,435 - $2,450', targetDown: '$2,380 - $2,365' },
+                    { asset: 'BITCOIN (BTC)', avgMove: '2.5% - 4.8% ($1,800 - $3,200)', targetUp: '$68,500 - $70,000', targetDown: '$63,200 - $61,800' },
+                    { asset: 'DXY INDEX', avgMove: '0.60 - 0.95 Points', targetUp: '105.20', targetDown: '103.40' }
+                ],
+
+                // Extended Institutional Breakdown (จัดเต็ม 7 สถาบัน)
+                institutions: [
+                    { name: 'Goldman Sachs', forecast: '3.1%', stance: 'BULLISH USD / BEARISH GOLD SHORT-TERM', comment: 'มองว่าราคาพลังงานที่ย่อตัวช่วยดัน CPI ลง แต่ภาคบริการยังตึงตัว คาดตลาดอาจผันผวนสองทางหลังประกาศ', badge: 'rgba(242,54,69,0.2); color:var(--accent-red)' },
+                    { name: 'JPMorgan Chase', forecast: '3.0%', stance: 'VERY BULLISH GOLD & BTC', comment: 'ประเมินว่าค่าเช่าบ้าน (Shelter Inflation) เริ่มชะลอลงชัดเจน หากออก 3.0% จะเปิดทางให้ Fed ลดดอกเบี้ย 2 ครั้งปีนี้', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' },
+                    { name: 'Morgan Stanley', forecast: '3.2%', stance: 'NEUTRAL / CAUTIOUS', comment: 'เตือนภัย Tail Risk: ราคาตั๋วเครื่องบินและประกันภัยอาจเด้งขึ้น ทำให้ CPI แตะ 3.2% และดอลลาร์รีบาวด์แรง', badge: 'rgba(255,152,0,0.2); color:var(--accent-amber)' },
+                    { name: 'Bank of America (BofA)', forecast: '3.0%', stance: 'BULLISH BOND & GOLD', comment: 'ดัชนีการบริโภคผ่านบัตรเครดิต BofA ชะลอตัว ชี้ว่าตัวเลขมีโอกาสหลุด 3.1% สูง', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' },
+                    { name: 'Citi Group', forecast: '3.1%', stance: 'NEUTRAL', comment: 'มองว่าตลาดซึมซับรับรู้ตัวเลข 3.1% ไปแล้ว อาจเกิดภาวะ Buy the rumor, Sell the fact', badge: 'rgba(255,152,0,0.2); color:var(--accent-amber)' },
+                    { name: 'UBS', forecast: '2.9%', stance: 'EXTREMELY BULLISH RISK ASSETS', comment: 'โมเดล UBS ชี้ว่าเงินเฟ้อกดต่ำกว่าคาดแน่นอน เป็นจุดสะสมทองคำและบิทคอยน์รอบใหญ่', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' },
+                    { name: 'Barclays', forecast: '3.1%', stance: 'BEARISH BTC', comment: 'แม้เงินเฟ้อลดลง แต่มองว่าสภาพคล่องสถาบันยังคงระมัดระวังจนกว่าจะถึงการประชุม FOMC', badge: 'rgba(242,54,69,0.2); color:var(--accent-red)' }
+                ],
+
+                // Scenarios with Specific Price Targets
                 scenarios: [
                     {
-                        name: 'Scenario A: ออกต่ำกว่าคาด (< 3.0%)',
+                        name: 'Scenario 1: ออกต่ำกว่าคาดมากๆ (< 3.0%)',
                         prob: '35% PROBABILITY',
-                        probColor: 'background:rgba(8,153,129,0.2); color:var(--accent-green); border:1px solid var(--accent-green);',
-                        impacts: [
-                            { asset: 'GOLD (ทองคำ)', impact: '🟢 BULLISH แรง', detail: 'เงินเฟ้อต่ำ หนุน Fed ลดดอกเบี้ย ดอลลาร์ร่วง ทองคำพุ่งขึ้นทดสอบ $2,420+' },
-                            { asset: 'BTC (บิทคอยน์)', impact: '🟢 BULLISH', detail: 'สภาพคล่องและ Risk-on Sentiment กลับมา พุ่งเป้าทดสอบ $68,000' },
-                            { asset: 'DXY (ดอลลาร์)', impact: '🔴 BEARISH', detail: 'Bond Yield ร่วง ดันดอลลาร์อ่อนค่าลงลึกทดสอบ 103.50' }
-                        ]
+                        color: 'var(--accent-green)',
+                        targets: 'GOLD เป้าหมาย: $2,440 - $2,460 | BTC เป้าหมาย: $69,500 | DXY: 103.20'
                     },
                     {
-                        name: 'Scenario B: ออกตามคาด (3.0% - 3.1%)',
+                        name: 'Scenario 2: ออกตามคาด (3.0% - 3.1%)',
                         prob: '50% PROBABILITY',
-                        probColor: 'background:rgba(255,152,0,0.2); color:var(--accent-amber); border:1px solid var(--accent-amber);',
-                        impacts: [
-                            { asset: 'GOLD (ทองคำ)', impact: '🟡 SIDEWAY / BULLISH', detail: 'ตลาดรับรู้ไปแล้ว อาจมี Sell on Fact สั้นๆ ก่อนปรับตัวขึ้นตามเทรนด์' },
-                            { asset: 'BTC (บิทคอยน์)', impact: '🟡 SIDEWAY', detail: 'เคลื่อนไหวตามกรอบเดิม ตลาดรอปัจจัย FOMC ถัดไป' },
-                            { asset: 'DXY (ดอลลาร์)', impact: '🟡 SIDEWAY NEUTRAL', detail: 'แกว่งตัวในกรอบ 104.00 - 104.50' }
-                        ]
+                        color: 'var(--accent-amber)',
+                        targets: 'GOLD เป้าหมาย: $2,415 - $2,425 | BTC เป้าหมาย: $66,800 | DXY: 104.10'
                     },
                     {
-                        name: 'Scenario C: ออกสูงกว่าคาด (> 3.2%)',
+                        name: 'Scenario 3: ออกสูงกว่าคาด (> 3.2%)',
                         prob: '15% PROBABILITY',
-                        probColor: 'background:rgba(242,54,69,0.2); color:var(--accent-red); border:1px solid var(--accent-red);',
-                        impacts: [
-                            { asset: 'GOLD (ทองคำ)', impact: '🔴 BEARISH', detail: 'เงินเฟ้อทรงตัวสูง ตลาดลดคาดการณ์ลดดอกเบี้ย ทองทิ้งตัวหลุด $2,380' },
-                            { asset: 'BTC (บิทคอยน์)', impact: '🔴 BEARISH', detail: 'สินทรัพย์เสี่ยงถูกขายลดความเสี่ยง ร่วงลงหาแนวรับ $63,000' },
-                            { asset: 'DXY (ดอลลาร์)', impact: '🟢 BULLISH', detail: 'ดอลลาร์พุ่งรีบาวด์แข็งค่าทดสอบ 105.00+' }
-                        ]
+                        color: 'var(--accent-red)',
+                        targets: 'GOLD เป้าหมาย: $2,375 - $2,360 | BTC เป้าหมาย: $62,500 | DXY: 105.30'
                     }
                 ]
             },
             'nfp': {
-                title: 'US Non-Farm Payrolls (การจ้างงานนอกภาคเกษตร)',
-                date: 'กำหนดการประกาศ: ศุกร์แรกของเดือน เวลา 19:30 น. (เวลาไทย) | ความสำคัญ: 🔴 HIGH IMPACT',
-                prev: '206K',
-                consensus: '175K',
-                aiForecast: '160K',
-                confidence: '78%',
-                logic: 'จากการคำนวณผ่านตัวเลข ADP Employment (ที่ลดลงแตะ 150K) และ ISM Manufacturing Employment Index ที่หดตัวติดต่อกัน AI Quant Model ประเมินว่าตลาดแรงงานสหรัฐฯ เริ่มชะลอตัวลงมากกว่าที่นักวิเคราะห์ส่วนใหญ่คาด',
+                title: 'US Non-Farm Payrolls (ตัวเลขจ้างงาน)',
+                date: 'กำหนดการประกาศ: ศุกร์แรกของเดือน เวลา 19:30 น. | ผลกระทบ: 🔴 HIGH VOLATILITY',
+                prev: '206K', consensus: '175K', aiForecast: '160K', confidence: '80%',
+                instantImpact: [
+                    { asset: 'GOLD (XAUUSD)', status: '🟢 BULLISH FAVORABLE', detail: 'ตลาดแรงงานชะลอตัวจะเร่งให้ Fed ลดดอกเบี้ย ดันทองคำขึ้น' },
+                    { asset: 'BITCOIN (BTC)', status: '🟡/🟢 NEUTRAL TO BULLISH', detail: 'ผันผวนช่วงแรก ก่อนปรับตัวขึ้นตามสภาพคล่อง' },
+                    { asset: 'DXY INDEX', status: '🔴 BEARISH PRESSURE', detail: 'ดอลลาร์ร่วงหลุดแนวรับสำคัญหากจ้างงานหลุด 150K' }
+                ],
+                volatilityStats: [
+                    { asset: 'GOLD (XAUUSD)', avgMove: '180 - 280 Pips ($18 - $28)', targetUp: '$2,430', targetDown: '$2,385' },
+                    { asset: 'BITCOIN (BTC)', avgMove: '2.0% - 3.5%', targetUp: '$67,800', targetDown: '$63,500' },
+                    { asset: 'DXY INDEX', avgMove: '0.50 - 0.80 Points', targetUp: '104.90', targetDown: '103.60' }
+                ],
                 institutions: [
-                    { name: 'Bank of America', forecast: '180K', comment: 'การจ้างงานยังคงแข็งแกร่งในภาคการแพทย์และภาครัฐ แต่อาจเริ่มเห็นความอ่อนแอในภาคการผลิต' },
-                    { name: 'Citi Group', forecast: '155K', comment: 'ตัวเลขการเปิดรับสมัครงาน (JOLTs) ลดลงชัดเจน จะส่งผลให้ NFP ออกมาชะลอตัว' }
+                    { name: 'Goldman Sachs', forecast: '185K', stance: 'NEUTRAL', comment: 'การจ้างงานยังทรงตัวดี ไม่ได้ย่ำแย่จนเกิด Recession', badge: 'rgba(255,152,0,0.2); color:var(--accent-amber)' },
+                    { name: 'Citi Group', forecast: '150K', stance: 'VERY BULLISH GOLD', comment: 'มองว่าจ้างงานชะลอตัวลงลึกกว่าที่คิด กดดันดอลลาร์อ่วม', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' },
+                    { name: 'JPMorgan', forecast: '165K', stance: 'BULLISH RISK ASSETS', comment: 'แรงงานโตแบบ Soft Landing ชะลอตัวกำลังดี เหมาะกับสินทรัพย์เสี่ยง', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' }
                 ],
                 scenarios: [
-                    {
-                        name: 'Scenario A: ตลาดแรงงานทรุด (< 150K)',
-                        prob: '40% PROBABILITY',
-                        probColor: 'background:rgba(8,153,129,0.2); color:var(--accent-green); border:1px solid var(--accent-green);',
-                        impacts: [
-                            { asset: 'GOLD (ทองคำ)', impact: '🟢 BULLISH', detail: 'เร่งความหวัง Fed ลดดอกเบี้ยแรงขึ้น หนุนทองคำพุ่งขึ้นแรง' },
-                            { asset: 'BTC (บิทคอยน์)', impact: '🟡/🟢 MIXED BULLISH', detail: 'ระยะสั้นเป็นบวก แต่ต้องระวังความกังวลเรื่องเศรษฐกิจถดถอย (Recession)' },
-                            { asset: 'DXY (ดอลลาร์)', impact: '🔴 BEARISH', detail: 'ดอลลาร์ถูกขายหนักตาม Bond Yield' }
-                        ]
-                    },
-                    {
-                        name: 'Scenario B: แข็งแกร่งเกินคาด (> 200K)',
-                        prob: '20% PROBABILITY',
-                        probColor: 'background:rgba(242,54,69,0.2); color:var(--accent-red); border:1px solid var(--accent-red);',
-                        impacts: [
-                            { asset: 'GOLD (ทองคำ)', impact: '🔴 BEARISH', detail: 'เฟดอาจคงดอกเบี้ยนานขึ้น (Higher for longer) ทองคำถูกขายย่อตัว' },
-                            { asset: 'DXY (ดอลลาร์)', impact: '🟢 BULLISH', detail: 'ดอลลาร์รีบาวด์แข็งค่าสลับตัวขึ้นแรง' }
-                        ]
-                    }
-                ]
-            },
-            'fomc': {
-                title: 'FOMC Federal Funds Rate Decision (อัตราดอกเบี้ยเฟด)',
-                date: 'กำหนดการประกาศ: พุธสัปดาห์หน้า เวลา 01:00 น. (ตี 1 เวลาไทย) | ความสำคัญ: 🔴 CRITICAL',
-                prev: '5.50%',
-                consensus: '5.50% (คงดอกเบี้ย)',
-                aiForecast: '5.50% (ส่งสัญญาณดุมลดเดือน ก.ย.)',
-                confidence: '95%',
-                logic: 'FedWatch Tool ให้น้ำหนัก 98% ว่าเฟดจะคงดอกเบี้ยในการประชุมครั้งนี้ แต่ไฮไลท์อยู่ที่ประธานเฟด Powell จะส่งสัญญาณปูทางลดดอกเบี้ยในการประชุมรอบถัดไป (กันยายน) อย่างแน่นอน',
-                institutions: [
-                    { name: 'Goldman Sachs', forecast: '5.50%', comment: 'คาดเฟดเปลี่ยนถ้อยแถลงใน Statement เป็น Softening Inflation พร้อมส่งสัญญาณลดดอกเบี้ย 0.25% เดือน ก.ย.' },
-                    { name: 'PIMCO', forecast: '5.50%', comment: 'ความเสี่ยงตลาดแรงงานเริ่มดันให้เฟดต้องเริ่มวัฏจักรดอกเบี้ยขาลง' }
-                ],
-                scenarios: [
-                    {
-                        name: 'Scenario A: Dovish Pivot (ส่งสัญญาณลดดอกเบี้ยชัดเจน)',
-                        prob: '70% PROBABILITY',
-                        probColor: 'background:rgba(8,153,129,0.2); color:var(--accent-green); border:1px solid var(--accent-green);',
-                        impacts: [
-                            { asset: 'GOLD (ทองคำ)', impact: '🟢 BULLISH HIGH', detail: 'ทองคำได้อานิสงส์เต็มๆ จากอัตราดอกเบี้ยแท้จริง (Real Yield) ที่ลดลง' },
-                            { asset: 'BTC (บิทคอยน์)', impact: '🟢 BULLISH', detail: 'ตลาดตอบรับสภาพคล่องที่จะฉีดเข้าสู่ระบบ' }
-                        ]
-                    }
+                    { name: 'Scenario 1: จ้างงานทรุด (< 150K)', prob: '40%', color: 'var(--accent-green)', targets: 'GOLD: $2,435 | BTC: $68,000 | DXY: 103.50' },
+                    { name: 'Scenario 2: จ้างงานแกร่ง (> 200K)', prob: '20%', color: 'var(--accent-red)', targets: 'GOLD: $2,370 | BTC: $62,000 | DXY: 105.10' }
                 ]
             }
         };
@@ -353,7 +262,7 @@
             document.querySelectorAll('.event-tab-btn').forEach(b => b.classList.remove('active'));
             event.currentTarget.classList.add('active');
 
-            const data = macroDatabase[evtKey] || macroDatabase['cpi'];
+            const data = macroData[evtKey] || macroData['cpi'];
 
             document.getElementById('event-title').innerText = data.title;
             document.getElementById('event-date').innerText = data.date;
@@ -361,55 +270,70 @@
             document.getElementById('val-consensus').innerText = data.consensus;
             document.getElementById('val-ai').innerText = data.aiForecast;
             document.getElementById('val-confidence').innerText = data.confidence;
-            document.getElementById('ai-logic-text').innerText = data.logic;
 
-            // Render Institutions
-            const instContainer = document.getElementById('inst-container');
-            instContainer.innerHTML = '';
-            data.institutions.forEach(i => {
-                instContainer.innerHTML += `
+            // Render Instant Impact Cards
+            const impactBox = document.getElementById('instant-impact-container');
+            impactBox.innerHTML = '';
+            data.instantImpact.forEach(i => {
+                impactBox.innerHTML += `
+                    <div class="asset-impact-card">
+                        <div style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">${i.asset}</div>
+                        <div style="font-size:0.95rem; font-weight:700; margin:6px 0; color:var(--accent-cyan);">${i.status}</div>
+                        <div style="font-size:0.82rem; color:var(--text-main); line-height:1.4;">${i.detail}</div>
+                    </div>
+                `;
+            });
+
+            // Render Volatility & Target Range Statistics
+            const volBox = document.getElementById('volatility-container');
+            volBox.innerHTML = '';
+            data.volatilityStats.forEach(v => {
+                volBox.innerHTML += `
+                    <div class="vol-card">
+                        <div style="font-size:0.85rem; font-weight:700; color:#fff;">${v.asset}</div>
+                        <div style="font-size:0.78rem; color:var(--accent-amber); margin:4px 0;">ระยะวิ่งเฉลี่ย: <strong>${v.avgMove}</strong></div>
+                        <div style="font-size:0.78rem; color:var(--accent-green);">เป้าหมายฝั่งขึ้น (Bullish Target): ${v.targetUp}</div>
+                        <div style="font-size:0.78rem; color:var(--accent-red);">เป้าหมายฝั่งลง (Bearish Target): ${v.targetDown}</div>
+                    </div>
+                `;
+            });
+
+            // Render Institutional Breakdown
+            const instBox = document.getElementById('inst-container');
+            instBox.innerHTML = '';
+            data.institutions.forEach(inst => {
+                instBox.innerHTML += `
                     <div class="inst-card">
-                        <div class="inst-name">
-                            <span>${i.name}</span>
-                            <span class="inst-forecast">${i.forecast}</span>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-weight:700; color:#fff; font-size:0.9rem;">${inst.name}</span>
+                            <span style="font-family:'JetBrains Mono'; font-weight:700; color:var(--accent-cyan);">${inst.forecast}</span>
                         </div>
-                        <div class="inst-comment">"${i.comment}"</div>
+                        <span class="inst-badge" style="background:${inst.badge}">${inst.stance}</span>
+                        <p style="font-size:0.8rem; color:var(--text-main); margin-top:10px; line-height:1.4;">"${inst.comment}"</p>
                     </div>
                 `;
             });
 
             // Render Scenarios
-            const scenContainer = document.getElementById('scenario-container');
-            scenContainer.innerHTML = '';
-            data.scenarios.forEach(s => {
-                let impactsHTML = '';
-                s.impacts.forEach(imp => {
-                    impactsHTML += `
-                        <div class="impact-item">
-                            <div class="impact-asset">${imp.asset} <span style="font-size:0.78rem;">(${imp.impact})</span></div>
-                            <div style="color:var(--text-muted);">${imp.detail}</div>
-                        </div>
-                    `;
-                });
-
-                scenContainer.innerHTML += `
+            const scenBox = document.getElementById('scenario-container');
+            scenBox.innerHTML = '';
+            data.scenarios.forEach(sc => {
+                scenBox.innerHTML += `
                     <div class="scenario-card">
-                        <div class="scen-header">
-                            <span class="scen-title">${s.name}</span>
-                            <span class="scen-prob" style="${s.probColor}">${s.prob}</span>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-weight:700; font-size:0.9rem; color:#fff;">${sc.name}</span>
+                            <span style="font-family:'JetBrains Mono'; font-size:0.8rem; font-weight:700; color:${sc.color}">${sc.prob}</span>
                         </div>
-                        <div class="impact-list">
-                            ${impactsHTML}
+                        <div class="scen-target-box" style="color:var(--text-main);">
+                            <i class="fa-solid fa-bullseye" style="color:var(--accent-cyan);"></i> ${sc.targets}
                         </div>
                     </div>
                 `;
             });
         }
 
-        // Initialize with CPI
-        window.addEventListener('DOMContentLoaded', () => {
-            switchEvent('cpi');
-        });
+        // Auto Load CPI
+        window.addEventListener('DOMContentLoaded', () => { switchEvent('cpi'); });
     </script>
 </body>
 </html>
