@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Multi-Asset Quant Dashboard</title>
+    <title>Quant Asset Terminal & AI Analytics</title>
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- TradingView Widget Script -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 
     <style>
         :root {
@@ -25,404 +27,535 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Prompt', sans-serif; background-color: var(--bg-dark); color: var(--text-main); padding: 20px; min-height: 100vh; }
-        .container { max-width: 1650px; margin: 0 auto; }
+        body { 
+            font-family: 'Prompt', sans-serif; 
+            background-color: var(--bg-dark); 
+            color: var(--text-main); 
+            padding: 16px; 
+            min-height: 100vh; 
+        }
 
-        .header-nav {
+        .container { max-width: 1550px; margin: 0 auto; }
+
+        /* Top Bar */
+        .top-bar {
             display: flex; justify-content: space-between; align-items: center;
             background: var(--bg-panel); padding: 14px 24px; border-radius: 12px;
             border: 1px solid var(--border-color); margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
         }
-        .nav-links { display: flex; gap: 10px; flex-wrap: wrap; }
-        .nav-btn {
+        .asset-header { display: flex; align-items: center; gap: 14px; }
+        .asset-icon { font-size: 2rem; color: var(--accent-amber); }
+        .asset-title-text h2 { font-size: 1.4rem; font-weight: 700; color: #fff; }
+        .asset-title-text span { font-size: 0.85rem; color: var(--text-muted); }
+
+        .back-btn {
             background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color);
-            padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 600;
-            display: flex; align-items: center; gap: 8px; transition: 0.2s;
+            padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 0.88rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.2s;
         }
-        .nav-btn:hover { border-color: var(--accent-purple); color: #fff; }
-        .nav-btn.active { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); }
+        .back-btn:hover { border-color: var(--accent-purple); color: #fff; }
 
-        .asset-switcher-bar {
-            display: flex; gap: 8px; background: var(--bg-panel); padding: 10px; border-radius: 10px;
-            border: 1px solid var(--border-color); margin-bottom: 20px; overflow-x: auto;
+        /* Main Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
         }
-        .asset-btn {
-            background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted);
-            padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s;
+
+        @media (max-width: 1100px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
         }
-        .asset-btn.active { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); }
 
-        .main-layout { display: grid; grid-template-columns: 2.2fr 1fr; gap: 20px; }
-        @media(max-width: 1200px) { .main-layout { grid-template-columns: 1fr; } }
+        .card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;
+        }
+        .card-title { font-size: 1.05rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 10px; }
 
-        .panel-box { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-        .panel-title { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+        /* Chart Container */
+        .chart-container { height: 480px; width: 100%; border-radius: 8px; overflow: hidden; }
 
-        .score-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px; }
-        .score-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; text-align: center; }
-        .score-title { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
-        .score-val { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: 700; }
-        .progress-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; margin-top: 8px; }
-        .progress-bar-fill { height: 100%; border-radius: 3px; }
+        /* Timeframe & Pattern Matrix */
+        .tf-matrix { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px; }
+        .tf-box {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 10px; padding: 14px; text-align: center;
+        }
+        .tf-name { font-weight: 700; font-size: 0.9rem; color: var(--accent-cyan); margin-bottom: 6px; }
+        .tf-candle { font-size: 0.85rem; font-weight: 600; color: #fff; margin-bottom: 4px; }
+        .tf-pattern { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; min-height: 32px; }
+        .tf-score {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 700;
+            padding: 4px 8px; border-radius: 6px; display: inline-block;
+        }
+        .score-bullish { background: rgba(8, 153, 129, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .score-bearish { background: rgba(242, 54, 69, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
+        .score-neutral { background: rgba(255, 152, 0, 0.2); color: var(--accent-amber); border: 1px solid var(--accent-amber); }
 
-        .chart-wrapper { height: 500px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); }
+        /* Support / Resistance Levels & Strength Bars */
+        .level-row {
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--bg-card); padding: 10px 14px; border-radius: 8px;
+            margin-bottom: 8px; border: 1px solid var(--border-color);
+        }
+        .level-info { display: flex; flex-direction: column; }
+        .level-tag { font-size: 0.75rem; font-weight: 700; }
+        .level-tag.res { color: var(--accent-red); }
+        .level-tag.sup { color: var(--accent-green); }
+        .level-price { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1rem; color: #fff; }
+        
+        .strength-box { text-align: right; width: 45%; }
+        .strength-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; display: flex; justify-content: space-between; }
+        .strength-bar-bg { background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; overflow: hidden; }
+        .strength-bar-fill { height: 100%; border-radius: 3px; }
 
+        /* Entry Setup & Scoring Box */
+        .entry-card {
+            background: linear-gradient(135deg, rgba(41, 98, 255, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid var(--accent-blue); border-radius: 12px; padding: 16px; margin-top: 15px;
+        }
+        .entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .entry-score-badge {
+            font-family: 'JetBrains Mono', monospace; background: var(--accent-blue); color: #fff;
+            padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.9rem;
+        }
+        .entry-details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem; }
+        .entry-item span { color: var(--text-muted); display: block; font-size: 0.75rem; }
+        .entry-item strong { color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; }
+
+        /* AI Council Section */
         .ai-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-        .ai-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; border-top: 3px solid var(--accent-purple); }
-        .ai-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .ai-name { font-weight: 700; font-size: 0.9rem; color: #fff; display: flex; align-items: center; gap: 8px; }
-        .ai-style { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 700; background: rgba(255,255,255,0.08); color: var(--accent-cyan); }
-        .ai-bias { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; }
-        .ai-desc { font-size: 0.8rem; color: var(--text-main); line-height: 1.5; }
-
-        .calc-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .form-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-group label { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
-        .form-control { background: var(--bg-card); border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; outline: none; }
-        .calc-res-box { background: rgba(139, 92, 246, 0.1); border: 1px solid var(--accent-purple); border-radius: 8px; padding: 14px; margin-top: 14px; text-align: center; }
-
-        .badge-buy { color: var(--accent-green); }
-        .badge-sell { color: var(--accent-red); }
-        .badge-neutral { color: var(--accent-amber); }
+        .ai-card {
+            background: var(--bg-panel); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 16px; transition: transform 0.2s;
+        }
+        .ai-card:hover { transform: translateY(-3px); border-color: var(--accent-purple); }
+        .ai-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .ai-avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .ai-name { font-weight: 700; color: #fff; font-size: 0.95rem; }
+        .ai-role { font-size: 0.75rem; color: var(--text-muted); }
+        .ai-badge { margin-left: auto; font-size: 0.75rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; }
+        .ai-comment { font-size: 0.85rem; color: var(--text-main); line-height: 1.5; background: var(--bg-card); padding: 10px; border-radius: 8px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Header Nav -->
-        <header class="header-nav">
-            <div style="font-weight: 700; color: #fff; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-microchip" style="color:var(--accent-purple);"></i> DYNAMIC QUANT DASHBOARD
+        <!-- Top Navigation -->
+        <div class="top-bar">
+            <div class="asset-header">
+                <i class="fa-solid fa-coins asset-icon" id="assetIcon"></i>
+                <div class="asset-title-text">
+                    <h2 id="assetName">GOLD (XAUUSD)</h2>
+                    <span id="assetSub">Dynamic Quantitative Analysis & Market Structure</span>
+                </div>
+            </div>
+            <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> เปลี่ยนสินทรัพย์</a>
+        </div>
+
+        <!-- Upper Section: Chart & Live Analytics -->
+        <div class="dashboard-grid">
+            
+            <!-- Left Side: Interactive TradingView Chart -->
+            <div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-chart-candlestick" style="color:var(--accent-cyan);"></i> กราฟราคา Real-Time & Structure</div>
+                    </div>
+                    <div class="chart-container" id="tv_chart_container"></div>
+                </div>
+
+                <!-- Multi-Timeframe Candlestick & Pattern Analysis -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-layer-group" style="color:var(--accent-purple);"></i> วิเคราะห์พฤติกรรมแท่งเทียน & Pattern (H1, H4, Day)</div>
+                    </div>
+                    <div class="tf-matrix">
+                        <!-- H1 -->
+                        <div class="tf-box">
+                            <div class="tf-name">Timeframe 1 ชั่วโมง (H1)</div>
+                            <div class="tf-candle" id="h1Candle">Bullish Rejection Pinbar</div>
+                            <div class="tf-pattern" id="h1Pattern">ซับแรงขายที่แนวรับ S1 / วอลุ่มเริ่มเข้า</div>
+                            <div class="tf-score score-bullish" id="h1Score">Score: +25 (Bullish)</div>
+                        </div>
+
+                        <!-- H4 -->
+                        <div class="tf-box">
+                            <div class="tf-name">Timeframe 4 ชั่วโมง (H4)</div>
+                            <div class="tf-candle" id="h4Candle">Higher Low Structure</div>
+                            <div class="tf-pattern" id="h4Pattern">เกิดรูปแบบ Double Bottom ชัดเจน</div>
+                            <div class="tf-score score-bullish" id="h4Score">Score: +35 (Bullish)</div>
+                        </div>
+
+                        <!-- Day -->
+                        <div class="tf-box">
+                            <div class="tf-name">Timeframe Daily (Day)</div>
+                            <div class="tf-candle" id="dayCandle">Uptrend Above EMA50</div>
+                            <div class="tf-pattern" id="dayPattern">เทรนด์ใหญ่เป็นเทรนด์ขาขึ้น ยก High-Low</div>
+                            <div class="tf-score score-bullish" id="dayScore">Score: +25 (Bullish)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Support/Resistance Strength & Trade Setup Score -->
+            <div>
+                <!-- Support & Resistance Strength Rating -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-shield-halved" style="color:var(--accent-amber);"></i> ความแข็งแกร่งแนวรับ-แนวต้าน</div>
+                    </div>
+
+                    <!-- Resistance 2 -->
+                    <div class="level-row">
+                        <div class="level-info">
+                            <span class="level-tag res">R2 (แนวต้านแข็งแกร่งมาก)</span>
+                            <span class="level-price" id="valR2">2,420.00</span>
+                        </div>
+                        <div class="strength-box">
+                            <div class="strength-label"><span>ความแข็งแกร่ง</span><span id="stR2">88%</span></div>
+                            <div class="strength-bar-bg"><div class="strength-bar-fill" id="barR2" style="width:88%; background:var(--accent-red);"></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Resistance 1 -->
+                    <div class="level-row">
+                        <div class="level-info">
+                            <span class="level-tag res">R1 (แนวต้านระยะสั้น)</span>
+                            <span class="level-price" id="valR1">2,400.00</span>
+                        </div>
+                        <div class="strength-box">
+                            <div class="strength-label"><span>ความแข็งแกร่ง</span><span id="stR1">65%</span></div>
+                            <div class="strength-bar-bg"><div class="strength-bar-fill" id="barR1" style="width:65%; background:var(--accent-amber);"></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Support 1 -->
+                    <div class="level-row">
+                        <div class="level-info">
+                            <span class="level-tag sup">S1 (แนวรับสำคัญ / Demand Zone)</span>
+                            <span class="level-price" id="valS1">2,370.00</span>
+                        </div>
+                        <div class="strength-box">
+                            <div class="strength-label"><span>ความแข็งแกร่ง</span><span id="stS1">82%</span></div>
+                            <div class="strength-bar-bg"><div class="strength-bar-fill" id="barS1" style="width:82%; background:var(--accent-green);"></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Support 2 -->
+                    <div class="level-row">
+                        <div class="level-info">
+                            <span class="level-tag sup">S2 (แนวรับหลักของวัน)</span>
+                            <span class="level-price" id="valS2">2,350.00</span>
+                        </div>
+                        <div class="strength-box">
+                            <div class="strength-label"><span>ความแข็งแกร่ง</span><span id="stS2">92%</span></div>
+                            <div class="strength-bar-bg"><div class="strength-bar-fill" id="barS2" style="width:92%; background:var(--accent-green);"></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Trade Setup & Entry Score Box -->
+                    <div class="entry-card">
+                        <div class="entry-header">
+                            <div style="font-weight:700; color:#fff;"><i class="fa-solid fa-bullseye" style="color:var(--accent-cyan);"></i> คะแนนจุดน่าสนใจเข้าซื้อขาย</div>
+                            <div class="entry-score-badge" id="setupScore">Score: 85/100</div>
+                        </div>
+                        <div class="entry-details">
+                            <div class="entry-item">
+                                <span>กลยุทธ์ที่แนะนำ (Strategy)</span>
+                                <strong id="setupStrategy" style="color:var(--accent-green);">Buy on Dip / Retest S1</strong>
+                            </div>
+                            <div class="entry-item">
+                                <span>โซนรับเปิดออเดอร์ (Entry)</span>
+                                <strong id="setupEntry">2,370 - 2,375</strong>
+                            </div>
+                            <div class="entry-item">
+                                <span>จุดตัดขาดทุน (Stop Loss)</span>
+                                <strong id="setupSL" style="color:var(--accent-red);">2,358 (-12 pt)</strong>
+                            </div>
+                            <div class="entry-item">
+                                <span>เป้าหมายกำไร (Take Profit)</span>
+                                <strong id="setupTP" style="color:var(--accent-green);">2,405 / 2,420</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Lower Section: AI Trader Council Opinions -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title"><i class="fa-solid fa-users-gear" style="color:var(--accent-cyan);"></i> มุมมองจาก AI Quant Council ทั้ง 5 มุมมอง</div>
             </div>
             
-            <div class="nav-links">
-                <a href="index.html" class="nav-btn"><i class="fa-solid fa-arrow-left"></i> กลับไปเลือกสินทรัพย์ (Index)</a>
-                <a href="economic_calendar.html" class="nav-btn"><i class="fa-solid fa-calendar-check" style="color:var(--accent-amber);"></i> ปฏิทินข่าว</a>
-                <a href="news_dashboard.html" class="nav-btn"><i class="fa-solid fa-newspaper" style="color:var(--accent-cyan);"></i> ศูนย์ข่าว</a>
-            </div>
-        </header>
+            <div class="ai-grid">
+                
+                <!-- AI 1 -->
+                <div class="ai-card">
+                    <div class="ai-header">
+                        <div class="ai-avatar" style="background:rgba(8,153,129,0.2); color:var(--accent-green);"><i class="fa-solid fa-chart-line"></i></div>
+                        <div>
+                            <div class="ai-name">Trend Following AI</div>
+                            <div class="ai-role">ผู้เชี่ยวชาญเทรนด์ระยะยาว</div>
+                        </div>
+                        <span class="ai-badge score-bullish" id="ai1Badge">BULLISH</span>
+                    </div>
+                    <div class="ai-comment" id="ai1Text">โครงสร้างหลักใน Day และ H4 ยังยก High-Low สวยงาม แนะนำถือตามเทรนด์ย่อย ย่อซื้อเมื่อชน Demand Zone</div>
+                </div>
 
-        <!-- Quick Switch Asset Bar -->
-        <div class="asset-switcher-bar">
-            <button class="asset-btn" id="btn-gold" onclick="switchAsset('gold')"><i class="fa-solid fa-coins" style="color:#ff9800;"></i> GOLD (XAUUSD)</button>
-            <button class="asset-btn" id="btn-btc" onclick="switchAsset('btc')"><i class="fa-brands fa-bitcoin" style="color:#f7931a;"></i> BITCOIN (BTC)</button>
-            <button class="asset-btn" id="btn-dxy" onclick="switchAsset('dxy')"><i class="fa-solid fa-dollar-sign" style="color:#089981;"></i> DXY INDEX</button>
-            <button class="asset-btn" id="btn-spx" onclick="switchAsset('spx')"><i class="fa-solid fa-chart-line" style="color:#2962ff;"></i> S&P 500 (SPX)</button>
-            <button class="asset-btn" id="btn-eurusd" onclick="switchAsset('eurusd')"><i class="fa-solid fa-euro-sign" style="color:#00b8d4;"></i> EUR / USD</button>
+                <!-- AI 2 -->
+                <div class="ai-card">
+                    <div class="ai-header">
+                        <div class="ai-avatar" style="background:rgba(139,92,246,0.2); color:var(--accent-purple);"><i class="fa-solid fa-wave-square"></i></div>
+                        <div>
+                            <div class="ai-name">Macro Momentum AI</div>
+                            <div class="ai-role">วิเคราะห์ปัจจัยมหภาค & สภาพคล่อง</div>
+                        </div>
+                        <span class="ai-badge score-bullish" id="ai2Badge">BULLISH</span>
+                    </div>
+                    <div class="ai-comment" id="ai2Text">เงินดอลลาร์ชะลอตัว ร่วมกับอัตราผลตอบแทนพันธบัตรย่อตัว หนุนสินทรัพย์เสี่ยงและทองคำ มีแรงหนุนภาพรวม</div>
+                </div>
+
+                <!-- AI 3 -->
+                <div class="ai-card">
+                    <div class="ai-header">
+                        <div class="ai-avatar" style="background:rgba(255,152,0,0.2); color:var(--accent-amber);"><i class="fa-solid fa-arrows-to-eye"></i></div>
+                        <div>
+                            <div class="ai-name">Price Action Specialist</div>
+                            <div class="ai-role">อ่านแท่งเทียน & Key Levels</div>
+                        </div>
+                        <span class="ai-badge score-neutral" id="ai3Badge">NEUTRAL</span>
+                    </div>
+                    <div class="ai-comment" id="ai3Text">H1 เกิด Rejection Pinbar ที่ S1 ชัดเจน แต่ต้องระวัง R1 (2,400) แนะนำรอคัดสัญญาณชัดๆ บริเวณแนวรับย่อยก่อนกด</div>
+                </div>
+
+                <!-- AI 4 -->
+                <div class="ai-card">
+                    <div class="ai-header">
+                        <div class="ai-avatar" style="background:rgba(41,98,255,0.2); color:var(--accent-blue);"><i class="fa-solid fa-scale-balanced"></i></div>
+                        <div>
+                            <div class="ai-name">Risk Management AI</div>
+                            <div class="ai-role">ผู้ประเมินความเสี่ยง & Volatility</div>
+                        </div>
+                        <span class="ai-badge score-bullish" id="ai4Badge">SAFE</span>
+                    </div>
+                    <div class="ai-comment" id="ai4Text">Risk/Reward Ratio อยู่ที่ 1:2.5 ถือว่าคุ้มค่า ความผันผวนอยู่ในระดับปกติ กำหนด SL ให้ชัดเจนใต้ S1</div>
+                </div>
+
+                <!-- AI 5 -->
+                <div class="ai-card">
+                    <div class="ai-header">
+                        <div class="ai-avatar" style="background:rgba(0,184,212,0.2); color:var(--accent-cyan);"><i class="fa-solid fa-robot"></i></div>
+                        <div>
+                            <div class="ai-name">Deep Quant Master</div>
+                            <div class="ai-role">รวมคะแนนอัลกอริทึมสุทธิ</div>
+                        </div>
+                        <span class="ai-badge score-bullish" id="ai5Badge">BUY 85%</span>
+                    </div>
+                    <div class="ai-comment" id="ai5Text">อัลกอริทึมประมวลผลคะแนนรวมได้ +85 คะแนน (Bullish Strongly) สัญญาณสอดคล้องกันทุก Timeframe</div>
+                </div>
+
+            </div>
         </div>
 
-        <!-- Multi-Score Grid -->
-        <div class="score-grid">
-            <div class="score-card">
-                <div class="score-title">S&R STRENGTH SCORE</div>
-                <div class="score-val" id="score-sr" style="color:var(--accent-cyan);">--</div>
-                <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-sr" style="width:0%; background: var(--accent-cyan);"></div></div>
-            </div>
-            <div class="score-card">
-                <div class="score-title">MACRO LIQUIDITY SCORE</div>
-                <div class="score-val" id="score-macro" style="color:var(--accent-green);">--</div>
-                <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-macro" style="width:0%; background: var(--accent-green);"></div></div>
-            </div>
-            <div class="score-card">
-                <div class="score-title">AI CONSENSUS SCORE</div>
-                <div class="score-val" id="score-consensus" style="color:var(--accent-purple);">--</div>
-                <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-consensus" style="width:0%; background: var(--accent-purple);"></div></div>
-            </div>
-            <div class="score-card">
-                <div class="score-title">MARKET SENTIMENT</div>
-                <div class="score-val" id="score-sentiment" style="color:var(--accent-amber);">--</div>
-                <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-sentiment" style="width:0%; background: var(--accent-amber);"></div></div>
-            </div>
-            <div class="score-card">
-                <div class="score-title">QUANT RISK INDEX</div>
-                <div class="score-val" id="score-risk" style="color:var(--accent-red);">--</div>
-                <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-risk" style="width:0%; background: var(--accent-red);"></div></div>
-            </div>
-        </div>
-
-        <!-- Main Layout -->
-        <div class="main-layout">
-            
-            <!-- Left Column -->
-            <div>
-                <!-- Real-Time TradingView Chart -->
-                <div class="panel-box">
-                    <div class="panel-title">
-                        <span id="chart-header-title"><i class="fa-solid fa-chart-candlestick" style="color:var(--accent-purple);"></i> Real-Time Chart</span>
-                        <span style="font-size:0.75rem; color:var(--text-muted);">TradingView Engine</span>
-                    </div>
-
-                    <div class="chart-wrapper">
-                        <div id="tradingview_widget_container" style="height:100%; width:100%;"></div>
-                    </div>
-                </div>
-
-                <!-- 5 AI Traders Analysis -->
-                <div class="panel-box">
-                    <div class="panel-title">
-                        <span><i class="fa-solid fa-brain" style="color:var(--accent-cyan);"></i> วิเคราะห์เจาะลึก 5 สายจาก 5 AI Trader Specialists</span>
-                        <span style="font-size:0.75rem; color:var(--accent-green);"><i class="fa-solid fa-rotate"></i> Live Data Injected</span>
-                    </div>
-
-                    <div class="ai-grid" id="ai-traders-container">
-                        <!-- Dynamic Injected -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column -->
-            <div>
-                <!-- Calculator -->
-                <div class="panel-box">
-                    <div class="panel-title">
-                        <span><i class="fa-solid fa-calculator" style="color:var(--accent-purple);"></i> Dynamic Risk & Position Calculator</span>
-                    </div>
-
-                    <div class="calc-form">
-                        <div class="form-group">
-                            <label>ขนาดพอร์ต ($)</label>
-                            <input type="number" id="balance" class="form-control" value="10000">
-                        </div>
-                        <div class="form-group">
-                            <label>ความเสี่ยง (%)</label>
-                            <input type="number" id="riskPercent" class="form-control" value="1.0" step="0.1">
-                        </div>
-                        <div class="form-group" style="grid-column: span 2;">
-                            <label id="sl-label">ระยะ Stop Loss (Pips/Points)</label>
-                            <input type="number" id="stopLoss" class="form-control" value="300">
-                        </div>
-                    </div>
-
-                    <button onclick="calculateRisk()" style="width:100%; margin-top:14px; background:var(--accent-purple); color:#fff; border:none; padding:10px; border-radius:6px; font-weight:700; cursor:pointer;">
-                        คำนวณขนาดสัญญา (Lot / Position Size)
-                    </button>
-
-                    <div class="calc-res-box">
-                        <div style="font-size:0.75rem; color:var(--text-muted);">ขนาดสัญญาที่แนะนำ:</div>
-                        <div id="resLot" style="font-family:'JetBrains Mono'; font-size:1.6rem; font-weight:700; color:var(--accent-cyan); margin:4px 0;">0.00</div>
-                        <div style="font-size:0.75rem; color:var(--text-muted);">จำนวนเงินที่เสี่ยง: <span id="resAmount" style="color:var(--accent-red); font-weight:700;">$0.00</span></div>
-                    </div>
-                </div>
-
-                <!-- Strategic Key Levels -->
-                <div class="panel-box">
-                    <div class="panel-title">
-                        <span><i class="fa-solid fa-bullseye" style="color:var(--accent-amber);"></i> Key Quant Levels Today</span>
-                    </div>
-                    <div style="font-size:0.83rem; line-height:2.2; font-family:'JetBrains Mono', monospace;" id="key-levels-container">
-                        <!-- Dynamic Injected -->
-                    </div>
-                </div>
-            </div>
-
-        </div>
     </div>
 
-    <!-- TradingView Embed Script -->
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-    <script type="text/javascript">
-        // Multi-Asset Database Engine
+    <!-- Dynamic JavaScript Data Logic -->
+    <script>
+        // Data Store for Supported Assets
         const assetDatabase = {
-            'gold': {
-                name: 'GOLD (XAUUSD)',
-                symbol: 'OANDA:XAUUSD',
-                pipValueMultiplier: 10, // $10 per pip on 1 standard lot
-                defaultSL: 300,
-                slLabel: 'ระยะ Stop Loss (Pips)',
-                scores: { sr: 88, macro: 76, consensus: '84% BUY', consensusVal: 84, sentiment: '72 (Greed)', sentimentVal: 72, risk: 'LOW (32%)', riskVal: 32 },
-                levels: { r2: '$2,450.00', r1: '$2,435.00', pivot: '$2,418.50', s1: '$2,395.00', s2: '$2,380.00' },
-                aiTraders: [
-                    { name: 'AI 1: Quant Specialist', style: 'Quant / Z-Score', bias: '🟢 BULLISH (88%)', biasClass: 'badge-buy', desc: 'Z-Score อยู่โซน Mean Reversion ด้านล่าง (+1.8 Sigma) บ่งชี้สะสมพลังรอ Breakout ขึ้นแรง' },
-                    { name: 'AI 2: SMC Liquidity Master', style: 'Smart Money / ICT', bias: '🟢 BUY AT FVG', biasClass: 'badge-buy', desc: 'เกิดการ Sweep Liquidity ด้านล่างเรียบร้อย สั่งซื้อสะสมที่ Fair Value Gap $2,410-$2,415' },
-                    { name: 'AI 3: Price Action Expert', style: 'Market Structure', bias: '🟢 BULLISH STRUCTURE', biasClass: 'badge-buy', desc: 'ทำ Higher High / Higher Low ชัดเจนในกรอบ H4 ยืนเหนือแนวต้านดั้งเดิมเปลี่ยนเป็นแนวรับ' },
-                    { name: 'AI 4: Macro & Flow Analyst', style: 'Macro Liquidity', bias: '🟢 MACRO TAILWIND', biasClass: 'badge-buy', desc: 'Bond Yield สหรัฐฯ 10 ปีร่วงลง ดึงดูดเม็ดเงินไหลเข้าทองคำในฐานะ Safe Haven' },
-                    { name: 'AI 5: Algo Trend System', style: 'Trend Following', bias: '🟢 STRONG BUY SIGNAL', biasClass: 'badge-buy', desc: 'EMA 20, 50, 200 เกิด Golden Cross ในกราฟ Daily ซื้อตามเทรนด์ต่อเนื่อง' }
-                ]
+            gold: {
+                name: "GOLD (XAUUSD)",
+                sub: "ทองคำแท่งและสปอตโฟลว์ - Safe Haven Asset",
+                icon: "fa-solid fa-coins",
+                symbol: "OANDA:XAUUSD",
+                r2: "2,420.00", stR2: "88%", barR2: "88%",
+                r1: "2,400.00", stR1: "65%", barR1: "65%",
+                s1: "2,370.00", stS1: "82%", barS1: "82%",
+                s2: "2,350.00", stS2: "92%", barS2: "92%",
+                h1Candle: "Bullish Rejection Pinbar", h1Pattern: "เกิดแรงซื้อสวนที่แนวรับ S1 ใน H1", h1Score: "Score: +25 (Bullish)",
+                h4Candle: "Higher Low Structure", h4Pattern: "ฟอร์มตัว Double Bottom ชัดเจนบน H4", h4Score: "Score: +35 (Bullish)",
+                dayCandle: "Uptrend Above EMA50", dayPattern: "เทรนด์ใหญ่เป็นขาขึ้นสมบูรณ์แบบ", dayScore: "Score: +25 (Bullish)",
+                setupScore: "Score: 85/100", setupStrategy: "Buy on Dip / Retest S1", setupEntry: "2,370 - 2,375", setupSL: "2,358 (-12 pt)", setupTP: "2,405 / 2,420",
+                ai1Badge: "BULLISH", ai1Text: "โครงสร้างหลักยังคงยก High-Low สวยงาม ย่อซื้อตามแนวรับได้เปรียบ",
+                ai2Badge: "BULLISH", ai2Text: "Bond Yield ย่อตัว เป็นปัจจัยบวกหนุนราคาทองคำอย่างมีนัยสำคัญ",
+                ai3Badge: "NEUTRAL", ai3Text: "H1 เกิด Pinbar ที่ S1 แล้ว แต่ระวังแนวต้าน R1 2,400 ที่อาจมีแรงขายสลับ",
+                ai4Badge: "SAFE", ai4Text: "Risk/Reward อยู่ที่ 1:2.5 วาง SL ใต้ S2 ได้กรอบควบคุมความเสี่ยงดี",
+                ai5Badge: "BUY 85%", ai5Text: "ระบบ Quant ประมวลผลคะแนนสุทธิได้ +85/100 แนะนำกลยุทธ์ฝั่งซื้อ"
             },
-            'btc': {
-                name: 'BITCOIN (BTCUSDT)',
-                symbol: 'BINANCE:BTCUSDT',
-                pipValueMultiplier: 1, // $1 per $1 movement
-                defaultSL: 1500,
-                slLabel: 'ระยะ Stop Loss ($ USDT)',
-                scores: { sr: 82, macro: 85, consensus: '78% BUY', consensusVal: 78, sentiment: '76 (Extreme Greed)', sentimentVal: 76, risk: 'MED (48%)', riskVal: 48 },
-                levels: { r2: '$72,000', r1: '$69,500', pivot: '$67,500', s1: '$64,200', s2: '$61,000' },
-                aiTraders: [
-                    { name: 'AI 1: Quant Specialist', style: 'Quant / Volatility', bias: '🟢 BULLISH CONTINUATION', biasClass: 'badge-buy', desc: 'ดัชนี On-Chain MVRV Z-Score บ่งชี้ตลาดยังไม่เข้าสู่โซน Overbought มี room ให้วิ่งต่อ' },
-                    { name: 'AI 2: SMC Liquidity Master', style: 'Smart Money / ICT', bias: '🟢 BULLISH SWEEP', biasClass: 'badge-buy', desc: 'ดึง Liquidity ฝั่ง Sell-side ออกหมดแล้ว เตรียมพร้อมทะยานทะลุ BSL $69,500' },
-                    { name: 'AI 3: Price Action Expert', style: 'Market Structure', bias: '🟠 NEUTRAL / CONSOLIDATION', biasClass: 'badge-neutral', desc: 'ราคากำลังสร้างกรอบ Bull Flag บริเวณ $67,000 รอแท่งเบรคเอาท์เพื่อยืนยัน Buy' },
-                    { name: 'AI 4: Macro & Flow Analyst', style: 'Macro Liquidity', bias: '🟢 INSTITUTIONAL INFLOW', biasClass: 'badge-buy', desc: 'เงินทุนสถาบันผ่าน Spot ETF ยังคงไหลเข้าสุทธิอย่างต่อเนื่อง หนุนสภาพคล่อง' },
-                    { name: 'AI 5: Algo Trend System', style: 'Trend Following', bias: '🟢 BUY SIGNAL', biasClass: 'badge-buy', desc: 'Supertrend indicator เป็นสีเขียวในกราฟ 1D ตั้งจุด SL ต่ำกว่า $64,200' }
-                ]
+            btc: {
+                name: "BITCOIN (BTCUSD)",
+                sub: "บิตคอยน์ สภาพคล่อง On-Chain และ ETF Flow",
+                icon: "fa-brands fa-bitcoin",
+                symbol: "BINANCE:BTCUSDT",
+                r2: "$68,500", stR2: "90%", barR2: "90%",
+                r1: "$66,200", stR1: "70%", barR1: "70%",
+                s1: "$63,800", stS1: "85%", barS1: "85%",
+                s2: "$61,500", stS2: "95%", barS2: "95%",
+                h1Candle: "Bullish Engulfing", h1Pattern: "แท่งทะลุ Resistance Line ใน H1 พร้อม Volume", h1Score: "Score: +30 (Bullish)",
+                h4Candle: "Ascending Triangle", h4Pattern: "ยก Low ขึ้นเรื่อยๆ จ่อ Breakout $66,200", h4Score: "Score: +35 (Bullish)",
+                dayCandle: "Consolidation Bullish", dayPattern: "พักตัวสร้างฐานเหนือ $62,000 แข็งแกร่ง", dayScore: "Score: +20 (Bullish)",
+                setupScore: "Score: 88/100", setupStrategy: "Breakout / Retest $63,800", setupEntry: "$63,800 - $64,200", setupSL: "$62,400", setupTP: "$66,200 / $68,500",
+                ai1Badge: "BULLISH", ai1Text: "บิตคอยน์ทำโครงสร้าง Ascending Triangle สะสมพลังพร้อมพุ่งต่อ",
+                ai2Badge: "BULLISH", ai2Text: "ETF Net Inflow เป็นบวกติดต่อกัน 4 วัน เงินสถาบันไหลเข้าสม่ำเสมอ",
+                ai3Badge: "BULLISH", ai3Text: "H1 แท่งเทียน Engulfing ปิดเต็มแท่งพร้อมโวลุ่มซื้อหนาแน่น",
+                ai4Badge: "SAFE", ai4Text: "R:R คุ้มค่าที่ 1:3.0 ความผันผวนเริ่มบีบตัวพร้อมเลือกทาง",
+                ai5Badge: "STRONG BUY", ai5Text: "คะแนน Quant อยู่ที่ 88/100 สัญญาณฝั่ง Bullish มีความได้เปรียบสูง"
             },
-            'dxy': {
-                name: 'DXY DOLLAR INDEX',
-                symbol: 'CAPITALCOM:DXY',
-                pipValueMultiplier: 10,
-                defaultSL: 50,
-                slLabel: 'ระยะ Stop Loss (Points)',
-                scores: { sr: 75, macro: 40, consensus: '70% SELL', consensusVal: 70, sentiment: '35 (Fear)', sentimentVal: 35, risk: 'LOW (25%)', riskVal: 25 },
-                levels: { r2: '105.80', r1: '105.00', pivot: '104.20', s1: '103.50', s2: '102.80' },
-                aiTraders: [
-                    { name: 'AI 1: Quant Specialist', style: 'Quant / Mean Reversion', bias: '🔴 BEARISH DOWNTREND', biasClass: 'badge-sell', desc: 'ดัชนีโมเมนตัม RSI เกิด Bearish Divergence ใน Timeframe H4' },
-                    { name: 'AI 2: SMC Liquidity Master', style: 'Smart Money / ICT', bias: '🔴 BEARISH ORDER BLOCK', biasClass: 'badge-sell', desc: 'ชนแนวต้าน Bearish Order Block ที่ 105.00 พร้อมปฏิเสธราคาชัดเจน' },
-                    { name: 'AI 3: Price Action Expert', style: 'Market Structure', bias: '🔴 LOWER LOW STRUCTURE', biasClass: 'badge-sell', desc: 'ทำ Lower Low และ Lower High ต่อเนื่อง กราฟเสียทรงขาขึ้นแล้ว' },
-                    { name: 'AI 4: Macro & Flow Analyst', style: 'Macro Liquidity', bias: '🔴 FED CUT EXPECTATION', biasClass: 'badge-sell', desc: 'ตลาดเงินรับรู้คาดการณ์การปรับลดดอกเบี้ยของ Fed กดดันดอลลาร์อ่อนค่า' },
-                    { name: 'AI 5: Algo Trend System', style: 'Trend Following', bias: '🔴 SELL SIGNAL', biasClass: 'badge-sell', desc: 'EMA 20 ตัดลงใต้ EMA 50 ยืนยันแนวโน้มขาลงสั้น-กลาง' }
-                ]
+            dxy: {
+                name: "DOLLAR INDEX (DXY)",
+                sub: "ดัชนีเงินดอลลาร์สหรัฐฯ & นโยบายการเงิน Fed",
+                icon: "fa-solid fa-dollar-sign",
+                symbol: "CAPITALCOM:DXY",
+                r2: "105.80", stR2: "85%", barR2: "85%",
+                r1: "105.20", stR1: "75%", barR1: "75%",
+                s1: "104.20", stS1: "80%", barS1: "80%",
+                s2: "103.50", stS2: "90%", barS2: "90%",
+                h1Candle: "Bearish Rejection", h1Pattern: "ชน R1 แล้วเกิดไส้ยาวบน แสดงถึงแรงขาย", h1Score: "Score: -25 (Bearish)",
+                h4Candle: "Lower High Structure", h4Pattern: "หลุดเส้น Trendline ขาขึ้นใน H4", h4Score: "Score: -30 (Bearish)",
+                dayCandle: "Bearish Head & Shoulders", dayPattern: "ฟอร์มตัวรูปแบบกลับตัวเป็นขาลง", dayScore: "Score: -30 (Bearish)",
+                setupScore: "Score: 82/100", setupStrategy: "Sell on Rally / Short DXY", setupEntry: "105.00 - 105.20", setupSL: "105.60", setupTP: "104.20 / 103.50",
+                ai1Badge: "BEARISH", ai1Text: "ดอลลาร์เริ่มเสียโครงสร้างขาขึ้นใน H4 และ Day ชัดเจน",
+                ai2Badge: "BEARISH", ai2Text: "ตลาดคาดการณ์ FED ลดดอกเบี้ย กดดันดอลลาร์อ่อนค่าต่อเนื่อง",
+                ai3Badge: "BEARISH", ai3Text: "เกิดไส้เทียน Rejection ด้านบนติดต่อกันใน H1 บ่งบอกแรงต้านหนาแน่น",
+                ai4Badge: "SAFE", ai4Text: "สเกล R:R อยู่ที่ 1:2.2 เหมาะกับการคุมความเสี่ยงฝั่ง Sell",
+                ai5Badge: "SELL 82%", ai5Text: "คะแนน Quant สรุปเป็น Bearish (-85 คะแนน) หนุนสินทรัพย์เสี่ยงขึ้น"
             },
-            'spx': {
-                name: 'S&P 500 INDEX (SPX)',
-                symbol: 'FOREXCOM:SPXUSD',
-                pipValueMultiplier: 1,
-                defaultSL: 40,
-                slLabel: 'ระยะ Stop Loss (Index Points)',
-                scores: { sr: 85, macro: 80, consensus: '80% BUY', consensusVal: 80, sentiment: '68 (Greed)', sentimentVal: 68, risk: 'LOW (28%)', riskVal: 28 },
-                levels: { r2: '5,700', r1: '5,620', pivot: '5,550', s1: '5,480', s2: '5,400' },
-                aiTraders: [
-                    { name: 'AI 1: Quant Specialist', style: 'Quant / Volatility', bias: '🟢 BULLISH RALLY', biasClass: 'badge-buy', desc: 'ดัชนี VIX ร่วงลงต่ำกว่า 14 แสดงถึงความผันผวนต่ำและสภาวะ Risk-On สมบูรณ์' },
-                    { name: 'AI 2: SMC Liquidity Master', style: 'Smart Money / ICT', bias: '🟢 BUY RETEST', biasClass: 'badge-buy', desc: 'รอราคาย่อตัวย้อนทดสอบ Liquidity Void บริเวณ 5,520 ก่อนดันขึ้นต่อ' },
-                    { name: 'AI 3: Price Action Expert', style: 'Market Structure', bias: '🟢 ALL TIME HIGH TREND', biasClass: 'badge-buy', desc: 'แนวโน้มขาขึ้นทรงพลัง ทำนิวไฮต่อเนื่อง แนะนำสะสมเมื่อย่อตัว' },
-                    { name: 'AI 4: Macro & Flow Analyst', style: 'Macro Liquidity', bias: '🟢 TECH EARNINGS BOOST', biasClass: 'badge-buy', desc: 'งบการเงินกลุ่มเทคโนโลยีใหญ่หนุน EPS และมูลค่าตลาดเติบโต' },
-                    { name: 'AI 5: Algo Trend System', style: 'Trend Following', bias: '🟢 STRONG BUY', biasClass: 'badge-buy', desc: 'ระบบอัลกอริทึมให้สัญญาณซื้อตามเทรนด์เต็มรูปแบบ' }
-                ]
+            spx: {
+                name: "S&P 500 (SPX)",
+                sub: "ดัชนีหุ้นสหรัฐฯ 500 บริษัท - Risk-On Benchmark",
+                icon: "fa-solid fa-chart-line",
+                symbol: "FOREXCOM:SPXUSD",
+                r2: "5,600", stR2: "92%", barR2: "92%",
+                r1: "5,550", stR1: "65%", barR1: "65%",
+                s1: "5,480", stS1: "85%", barS1: "85%",
+                s2: "5,420", stS2: "90%", barS2: "90%",
+                h1Candle: "V-Shape Recovery", h1Pattern: "ดึงกลับเร็วใน H1 หลังรีเทสแนวรับ S1", h1Score: "Score: +20 (Bullish)",
+                h4Candle: "Bull Flag Pattern", h4Pattern: "แกว่งตัวในกรอบธงเพื่อสะสมกำลังปรับตัวขึ้น", h4Score: "Score: +30 (Bullish)",
+                dayCandle: "Strong Uptrend", dayPattern: "เกาะเส้น EMA10 ขาขึ้นแข็งแกร่ง", dayScore: "Score: +35 (Bullish)",
+                setupScore: "Score: 84/100", setupStrategy: "Buy Support S1", setupEntry: "5,480 - 5,500", setupSL: "5,440", setupTP: "5,550 / 5,600",
+                ai1Badge: "BULLISH", ai1Text: "ตลาดยังอยู่ในโหมด Risk-On แรงซื้อหุ้นเทคโนโลยียังพยุงดัชนีได้ดี",
+                ai2Badge: "BULLISH", ai2Text: "ผลประกอบการบริษัทจดทะเบียนออกมาดีกว่าคาดการณ์",
+                ai3Badge: "NEUTRAL", ai3Text: "ราคาอยู่ใกล้ R1 อาจมีการย่อตัวพักฐานสั้นๆ ก่อนไปต่อ",
+                ai4Badge: "SAFE", ai4Text: "บริหาร Margin ให้ดีเนื่องจากดัชนีอยู่ระดับ High",
+                ai5Badge: "BUY 84%", ai5Text: "คะแนน Quant รวม 84/100 แนะนำกลยุทธ์ตั้งรับ Buy ที่แนวรับ"
             },
-            'eurusd': {
-                name: 'EUR / USD',
-                symbol: 'FX:EURUSD',
-                pipValueMultiplier: 10,
-                defaultSL: 40,
-                slLabel: 'ระยะ Stop Loss (Pips)',
-                scores: { sr: 78, macro: 72, consensus: '75% BUY', consensusVal: 75, sentiment: '58 (Neutral)', sentimentVal: 58, risk: 'LOW (20%)', riskVal: 20 },
-                levels: { r2: '1.1020', r1: '1.0940', pivot: '1.0850', s1: '1.0780', s2: '1.0700' },
-                aiTraders: [
-                    { name: 'AI 1: Quant Specialist', style: 'Quant / Reversion', bias: '🟢 BULLISH', biasClass: 'badge-buy', desc: 'ส่วนต่างอัตราดอกเบี้ยกดดันดอลลาร์ ส่งผลให้ EURUSD ฟื้นตัวตามโมเดล' },
-                    { name: 'AI 2: SMC Liquidity Master', style: 'Smart Money / ICT', bias: '🟢 BUY AT FVG', biasClass: 'badge-buy', desc: 'เก็บสะสมฝั่ง Buy ในเขต Fair Value Gap 1.0820-1.0840' },
-                    { name: 'AI 3: Price Action Expert', style: 'Market Structure', bias: '🟢 REVERSAL BREAKOUT', biasClass: 'badge-buy', desc: 'เบรคผ่านเส้น Trendline ขาลงพร้อมวอลุ่มหนาแน่น' },
-                    { name: 'AI 4: Macro & Flow Analyst', style: 'Macro Liquidity', bias: '🟢 DOLLAR WEAKNESS', biasClass: 'badge-buy', desc: 'การอ่อนค่าของดอลลาร์ดันคู่เงินหลักพุ่งขึ้นถั่วหน้า' },
-                    { name: 'AI 5: Algo Trend System', style: 'Trend Following', bias: '🟢 BUY SIGNAL', biasClass: 'badge-buy', desc: 'EMA 20 ตัดเหนือ EMA 50 สัญญาณการเข้าเก็งกำไรระยะสั้น' }
-                ]
+            eurusd: {
+                name: "EUR / USD",
+                sub: "คู่เงินหลักตลาด Forex - ECB vs FED Liquidity",
+                icon: "fa-solid fa-euro-sign",
+                symbol: "FX:EURUSD",
+                r2: "1.0980", stR2: "88%", barR2: "88%",
+                r1: "1.0920", stR1: "70%", barR1: "70%",
+                s1: "1.0840", stS1: "80%", barS1: "80%",
+                s2: "1.0780", stS2: "92%", barS2: "92%",
+                h1Candle: "Inside Bar Breakout", h1Pattern: "เบรคทะลุกรอบ Inside bar ใน H1 ขึ้นด้านบน", h1Score: "Score: +25 (Bullish)",
+                h4Candle: "Double Bottom", h4Pattern: "ทดสอบแนวรับ 1.0840 สองรอบแล้วเด้งกลับ", h4Score: "Score: +30 (Bullish)",
+                dayCandle: "Sideway Up", dayPattern: "แกว่งตัวยกฐานขึ้นตามการอ่อนค่าของดอลลาร์", dayScore: "Score: +20 (Bullish)",
+                setupScore: "Score: 80/100", setupStrategy: "Buy Dip at 1.0840", setupEntry: "1.0840 - 1.0860", setupSL: "1.0790", setupTP: "1.0920 / 1.0980",
+                ai1Badge: "BULLISH", ai1Text: "EUR/USD ฟื้นตัวตามการย่อตัวของดอลลาร์ โครงสร้างดีขึ้น",
+                ai2Badge: "NEUTRAL", ai2Text: "นโยบายการเงิน ECB ยังทรงตัว ต้องรอติดตามตัวเลขเศรษฐกิจยุโรป",
+                ai3Badge: "BULLISH", ai3Text: "เกิดสัญญาณ Double Bottom ชัดเจนใน H4 แนวรับ 1.0840 ทำหน้าที่ได้ดี",
+                ai4Badge: "SAFE", ai4Text: "ความผันผวนระดับปานกลาง Risk/Reward 1:2.0 ถือว่าปลอดภัย",
+                ai5Badge: "BUY 80%", ai5Text: "คะแนน Quant +80 คะแนน สัญญาณฝั่ง Long ได้เปรียบระยะสั้น"
             }
         };
 
-        let currentAssetKey = 'gold';
-
-        function loadTradingViewChart(symbolName) {
-            document.getElementById('tradingview_widget_container').innerHTML = '';
-            new TradingView.widget({
+        // Function to render TradingView Chart
+        function renderTVChart(symbol) {
+            new tradingview.widget({
                 "autosize": true,
-                "symbol": symbolName,
+                "symbol": symbol,
                 "interval": "60",
                 "timezone": "Asia/Bangkok",
                 "theme": "dark",
                 "style": "1",
-                "locale": "th_TH",
+                "locale": "th",
                 "toolbar_bg": "#151924",
                 "enable_publishing": false,
                 "hide_side_toolbar": false,
                 "allow_symbol_change": true,
-                "container_id": "tradingview_widget_container"
+                "container_id": "tv_chart_container"
             });
         }
 
-        function switchAsset(assetKey) {
-            if(!assetDatabase[assetKey]) assetKey = 'gold';
-            currentAssetKey = assetKey;
-
-            const data = assetDatabase[assetKey];
-
-            // 1. Update Switcher Buttons
-            document.querySelectorAll('.asset-btn').forEach(btn => btn.classList.remove('active'));
-            const activeBtn = document.getElementById(`btn-${assetKey}`);
-            if(activeBtn) activeBtn.classList.add('active');
-
-            // 2. Update Header & Chart
-            document.getElementById('chart-header-title').innerHTML = `<i class="fa-solid fa-chart-candlestick" style="color:var(--accent-purple);"></i> Real-Time Chart: ${data.name}`;
-            loadTradingViewChart(data.symbol);
-
-            // 3. Update Scorecards
-            document.getElementById('score-sr').innerText = `${data.scores.sr}/100`;
-            document.getElementById('bar-sr').style.width = `${data.scores.sr}%`;
-
-            document.getElementById('score-macro').innerText = `${data.scores.macro}/100`;
-            document.getElementById('bar-macro').style.width = `${data.scores.macro}%`;
-
-            document.getElementById('score-consensus').innerText = data.scores.consensus;
-            document.getElementById('bar-consensus').style.width = `${data.scores.consensusVal}%`;
-
-            document.getElementById('score-sentiment').innerText = data.scores.sentiment;
-            document.getElementById('bar-sentiment').style.width = `${data.scores.sentimentVal}%`;
-
-            document.getElementById('score-risk').innerText = data.scores.risk;
-            document.getElementById('bar-risk').style.width = `${data.scores.riskVal}%`;
-
-            // 4. Update 5 AI Traders
-            const aiContainer = document.getElementById('ai-traders-container');
-            aiContainer.innerHTML = '';
-            data.aiTraders.forEach(ai => {
-                aiContainer.innerHTML += `
-                    <div class="ai-card">
-                        <div class="ai-header">
-                            <div class="ai-name"><i class="fa-solid fa-user-gear" style="color:var(--accent-purple);"></i> ${ai.name}</div>
-                            <span class="ai-style">${ai.style}</span>
-                        </div>
-                        <div class="ai-bias ${ai.biasClass}">${ai.bias}</div>
-                        <div class="ai-desc">"${ai.desc}"</div>
-                    </div>
-                `;
-            });
-
-            // 5. Update Key Levels
-            const levelsContainer = document.getElementById('key-levels-container');
-            levelsContainer.innerHTML = `
-                <div style="display:flex; justify-content:space-between; border-bottom:1px dashed var(--border-color);">
-                    <span style="color:var(--text-muted);">Major Resistance 2:</span>
-                    <span style="color:var(--accent-red); font-weight:700;">${data.levels.r2}</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; border-bottom:1px dashed var(--border-color);">
-                    <span style="color:var(--text-muted);">Major Resistance 1:</span>
-                    <span style="color:var(--accent-red); font-weight:700;">${data.levels.r1}</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; border-bottom:1px dashed var(--border-color); background:rgba(139,92,246,0.1); padding:0 4px;">
-                    <span style="color:#fff;">Pivot Target Level:</span>
-                    <span style="color:var(--accent-cyan); font-weight:700;">${data.levels.pivot}</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; border-bottom:1px dashed var(--border-color);">
-                    <span style="color:var(--text-muted);">Major Support 1:</span>
-                    <span style="color:var(--accent-green); font-weight:700;">${data.levels.s1}</span>
-                </div>
-                <div style="display:flex; justify-content:space-between;">
-                    <span style="color:var(--text-muted);">Major Support 2:</span>
-                    <span style="color:var(--accent-green); font-weight:700;">${data.levels.s2}</span>
-                </div>
-            `;
-
-            // 6. Update Calculator Labels
-            document.getElementById('sl-label').innerText = data.slLabel;
-            document.getElementById('stopLoss').value = data.defaultSL;
-            calculateRisk();
-        }
-
-        // Calculate Position Risk
-        function calculateRisk() {
-            const balance = parseFloat(document.getElementById('balance').value) || 0;
-            const riskPercent = parseFloat(document.getElementById('riskPercent').value) || 0;
-            const stopLoss = parseFloat(document.getElementById('stopLoss').value) || 1;
-            
-            const assetData = assetDatabase[currentAssetKey];
-            const riskAmount = balance * (riskPercent / 100);
-            
-            let lotSize = riskAmount / (stopLoss * assetData.pipValueMultiplier);
-
-            document.getElementById('resLot').innerText = lotSize.toFixed(2) + " Lot / Units";
-            document.getElementById('resAmount').innerText = "$" + riskAmount.toFixed(2);
-        }
-
-        // URL Query Parameter Parser
+        // Initialize Page Data Based on URL Parameter
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
-            const selectedAsset = urlParams.get('asset') || 'gold';
-            switchAsset(selectedAsset);
+            const assetKey = urlParams.get('asset') || 'gold';
+            const data = assetDatabase[assetKey] || assetDatabase['gold'];
+
+            // Header update
+            document.getElementById('assetName').innerText = data.name;
+            document.getElementById('assetSub').innerText = data.sub;
+            document.getElementById('assetIcon').className = data.icon + " asset-icon";
+
+            // Support / Resistance
+            document.getElementById('valR2').innerText = data.r2;
+            document.getElementById('stR2').innerText = data.stR2;
+            document.getElementById('barR2').style.width = data.barR2;
+
+            document.getElementById('valR1').innerText = data.r1;
+            document.getElementById('stR1').innerText = data.stR1;
+            document.getElementById('barR1').style.width = data.barR1;
+
+            document.getElementById('valS1').innerText = data.s1;
+            document.getElementById('stS1').innerText = data.stS1;
+            document.getElementById('barS1').style.width = data.barS1;
+
+            document.getElementById('valS2').innerText = data.s2;
+            document.getElementById('stS2').innerText = data.stS2;
+            document.getElementById('barS2').style.width = data.barS2;
+
+            // Timeframes & Patterns
+            document.getElementById('h1Candle').innerText = data.h1Candle;
+            document.getElementById('h1Pattern').innerText = data.h1Pattern;
+            document.getElementById('h1Score').innerText = data.h1Score;
+
+            document.getElementById('h4Candle').innerText = data.h4Candle;
+            document.getElementById('h4Pattern').innerText = data.h4Pattern;
+            document.getElementById('h4Score').innerText = data.h4Score;
+
+            document.getElementById('dayCandle').innerText = data.dayCandle;
+            document.getElementById('dayPattern').innerText = data.dayPattern;
+            document.getElementById('dayScore').innerText = data.dayScore;
+
+            // Setup Score & Execution Details
+            document.getElementById('setupScore').innerText = data.setupScore;
+            document.getElementById('setupStrategy').innerText = data.setupStrategy;
+            document.getElementById('setupEntry').innerText = data.setupEntry;
+            document.getElementById('setupSL').innerText = data.setupSL;
+            document.getElementById('setupTP').innerText = data.setupTP;
+
+            // AI Council Opinions
+            document.getElementById('ai1Badge').innerText = data.ai1Badge;
+            document.getElementById('ai1Text').innerText = data.ai1Text;
+
+            document.getElementById('ai2Badge').innerText = data.ai2Badge;
+            document.getElementById('ai2Text').innerText = data.ai2Text;
+
+            document.getElementById('ai3Badge').innerText = data.ai3Badge;
+            document.getElementById('ai3Text').innerText = data.ai3Text;
+
+            document.getElementById('ai4Badge').innerText = data.ai4Badge;
+            document.getElementById('ai4Text').innerText = data.ai4Text;
+
+            document.getElementById('ai5Badge').innerText = data.ai5Badge;
+            document.getElementById('ai5Text').innerText = data.ai5Text;
+
+            // Render Chart
+            renderTVChart(data.symbol);
         });
     </script>
 </body>
