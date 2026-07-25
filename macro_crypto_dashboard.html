@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Macro & Crypto Detailed Analysis Dashboard</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #0b0e14;
+            --bg-panel: #151924;
+            --bg-card: #1c2130;
+            --border-color: #2a2e39;
+            --text-main: #d1d4dc;
+            --text-muted: #787b86;
+            --accent-blue: #2962ff;
+            --accent-purple: #8b5cf6;
+            --accent-green: #089981;
+            --accent-red: #f23645;
+            --accent-amber: #ff9800;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Prompt', 'JetBrains Mono', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        /* Top Header Navigation */
+        .dash-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-panel);
+            padding: 16px 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover { background: var(--accent-purple); color: #fff; }
+
+        .symbol-title-box { display: flex; align-items: center; gap: 12px; }
+        .symbol-title-box h1 { font-size: 1.5rem; font-weight: 700; color: #fff; }
+
+        /* Main Grid Layout */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1024px) { .dash-grid { grid-template-columns: 1fr; } }
+
+        .card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--accent-purple);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 10px;
+        }
+
+        /* Score Cards Grid */
+        .score-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .score-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .score-box span { font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 6px; }
+        .score-box h3 { font-size: 1.3rem; font-family: 'JetBrains Mono', monospace; }
+
+        /* Chart Frame */
+        .chart-box {
+            height: 480px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Timeframe Grid */
+        .tf-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) { .tf-grid { grid-template-columns: 1fr; } }
+
+        .tf-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        .tf-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .level-item {
+            background: var(--bg-card);
+            border-left: 4px solid var(--accent-blue);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .level-item.res { border-left-color: var(--accent-red); }
+        .level-item.sup { border-left-color: var(--accent-green); }
+
+        .level-header { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; }
+        .level-price { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; margin: 4px 0; }
+        .level-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Top Nav Header -->
+        <header class="dash-header">
+            <div class="symbol-title-box">
+                <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> กลับ Terminal</a>
+                <h1 id="dash-symbol-name">BTC / USDT - AI MACRO DASHBOARD</h1>
+            </div>
+            <div>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">สถานะวิเคราะห์ล่าสุด: <strong style="color: var(--accent-green);">REALTIME READY</strong></span>
+            </div>
+        </header>
+
+        <!-- Scores Breakdown Bar -->
+        <div class="score-board">
+            <div class="score-box" style="border-color: var(--accent-purple);">
+                <span>OVERALL CONFIDENCE</span>
+                <h3 style="color: var(--accent-purple);" id="sc-overall">8.8 / 10</h3>
+            </div>
+            <div class="score-box">
+                <span>NEWS & MACRO SCORE</span>
+                <h3 style="color: var(--accent-amber);" id="sc-news">7.8 / 10</h3>
+            </div>
+            <div class="score-box">
+                <span>TECHNICAL INDICATORS</span>
+                <h3 style="color: var(--accent-blue);" id="sc-tech">9.0 / 10</h3>
+            </div>
+            <div class="score-box">
+                <span>STRUCTURE & LIQUIDITY</span>
+                <h3 style="color: var(--accent-green);" id="sc-struct">9.5 / 10</h3>
+            </div>
+        </div>
+
+        <!-- Main Workspace Grid -->
+        <div class="dash-grid">
+            
+            <!-- Left Column: Chart & Multi-TF -->
+            <div>
+                <!-- Interactive Chart -->
+                <div class="card">
+                    <div class="card-title"><i class="fa-solid fa-chart-candlestick"></i> กราฟราคา และ อินดิเคเตอร์เทคนิค</div>
+                    <div class="chart-box" id="tv_dashboard_chart"></div>
+                </div>
+
+                <!-- Multi-Timeframe Analysis (H1, M15, M5) -->
+                <div class="card">
+                    <div class="card-title"><i class="fa-solid fa-layer-group"></i> เจาะลึกโครงสร้างราคา 3 TIMEFRAMES (H1 / M15 / M5)</div>
+                    <div class="tf-grid">
+                        <div class="tf-card">
+                            <span class="tf-badge" style="background: rgba(41, 98, 255, 0.2); color: var(--accent-blue);">H1 TIMEFRAME</span>
+                            <h4 style="font-size: 0.9rem; margin-bottom: 6px;" id="tf-h1-title">BULLISH STRUCTURE</h4>
+                            <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;" id="tf-h1-text">-</p>
+                        </div>
+                        <div class="tf-card">
+                            <span class="tf-badge" style="background: rgba(255, 152, 0, 0.2); color: var(--accent-amber);">M15 TIMEFRAME</span>
+                            <h4 style="font-size: 0.9rem; margin-bottom: 6px;" id="tf-m15-title">PULLBACK SETUP</h4>
+                            <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;" id="tf-m15-text">-</p>
+                        </div>
+                        <div class="tf-card">
+                            <span class="tf-badge" style="background: rgba(8, 153, 129, 0.2); color: var(--accent-green);">M5 TIMEFRAME</span>
+                            <h4 style="font-size: 0.9rem; margin-bottom: 6px;" id="tf-m5-title">SCALP TRIGGER</h4>
+                            <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;" id="tf-m5-text">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Synthesis, Levels & Reasons -->
+            <div>
+                <!-- AI Synthesis -->
+                <div class="card">
+                    <div class="card-title"><i class="fa-solid fa-brain"></i> บทวิเคราะห์รวบยอด (Macro + Technical)</div>
+                    <div style="font-size: 0.85rem; line-height: 1.6; color: var(--text-main);" id="synthesis-detail-text">
+                        กำลังโหลดข้อมูล...
+                    </div>
+                </div>
+
+                <!-- Support & Resistance Analysis -->
+                <div class="card">
+                    <div class="card-title"><i class="fa-solid fa-arrows-up-down"></i> แนวรับ-แนวต้าน พร้อมคะแนน & เหตุผล</div>
+                    
+                    <!-- R1 -->
+                    <div class="level-item res">
+                        <div class="level-header">
+                            <span style="color: var(--accent-red);">แนวต้านสำคัญ (R1)</span>
+                            <span id="r1-score-tag">คะแนน: 8.5/10</span>
+                        </div>
+                        <div class="level-price" style="color: var(--accent-red);" id="r1-price-tag">$0</div>
+                        <div class="level-desc" id="r1-reason-tag">-</div>
+                    </div>
+
+                    <!-- S1 -->
+                    <div class="level-item sup">
+                        <div class="level-header">
+                            <span style="color: var(--accent-green);">แนวรับสำคัญ (S1)</span>
+                            <span id="s1-score-tag">คะแนน: 9.5/10</span>
+                        </div>
+                        <div class="level-price" style="color: var(--accent-green);" id="s1-price-tag">$0</div>
+                        <div class="level-desc" id="s1-reason-tag">-</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TradingView SDK -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script>
+        // Database
+        const db = {
+            'BTCUSDT': {
+                name: 'BTC / USDT (Bitcoin)',
+                tvSymbol: 'BINANCE:BTCUSDT',
+                overall: '8.8 / 10', news: '7.8 / 10', tech: '9.0 / 10', struct: '9.5 / 10',
+                h1Title: 'BULLISH CONTINUATION', h1Text: 'โครงสร้างราคาสร้าง Higher High และ Higher Low ชัดเจน ยืนเหนือเส้น EMA 200 ใน Timeframe H1',
+                m15Title: 'DEMAND PULLBACK', m15Text: 'เกิดการย่อตัวลงมาทดสอบ Fair Value Gap (FVG) และก้อน Order Block ที่ $66,200',
+                m5Title: 'CHOCH ENTRY TRIGGER', m5Text: 'เกิดสัญญาณ Change of Character ใน M5 พร้อมแรงปฏิเสธราคา (Rejection) เหมาะตั้ง Stop Loss แคบ',
+                synthesis: '📌 <strong>มุมมองมหภาค & ข่าวสาร:</strong> เม็ดเงินสถาบันไหลเข้าสู่กองทุน Bitcoin Spot ETF อย่างต่อเนื่อง และดัชนีดอลลาร์ผ่อนคลายตัวลง<br><br>📌 <strong>มุมมองเทคนิค:</strong> โครงสร้างราคายังรักษายอดคลื่นขาขึ้นได้สมบูรณ์ การย่อตัวมองเป็นโอกาสสะสมฝั่ง Buy ตามแนวรับ Order Block',
+                r1: { price: '$68,500', score: '8.5/10', reason: 'ตรงกับจุด Fibonacci Retracement 0.618 และ High เดิมของสัปดาห์' },
+                s1: { price: '$66,200', score: '9.5/10', reason: '🔥 **Demand Zone หนานา:** เป็นก้อนซื้อสะสม Order Block ที่มี Volume สลับแลกเปลี่ยนสูงที่สุด' }
+            },
+            'GOLD': {
+                name: 'GOLD (XAU / USD)',
+                tvSymbol: 'TVC:GOLD',
+                overall: '8.2 / 10', news: '8.5 / 10', tech: '8.0 / 10', struct: '8.2 / 10',
+                h1Title: 'SIDEWAY HIGH SETUP', h1Text: 'แกว่งตัวสะสมกำลังในกรอบกว้าง $2,390 - $2,430 ยังไม่เสียทรงขาขึ้นภาพใหญ่',
+                m15Title: 'LIQUIDITY SWEEP', m15Text: 'มีการกวาด Liquidity ขอบล่างบริเวณ $2,398 แล้วมีแรงซื้อสวนกลับทันที',
+                m5Title: 'WAIT FOR BREAKOUT', m5Text: 'รอแท่งเทียน M5 ปิดทะลุ High ย่อย เพื่อยืนยันการขึ้นต่อ',
+                synthesis: '📌 <strong>มุมมองมหภาค & ข่าวสาร:</strong> ได้รับแรงหนุนจากความต้องการสินทรัพย์ปลอดภัยจากภาวะสงครามและความเสี่ยงการเมืองโลก<br><br>📌 <strong>มุมมองเทคนิค:</strong> ราคายังทรงตัวเหนือแนวรับสำคัญได้ดี ย่อ Buy ที่ขอบล่างกรอบ Sideway มีความเสี่ยงต่ำกว่า',
+                r1: { price: '$2,430.00', score: '8.8/10', reason: 'กรอบแนวต้านบนของ Sideway Channel ก่อนไปทดสอบ High เดิม' },
+                s1: { price: '$2,390.00', score: '9.2/10', reason: '🔥 **จุดรับแข็งแกร่ง:** เส้น Trendline ขาขึ้น + EMA 200' }
+            },
+            'DXY': {
+                name: 'DXY (US Dollar Index)',
+                tvSymbol: 'CAPITALCOM:DXY',
+                overall: '7.9 / 10', news: '8.2 / 10', tech: '7.8 / 10', struct: '7.6 / 10',
+                h1Title: 'BEARISH STRUCTURE', h1Text: 'ทำ Lower Low ต่อเนื่อง โครงสร้างหลุดแนวรับสำคัญระยะกลาง',
+                m15Title: 'BOUNCE TO SELL', m15Text: 'การดีดตัวขึ้นมาเป็นเพียงการ Re-test โซน Supply เพื่อลงต่อ',
+                m5Title: 'REJECTION CONFIRMED', m5Text: 'เกิดไส้เทียนด้านบนยาว (Upper Wick) แสดงแรงขายกดราคาลงมา',
+                synthesis: '📌 <strong>มุมมองมหภาค & ข่าวสาร:</strong> ตลาดคาดการณ์ธนาคารกลางปรับลดดอกเบี้ยลงต่อเนื่อง กดดันค่าเงินดอลลาร์<br><br>📌 <strong>มุมมองเทคนิค:</strong> กราฟอยู่ในแนวโน้มขาลงชัดเจน เน้นเปิดสัญญา Sell เมื่อราคาเด้งทดสอบแนวต้าน',
+                r1: { price: '102.10', score: '8.5/10', reason: 'Supply Zone + เส้นแนวโน้มขาลงใน Timeframe ใหญ่' },
+                s1: { price: '100.80', score: '9.0/10', reason: '🔥 **แนวรับสถิติ:** จุด Low เดิมของปีก่อนหน้า' }
+            },
+            'USOIL': {
+                name: 'US OIL (WTI Crude)',
+                tvSymbol: 'TVC:USOIL',
+                overall: '7.5 / 10', news: '7.0 / 10', tech: '7.8 / 10', struct: '7.7 / 10',
+                h1Title: 'RANGE BOUND', h1Text: 'วิ่งอยู่ในกรอบแกว่งตัว $76.50 - $80.00 ไร้ทิศทางเบรกเอาท์ชัดเจน',
+                m15Title: 'DOUBLE BOTTOM', m15Text: 'สร้างฐานรูปแบบดับเบิ้ลโบททอมบริเวณขอบล่างของกรอบ',
+                m5Title: 'SCALP BUY TRIGGER', m5Text: 'เกิดสัญญาณ Bullish Divergence ใน RSI ย่อย M5',
+                synthesis: '📌 <strong>มุมมองมหภาค & ข่าวสาร:</strong> ตลาดกังวลเกี่ยวกับอุปสงค์พลังงานตามสภาวะเศรษฐกิจชะลอตัว<br><br>📌 <strong>มุมมองเทคนิค:</strong> เหมาะกับการเทรดสั้นแบบ Swing ในกรอบแนวรับ-แนวต้าน',
+                r1: { price: '$80.00', score: '8.2/10', reason: 'ด่านแนวต้านตัวเลขกลม $80 + แนวปะทะ MA200' },
+                s1: { price: '$76.50', score: '8.9/10', reason: '🔥 **แนวรับฐานกรอบ:** จุดดีดตัวกลับแรงสถิติเดิม' }
+            }
+        };
+
+        // Get Query Parameter ?symbol=...
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeSymbol = urlParams.get('symbol') || 'BTCUSDT';
+        const data = db[activeSymbol] || db['BTCUSDT'];
+
+        // Render Page Data
+        document.getElementById('dash-symbol-name').innerText = data.name + ' - AI MACRO DASHBOARD';
+        document.getElementById('sc-overall').innerText = data.overall;
+        document.getElementById('sc-news').innerText = data.news;
+        document.getElementById('sc-tech').innerText = data.tech;
+        document.getElementById('sc-struct').innerText = data.struct;
+
+        document.getElementById('tf-h1-title').innerText = data.h1Title;
+        document.getElementById('tf-h1-text').innerText = data.h1Text;
+        document.getElementById('tf-m15-title').innerText = data.m15Title;
+        document.getElementById('tf-m15-text').innerText = data.m15Text;
+        document.getElementById('tf-m5-title').innerText = data.m5Title;
+        document.getElementById('tf-m5-text').innerText = data.m5Text;
+
+        document.getElementById('synthesis-detail-text').innerHTML = data.synthesis;
+
+        document.getElementById('r1-score-tag').innerText = 'คะแนน: ' + data.r1.score;
+        document.getElementById('r1-price-tag').innerText = data.r1.price;
+        document.getElementById('r1-reason-tag').innerText = data.r1.reason;
+
+        document.getElementById('s1-score-tag').innerText = 'คะแนน: ' + data.s1.score;
+        document.getElementById('s1-price-tag').innerText = data.s1.price;
+        document.getElementById('s1-reason-tag').innerText = data.s1.reason;
+
+        // Render Chart
+        new TradingView.widget({
+            "autosize": true,
+            "symbol": data.tvSymbol,
+            "interval": "60",
+            "timezone": "Asia/Bangkok",
+            "theme": "dark",
+            "style": "1",
+            "locale": "th_TH",
+            "container_id": "tv_dashboard_chart"
+        });
+    </script>
+</body>
+</html>
