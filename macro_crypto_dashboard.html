@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Consensus & Technical Quant Analysis Pro</title>
+    <title>Macro & Crypto Main Command Terminal</title>
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- TradingView Widget Script -->
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 
     <style>
         :root {
@@ -28,581 +26,264 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Prompt', sans-serif; background-color: var(--bg-dark); color: var(--text-main); padding: 20px; min-height: 100vh; }
-        .container { max-width: 1450px; margin: 0 auto; }
+        .container { max-width: 1600px; margin: 0 auto; }
 
-        /* Header Navigation */
-        .header {
+        /* Central Navigation Bar (กดกระจายออกไปหน้าอื่นได้สะดวก) */
+        .header-nav {
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--bg-panel); padding: 16px 24px; border-radius: 12px;
+            background: var(--bg-panel); padding: 14px 24px; border-radius: 12px;
             border: 1px solid var(--border-color); margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
         }
-
-        .back-btn {
-            background: rgba(255, 255, 255, 0.05); color: var(--text-main);
-            border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px;
-            text-decoration: none; font-size: 0.85rem; font-weight: 600;
+        .nav-links { display: flex; gap: 10px; flex-wrap: wrap; }
+        .nav-btn {
+            background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color);
+            padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 600;
             display: flex; align-items: center; gap: 8px; transition: 0.2s;
         }
-        .back-btn:hover { background: var(--accent-purple); color: #fff; }
+        .nav-btn:hover { border-color: var(--accent-purple); color: #fff; }
+        .nav-btn.active { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); }
 
-        .symbol-selector { display: flex; gap: 8px; background: var(--bg-dark); padding: 4px; border-radius: 8px; border: 1px solid var(--border-color); }
-        .sym-btn {
-            background: transparent; border: none; color: var(--text-muted);
-            padding: 6px 14px; font-family: inherit; font-size: 0.85rem; font-weight: 600;
-            border-radius: 6px; cursor: pointer; transition: 0.2s;
-        }
-        .sym-btn.active { background: var(--accent-purple); color: #fff; }
+        /* Market Ticker Row */
+        .ticker-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 20px; }
+        .ticker-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; }
+        .ticker-title { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; display: flex; justify-content: space-between; }
+        .ticker-val { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; font-weight: 700; margin-top: 6px; }
 
-        /* Panel Box Common */
+        /* Main Dashboard Grid */
+        .dashboard-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        @media(max-width: 1100px) { .dashboard-layout { grid-template-columns: 1fr; } }
+
         .panel-box { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .panel-title { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
 
-        /* Top Grid: Bias Meter & Correlation */
-        .top-row-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; margin-bottom: 20px; }
-        @media (max-width: 1024px) { .top-row-grid { grid-template-columns: 1fr; } }
-
-        .gauge-container { margin-top: 12px; background: var(--bg-card); border-radius: 10px; height: 12px; overflow: hidden; position: relative; }
-        .gauge-fill { height: 100%; background: linear-gradient(90deg, var(--accent-red), var(--accent-amber), var(--accent-green)); transition: width 0.5s ease; }
-
-        .corr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 10px; }
-        .corr-item { background: var(--bg-card); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--border-color); }
-        .corr-val { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.95rem; margin-top: 4px; }
-
-        /* NEW: Support & Resistance Strength Matrix */
-        .sr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 16px; margin-top: 12px; }
-        .sr-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; position: relative; }
-        .sr-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .sr-type { font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
-        .type-support { background: rgba(8, 153, 129, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
-        .type-resistance { background: rgba(242, 54, 69, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
-        .sr-price { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 700; color: #fff; }
-        .sr-score-badge { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--accent-amber); }
-        .sr-progress-bg { background: rgba(255,255,255,0.08); height: 8px; border-radius: 4px; overflow: hidden; margin: 8px 0; }
-        .sr-progress-bar { height: 100%; border-radius: 4px; transition: width 0.5s; }
-        .sr-confluences { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
-
-        /* NEW: Pattern Backtest Probability Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 12px; }
-        .stat-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; }
-        .stat-name { font-size: 0.88rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
-        .stat-winrate-box { display: flex; align-items: baseline; gap: 8px; margin: 8px 0; }
-        .stat-winrate-val { font-family: 'JetBrains Mono', monospace; font-size: 1.6rem; font-weight: 700; color: var(--accent-green); }
-        .stat-details { font-size: 0.75rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; line-height: 1.6; border-top: 1px dashed var(--border-color); padding-top: 8px; margin-top: auto; }
-
-        /* Multi-Timeframe Matrix */
-        .mtf-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 12px; text-align: center; }
-        @media (max-width: 768px) { .mtf-grid { grid-template-columns: repeat(2, 1fr); } }
-        .mtf-card { background: var(--bg-card); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); }
-        .mtf-tf { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; }
-        .mtf-signal { font-size: 0.85rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; margin-top: 4px; }
-
-        /* Chart & Calculator Grid */
-        .chart-calc-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 24px; }
-        @media (max-width: 1100px) { .chart-calc-grid { grid-template-columns: 1fr; } }
-        .chart-container-box { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; height: 520px; }
-
-        /* Calculator Styles */
-        .calc-box { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; }
-        .calc-group { margin-bottom: 12px; }
-        .calc-group label { font-size: 0.78rem; color: var(--text-muted); display: block; margin-bottom: 4px; }
-        .calc-input {
-            width: 100%; background: var(--bg-card); border: 1px solid var(--border-color);
-            color: #fff; padding: 10px 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem; outline: none;
+        /* Risk & Position Calculator */
+        .calc-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
+        .form-control {
+            background: var(--bg-card); border: 1px solid var(--border-color); color: #fff;
+            padding: 10px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; outline: none;
         }
-        .calc-input:focus { border-color: var(--accent-purple); }
-        .calc-result-box {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(41, 98, 255, 0.15));
-            border: 1px solid var(--accent-purple); border-radius: 10px; padding: 14px; margin-top: auto;
-        }
-        .calc-res-item { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.82rem; }
-        .calc-res-val { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #fff; }
+        .form-control:focus { border-color: var(--accent-purple); }
+        .calc-res-box { background: rgba(139, 92, 246, 0.1); border: 1px solid var(--accent-purple); border-radius: 8px; padding: 14px; margin-top: 14px; text-align: center; }
 
-        /* Cheat Sheet & Experts */
-        .cheat-sheet-section { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 24px; overflow-x: auto; }
-        .cheat-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; font-family: 'JetBrains Mono', monospace; }
-        .cheat-table th, .cheat-table td { padding: 12px 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        .cheat-table th { background: rgba(0,0,0,0.3); color: var(--text-muted); font-weight: 600; }
+        /* Technical & S&R Score Table */
+        .sr-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .sr-table th { text-align: left; padding: 10px; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
+        .sr-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-family: 'JetBrains Mono', monospace; }
 
-        .experts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-        .expert-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; }
-        
-        .plan-b-box {
-            background: rgba(242, 54, 69, 0.08); border-left: 3px solid var(--accent-red);
-            border-radius: 6px; padding: 10px; margin-top: 12px; font-size: 0.78rem;
-        }
+        .badge-signal { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
+        .bg-bullish { background: rgba(8, 153, 129, 0.2); color: var(--accent-green); }
+        .bg-bearish { background: rgba(242, 54, 69, 0.2); color: var(--accent-red); }
+
+        /* Progress Bar */
+        .progress-bar-bg { width: 100%; height: 8px; background: var(--bg-card); border-radius: 4px; overflow: hidden; margin-top: 4px; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); border-radius: 4px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> กลับ Terminal</a>
-                <a id="link-to-news" href="news_dashboard.html" class="back-btn"><i class="fa-solid fa-newspaper"></i> ศูนย์ข่าวตามสินทรัพย์</a>
+        <!-- Main Navigation Bar (ศูนย์กลางการกดออกไปหน้าอื่นๆ) -->
+        <header class="header-nav">
+            <div style="font-weight: 700; color: #fff; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-gauge-high" style="color:var(--accent-purple);"></i> MAIN COMMAND TERMINAL
             </div>
-
-            <div class="symbol-selector">
-                <button class="sym-btn active" id="btn-btc" onclick="selectSymbol('BTCUSDT')">BTC/USDT</button>
-                <button class="sym-btn" id="btn-gold" onclick="selectSymbol('GOLD')">GOLD (XAU)</button>
-                <button class="sym-btn" id="btn-dxy" onclick="selectSymbol('DXY')">DXY INDEX</button>
+            
+            <div class="nav-links">
+                <a href="macro_crypto_dashboard.html" class="nav-btn active"><i class="fa-solid fa-house-laptop"></i> Dashboard หลัก</a>
+                <a href="economic_calendar.html" class="nav-btn"><i class="fa-solid fa-calendar-check" style="color:var(--accent-amber);"></i> ปฏิทินข่าว & AI คาดการณ์</a>
+                <a href="news_dashboard.html" class="nav-btn"><i class="fa-solid fa-newspaper" style="color:var(--accent-cyan);"></i> ศูนย์ข่าว Asset News</a>
+                <a href="index.html" class="nav-btn"><i class="fa-solid fa-door-open" style="color:var(--text-muted);"></i> กลับหน้า Index</a>
             </div>
         </header>
 
-        <!-- Top Row: Consensus Gauge + Asset Correlation -->
-        <div class="top-row-grid">
-            <div class="panel-box">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <h2 style="font-size:1.05rem; color:#fff;">
-                            <i class="fa-solid fa-gauge-high" style="color:var(--accent-purple);"></i>
-                            AI CONSENSUS BIAS METER (<span id="active-sym-text">BTCUSDT</span>)
-                        </h2>
-                        <p style="font-size:0.78rem; color:var(--text-muted);" id="consensus-desc">ประมวลผลสัญญาณจาก 4 AI Experts...</p>
-                    </div>
-                    <span id="bias-percentage-text" style="font-size:1.3rem; font-weight:700; color:var(--accent-green);">78% BULLISH</span>
-                </div>
-                <div class="gauge-container">
-                    <div class="gauge-fill" id="gauge-fill-bar" style="width: 78%;"></div>
-                </div>
+        <!-- Ticker Row -->
+        <div class="ticker-grid">
+            <div class="ticker-card">
+                <div class="ticker-title">BITCOIN (BTC/USD) <span style="color:var(--accent-green);"><i class="fa-solid fa-caret-up"></i> +2.4%</span></div>
+                <div class="ticker-val" style="color:#fff;">$67,420.00</div>
             </div>
-
-            <div class="panel-box">
-                <h3 style="font-size:0.9rem; color:#fff; display:flex; align-items:center; gap:8px;">
-                    <i class="fa-solid fa-link" style="color:var(--accent-blue);"></i> CROSS-ASSET CORRELATION MATRIX
-                </h3>
-                <div class="corr-grid" id="corr-container"></div>
+            <div class="ticker-card">
+                <div class="ticker-title">GOLD (XAU/USD) <span style="color:var(--accent-green);"><i class="fa-solid fa-caret-up"></i> +0.8%</span></div>
+                <div class="ticker-val" style="color:#fff;">$2,418.50</div>
+            </div>
+            <div class="ticker-card">
+                <div class="ticker-title">US DOLLAR INDEX (DXY) <span style="color:var(--accent-red);"><i class="fa-solid fa-caret-down"></i> -0.35%</span></div>
+                <div class="ticker-val" style="color:var(--accent-red);">104.12</div>
+            </div>
+            <div class="ticker-card">
+                <div class="ticker-title">S&P 500 INDEX <span style="color:var(--accent-green);"><i class="fa-solid fa-caret-up"></i> +0.45%</span></div>
+                <div class="ticker-val" style="color:#fff;">5,615.30</div>
             </div>
         </div>
 
-        <!-- NEW SECTION 1: Support & Resistance Confluence Strength Score -->
-        <section class="panel-box">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3 style="font-size:0.95rem; color:#fff; display:flex; align-items:center; gap:8px;">
-                    <i class="fa-solid fa-shield-halved" style="color:var(--accent-cyan);"></i>
-                    SUPPORT & RESISTANCE STRENGTH SCORE (ประเมินคะแนนความแข็งแกร่งแนวรับ-แนวต้าน)
-                </h3>
-                <span style="font-size:0.75rem; color:var(--text-muted);">วัดจาก 4 ปัจจัยสมทบ (Confluences)</span>
-            </div>
-            <div class="sr-grid" id="sr-score-container">
-                <!-- Dynamic S&R Score Injection -->
-            </div>
-        </section>
-
-        <!-- NEW SECTION 2: AI Backtest Pattern Probability Stats -->
-        <section class="panel-box">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3 style="font-size:0.95rem; color:#fff; display:flex; align-items:center; gap:8px;">
-                    <i class="fa-solid fa-chart-pie" style="color:var(--accent-amber);"></i>
-                    PATTERN & STRUCTURE BACKTEST PROBABILITY (สถิติย้อนหลังความน่าจะเป็นของแพตเทิร์น)
-                </h3>
-                <span style="font-size:0.75rem; color:var(--text-muted);">คำนวณจากตัวอย่างสถิติตลาดอดีต (Sample Size > 200)</span>
-            </div>
-            <div class="stats-grid" id="pattern-stats-container">
-                <!-- Dynamic Pattern Stats Injection -->
-            </div>
-        </section>
-
-        <!-- Multi-Timeframe Trend Matrix -->
-        <section class="panel-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                <h3 style="font-size:0.95rem; color:#fff; display:flex; align-items:center; gap:8px;">
-                    <i class="fa-solid fa-layer-group" style="color:var(--accent-amber);"></i> MULTI-TIMEFRAME TREND MATRIX (เช็กความสอดคล้องทุกช่วงเวลา)
-                </h3>
-                <span id="mtf-status-badge" style="padding:4px 12px; border-radius:20px; font-weight:700; font-size:0.78rem; background:rgba(8,153,129,0.2); color:var(--accent-green); border:1px solid var(--accent-green);">
-                    🟢 HIGH CONVICTION SETUP
-                </span>
-            </div>
-            <div class="mtf-grid" id="mtf-container"></div>
-        </section>
-
-        <!-- Interactive TradingView Chart & Risk Calculator -->
-        <div class="chart-calc-grid">
-            <div class="chart-container-box">
-                <div id="tradingview_widget_container" style="height:100%; width:100%;"></div>
-            </div>
-
-            <div class="calc-box">
-                <h3 style="font-size:0.95rem; color:#fff; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
-                    <i class="fa-solid fa-calculator" style="color:var(--accent-purple);"></i> POSITION SIZING & RISK CALCULATOR
-                </h3>
-
-                <div class="calc-group">
-                    <label>ทุนในพอร์ต (Balance $):</label>
-                    <input type="number" id="calc-balance" class="calc-input" value="10000" oninput="calculatePosition()">
-                </div>
-
-                <div class="calc-group">
-                    <label>ความเสี่ยงที่ยอมรับ (% Risk):</label>
-                    <input type="number" id="calc-risk-pct" class="calc-input" value="1.0" step="0.1" oninput="calculatePosition()">
-                </div>
-
-                <div class="calc-group">
-                    <label>ราคาจุดเข้า (Entry $):</label>
-                    <input type="number" id="calc-entry" class="calc-input" value="65000" oninput="calculatePosition()">
-                </div>
-
-                <div class="calc-group">
-                    <label>ราคาตัดขาดทุน (SL $):</label>
-                    <input type="number" id="calc-sl" class="calc-input" value="64100" oninput="calculatePosition()">
-                </div>
-
-                <div class="calc-result-box">
-                    <div class="calc-res-item">
-                        <span>ยอมรับความเสี่ยงได้สูงสุด (Risk $):</span>
-                        <span class="calc-res-val" id="res-risk-usd" style="color:var(--accent-red);">$100.00</span>
+        <!-- Dashboard Layout -->
+        <div class="dashboard-layout">
+            
+            <!-- Left Column: Technicals, S&R Score & AI Signals -->
+            <div>
+                <!-- Panel 1: S&R Strength Score & Market Bias -->
+                <div class="panel-box">
+                    <div class="panel-title">
+                        <i class="fa-solid fa-layer-group" style="color:var(--accent-cyan);"></i> 
+                        Support & Resistance Strength Score (S&R Analytics)
                     </div>
-                    <div class="calc-res-item">
-                        <span>ระยะตัดขาดทุน (SL Distance):</span>
-                        <span class="calc-res-val" id="res-sl-dist">900.00 Points</span>
+                    
+                    <table class="sr-table">
+                        <thead>
+                            <tr>
+                                <th>สินทรัพย์</th>
+                                <th>แนวรับสำคัญ (Support)</th>
+                                <th>แนวต้านสำคัญ (Resistance)</th>
+                                <th>S&R Score</th>
+                                <th>AI Signal Bias</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>GOLD (XAUUSD)</strong></td>
+                                <td style="color:var(--accent-green);">$2,395 / $2,380</td>
+                                <td style="color:var(--accent-red);">$2,435 / $2,450</td>
+                                <td>
+                                    <strong>88/100 (Strong)</strong>
+                                    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 88%;"></div></div>
+                                </td>
+                                <td><span class="badge-signal bg-bullish">STRONG BUY</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>BITCOIN (BTC)</strong></td>
+                                <td style="color:var(--accent-green);">$64,500 / $62,000</td>
+                                <td style="color:var(--accent-red);">$68,500 / $70,000</td>
+                                <td>
+                                    <strong>75/100 (Moderate)</strong>
+                                    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 75%;"></div></div>
+                                </td>
+                                <td><span class="badge-signal bg-bullish">BULLISH ACCUMULATE</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>DXY INDEX</strong></td>
+                                <td style="color:var(--accent-green);">103.80 / 103.20</td>
+                                <td style="color:var(--accent-red);">104.80 / 105.30</td>
+                                <td>
+                                    <strong>82/100 (Strong)</strong>
+                                    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 82%;"></div></div>
+                                </td>
+                                <td><span class="badge-signal bg-bearish">BEARISH BREAKDOWN</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Panel 2: Macro Liquidity & Market Sentiment -->
+                <div class="panel-box">
+                    <div class="panel-title">
+                        <i class="fa-solid fa-globe" style="color:var(--accent-blue);"></i>
+                        Macro Liquidity & Fed Rate Probabilities
                     </div>
-                    <div class="calc-res-item" style="border-top:1px dashed var(--border-color); padding-top:6px; margin-top:6px;">
-                        <span style="font-weight:700; color:#fff;">ขนาดสัญญาที่ควรออก:</span>
-                        <span class="calc-res-val" id="res-pos-size" style="color:var(--accent-green); font-size:1rem;">0.111 Units / Lot</span>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:14px;">
+                        <div style="background:var(--bg-card); padding:14px; border-radius:8px; border:1px solid var(--border-color);">
+                            <div style="font-size:0.75rem; color:var(--text-muted);">Crypto Fear & Greed Index</div>
+                            <div style="font-size:1.4rem; font-weight:700; color:var(--accent-green); margin-top:4px;">72 (Greed)</div>
+                        </div>
+                        <div style="background:var(--bg-card); padding:14px; border-radius:8px; border:1px solid var(--border-color);">
+                            <div style="font-size:0.75rem; color:var(--text-muted);">Fed Rate Cut Probability (Sep)</div>
+                            <div style="font-size:1.4rem; font-weight:700; color:var(--accent-cyan); margin-top:4px;">92.5%</div>
+                        </div>
+                        <div style="background:var(--bg-card); padding:14px; border-radius:8px; border:1px solid var(--border-color);">
+                            <div style="font-size:0.75rem; color:var(--text-muted);">US 10Y Treasury Yield</div>
+                            <div style="font-size:1.4rem; font-weight:700; color:var(--accent-amber); margin-top:4px;">4.21% (-1.2%)</div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Right Column: Quant Tools & Position Calculator -->
+            <div>
+                <!-- Interactive Calculator Widget -->
+                <div class="panel-box">
+                    <div class="panel-title">
+                        <i class="fa-solid fa-calculator" style="color:var(--accent-purple);"></i>
+                        Quant Lot Size & Risk Calculator
+                    </div>
+
+                    <div class="calc-form">
+                        <div class="form-group">
+                            <label>ขนาดพอร์ต ($)</label>
+                            <input type="number" id="balance" class="form-control" value="10000">
+                        </div>
+                        <div class="form-group">
+                            <label>ความเสี่ยง (%)</label>
+                            <input type="number" id="riskPercent" class="form-control" value="1.0" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>ระยะ Stop Loss (Pips/Pts)</label>
+                            <input type="number" id="stopLoss" class="form-control" value="300">
+                        </div>
+                        <div class="form-group">
+                            <label>เลือกประเภทสินทรัพย์</label>
+                            <select id="assetType" class="form-control">
+                                <option value="gold">GOLD (1 Lot = $10/Pip)</option>
+                                <option value="forex">Forex (1 Lot = $10/Pip)</option>
+                                <option value="btc">BTCUSD (1 Lot = 1 BTC)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="calculateRisk()" style="width:100%; margin-top:14px; background:var(--accent-purple); color:#fff; border:none; padding:10px; border-radius:6px; font-weight:700; cursor:pointer;">
+                        คำนวณขนาด Lot Size
+                    </button>
+
+                    <div class="calc-res-box">
+                        <div style="font-size:0.75rem; color:var(--text-muted);">ขนาดสัญญาที่แนะนำ (Recommended Lot):</div>
+                        <div id="resLot" style="font-family:'JetBrains Mono'; font-size:1.6rem; font-weight:700; color:var(--accent-cyan); margin:4px 0;">0.33 Lot</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">จำนวนเงินที่เสี่ยง (Risk Amount): <span id="resAmount" style="color:var(--accent-red); font-weight:700;">$100.00</span></div>
+                    </div>
+                </div>
+
+                <!-- Quick Macro Checklist -->
+                <div class="panel-box">
+                    <div class="panel-title">
+                        <i class="fa-solid fa-clipboard-check" style="color:var(--accent-green);"></i>
+                        Trade Entry Checklist
+                    </div>
+                    <div style="font-size:0.83rem; color:var(--text-main); line-height:1.8;">
+                        <div><i class="fa-solid fa-check" style="color:var(--accent-green);"></i> ตรวจสอบข่าวปฏิทินเศรษฐกิจช่วง 1-2 ชม.</div>
+                        <div><i class="fa-solid fa-check" style="color:var(--accent-green);"></i> S&R Score สอดคล้องกับ Trend หลัก</div>
+                        <div><i class="fa-solid fa-check" style="color:var(--accent-green);"></i> คำนวณ Lot Size และวาง SL ชัดเจน</div>
+                        <div><i class="fa-solid fa-check" style="color:var(--accent-green);"></i> Risk : Reward Ratio อย่างน้อย 1 : 1.5</div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-
-        <!-- Cheat Sheet -->
-        <section class="cheat-sheet-section">
-            <h3 style="font-size:0.95rem; color:#fff; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-                <i class="fa-solid fa-list-check" style="color:var(--accent-amber);"></i>
-                TRADE EXECUTION CHEAT SHEET & PLAN B (โพยจุดเข้าเทรด + เงื่อนไขแผนพัง)
-            </h3>
-            <table class="cheat-table">
-                <thead>
-                    <tr>
-                        <th>ระบบ / AI Expert</th>
-                        <th>สัญญาณ</th>
-                        <th>จุดเข้า (Entry)</th>
-                        <th>ตัดขาดทุน (SL)</th>
-                        <th>เป้าทำกำไร (TP)</th>
-                        <th>RRR</th>
-                        <th>⚠️ เงื่อนไขแผนพัง & แผนสำรอง (Plan B Trigger)</th>
-                    </tr>
-                </thead>
-                <tbody id="cheat-sheet-body"></tbody>
-            </table>
-        </section>
-
-        <!-- 4 AI Experts Cards -->
-        <div class="experts-grid" id="experts-container"></div>
     </div>
 
     <script>
-        const fullDatabase = {
-            'BTCUSDT': {
-                symbol: 'BTCUSDT',
-                tvSymbol: 'BINANCE:BTCUSDT',
-                biasText: '78% BULLISH',
-                biasWidth: '78%',
-                desc: '3 ใน 4 ของ AI Experts สอดคล้องกันว่าโครงสร้างตลาดยังคงเน้นฝั่ง BUY',
-                defaultEntry: 65000,
-                defaultSL: 64100,
-                correlations: [
-                    { pair: 'DXY Index', val: '-0.82', color: 'var(--accent-red)', desc: 'ตรงข้ามแรง' },
-                    { pair: 'S&P 500', val: '+0.76', color: 'var(--accent-green)', desc: 'ทิศทางเดียวกัน' },
-                    { pair: 'GOLD (XAU)', val: '+0.64', color: 'var(--accent-green)', desc: 'สอดคล้องกัน' }
-                ],
-                srScores: [
-                    { price: '$64,200', type: 'SUPPORT', typeClass: 'type-support', score: 92, scoreText: '92/100 (VERY STRONG)', barColor: 'var(--accent-green)', confluences: '• H4 Bullish Order Block<br>• VPVR High Volume Node (Point of Control)<br>• Fibonacci 61.8% Golden Pocket' },
-                    { price: '$62,500', type: 'SUPPORT', typeClass: 'type-support', score: 85, scoreText: '85/100 (STRONG)', barColor: 'var(--accent-green)', confluences: '• Daily Major Swing Low<br>• Liquidated Sell-side Pool<br>• EMA 200 H4 Support' },
-                    { price: '$68,500', type: 'RESISTANCE', typeClass: 'type-resistance', score: 88, scoreText: '88/100 (STRONG)', barColor: 'var(--accent-red)', confluences: '• Buy-side Liquidity Pool (Equal Highs)<br>• H4 Bearish Fair Value Gap (FVG)<br>• Unfilled Institutional Supply Zone' }
-                ],
-                patternStats: [
-                    { name: 'H4 CHoCH + Bullish Order Block', winrate: '78.4%', winrateColor: 'var(--accent-green)', samples: '320 ครั้ง', avgRR: '1 : 3.4', ev: '+2.1R ต่อการเทรด' },
-                    { name: 'EMA 20/50 Golden Cross (H1)', winrate: '68.2%', winrateColor: 'var(--accent-green)', samples: '450 ครั้ง', avgRR: '1 : 2.2', ev: '+1.4R ต่อการเทรด' },
-                    { name: 'RSI Bearish Divergence (M15)', winrate: '54.1%', winrateColor: 'var(--accent-amber)', samples: '610 ครั้ง', avgRR: '1 : 1.8', ev: '+0.5R ต่อการเทรด' }
-                ],
-                mtf: [
-                    { tf: 'M15 (Scalp)', signal: 'BULLISH', class: 'color:var(--accent-green)' },
-                    { tf: 'H1 (Daytrade)', signal: 'BULLISH', class: 'color:var(--accent-green)' },
-                    { tf: 'H4 (Swing)', signal: 'BULLISH', class: 'color:var(--accent-green)' },
-                    { tf: 'D1 (Trend)', signal: 'BULLISH', class: 'color:var(--accent-green)' },
-                    { tf: 'W1 (Macro)', signal: 'NEUTRAL', class: 'color:var(--accent-amber)' }
-                ],
-                mtfBadge: '🟢 HIGH CONVICTION SETUP (4/5 TF Align)',
-                cheatSheet: [
-                    { name: '🎯 AI-SMC', signal: 'BUY', entry: '$64,200 - $64,500', sl: '$63,500', tp: '$68,500', rrr: '1 : 5.7', planB: 'หลุด $63,500 ปิดแท่ง H4 -> สลับเปิด Short ไปหา $62,000' },
-                    { name: '📊 AI-Quant', signal: 'BUY', entry: '$65,000', sl: '$64,100', tp: '$67,800', rrr: '1 : 3.1', planB: 'EMA 20 ตัดลง EMA 50 -> ปิดทำกำไรทันทีแล้วถอยดูสถานการณ์' },
-                    { name: '⚡ AI-Scalp', signal: 'WAIT', entry: 'รอ Dip M5', sl: '-', tp: '-', rrr: '-', planB: 'หากพุ่งทะลุ $66,500 ให้ Follow Buy ตามโมเมนตัม' },
-                    { name: '🐘 AI-Macro', signal: 'BUY', entry: '$63,800', sl: '$62,000', tp: '$72,000', rrr: '1 : 4.5', planB: 'หลุด $62,000 -> โครงสร้างใหญ่พัง ให้ถือเงินสด 100%' }
-                ],
-                experts: [
-                    { name: 'AI-SMC "Nexus"', avatar: '🎯', style: 'Smart Money Concepts', signal: 'BULLISH', text: 'ทำ CHoCH บน H4 เกิด Bullish Order Block สดใหม่รองรับด้านล่าง Sweep Liquidity เรียบร้อย', support: '$64,200', resist: '$68,500', planB: 'หากราคาหลุด $63,500 และปิดแท่ง H4 ใต้แนวนี้ แสดงว่า Order Block ล้มเหลว ให้ยกเลิกแผน Buy' },
-                    { name: 'AI-Quant "Alpha"', avatar: '📊', style: 'Momentum & EMA Cross', signal: 'BULLISH', text: 'EMA 20 ตัดขึ้นเหนือ EMA 50 บน H1 ค่า RSI ยืนเหนือ 58 พร้อม Volume Support', support: '$65,000', resist: '$67,800', planB: 'หากเกิด Bearish Divergence บน RSI H1 ให้ตั้ง Trailing Stop ล็อกกำไรไว้ทันที' },
-                    { name: 'AI-Scalp "Flash"', avatar: '⚡', style: 'Scalping Orderflow', signal: 'NEUTRAL', text: 'ระยะสั้น M5 ชนแนวต้านแต่ Delta Volume เริ่มแผ่ว มีโอกาสย่อลงมาทดสอบ VWAP ก่อนเลือกทาง', support: '$65,400', resist: '$66,500', planB: 'รอสัญญาณ Reject ที่แนวรับ VWAP M15 หากมีแรงซื้อสวนค่อยกด Buy สั้นๆ' },
-                    { name: 'AI-Macro "Titan"', avatar: '🐘', style: 'Structural Swing D1/W1', signal: 'BULLISH', text: 'โครงสร้าง Daily ทำ Higher High / Higher Low สมบูรณ์แบบ มุ่งหน้าทดสอบ ATH เดิม', support: '$62,500', resist: '$72,000', planB: 'ตราบใดที่ไม่หลุด $62,000 ทุกจังหวะย่อตัวคือโอกาสสะสมพลังฝั่ง BUY' }
-                ]
-            },
-            'GOLD': {
-                symbol: 'GOLD (XAU/USD)',
-                tvSymbol: 'OANDA:XAUUSD',
-                biasText: '62% BULLISH',
-                biasWidth: '62%',
-                desc: 'เทรนด์ใหญ่ยังเป็นขาขึ้น แต่ระยะสั้นมีสัญญาณเตือนระวังแรงขายทำกำไรที่แนวต้าน',
-                defaultEntry: 2400,
-                defaultSL: 2385,
-                correlations: [
-                    { pair: 'DXY Index', val: '-0.88', color: 'var(--accent-red)', desc: 'ตรงข้ามแรงมาก' },
-                    { pair: 'US 10Y Yield', val: '-0.75', color: 'var(--accent-red)', desc: 'ตรงข้ามกัน' },
-                    { pair: 'BTCUSDT', val: '+0.64', color: 'var(--accent-green)', desc: 'สอดคล้องกัน' }
-                ],
-                srScores: [
-                    { price: '$2,385', type: 'SUPPORT', typeClass: 'type-support', score: 95, scoreText: '95/100 (VERY STRONG)', barColor: 'var(--accent-green)', confluences: '• Equal Lows Swept (Liquidity Grab)<br>• Bullish Fair Value Gap (H4)<br>• Geopolitical Risk Premium Support' },
-                    { price: '$2,430', type: 'RESISTANCE', typeClass: 'type-resistance', score: 82, scoreText: '82/100 (MODERATE STRONG)', barColor: 'var(--accent-red)', confluences: '• All-Time High Supply Zone<br>• RSI Bearish Divergence Peak (H4)<br>• Heavy Profit Taking Barrier' }
-                ],
-                patternStats: [
-                    { name: 'Liquidity Sweep + Rejection Tail (H1)', winrate: '81.2%', winrateColor: 'var(--accent-green)', samples: '280 ครั้ง', avgRR: '1 : 4.1', ev: '+2.5R ต่อการเทรด' },
-                    { name: 'Double Top at Major Resistance (M15)', winrate: '62.5%', winrateColor: 'var(--accent-green)', samples: '510 ครั้ง', avgRR: '1 : 2.0', ev: '+0.9R ต่อการเทรด' }
-                ],
-                mtf: [
-                    { tf: 'M15 (Scalp)', signal: 'BEARISH', class: 'color:var(--accent-red)' },
-                    { tf: 'H1 (Daytrade)', signal: 'BEARISH', class: 'color:var(--accent-red)' },
-                    { tf: 'H4 (Swing)', signal: 'BULLISH', class: 'color:var(--accent-green)' },
-                    { tf: 'D1 (Trend)', signal: 'BULLISH', class: 'color:var(--accent-green)' },
-                    { tf: 'W1 (Macro)', signal: 'BULLISH', class: 'color:var(--accent-green)' }
-                ],
-                mtfBadge: '🟡 MIXED TIMING (สั้นย่อ-ยาวขึ้น)',
-                cheatSheet: [
-                    { name: '🎯 AI-SMC', signal: 'BUY', entry: '$2,385 - $2,390', sl: '$2,375', tp: '$2,430', rrr: '1 : 4.5', planB: 'หลุด $2,375 -> รอดัก Buy ใหม่ที่ Major Demand Zone $2,350' },
-                    { name: '📊 AI-Quant', signal: 'SELL', entry: '$2,420', sl: '$2,432', tp: '$2,380', rrr: '1 : 3.3', planB: 'หากราคาผ่าน $2,432 -> Cut Loss ทันที และFollow Buy ตามพุ่ง' },
-                    { name: '⚡ AI-Scalp', signal: 'SELL', entry: '$2,415', sl: '$2,422', tp: '$2,395', rrr: '1 : 2.8', planB: 'เป้าหมายสั้นเพียง 40-60 ปิ๊ป ได้แล้วรีบเก็บกำไรทันที' },
-                    { name: '🐘 AI-Macro', signal: 'BUY', entry: '$2,360', sl: '$2,330', tp: '$2,480', rrr: '1 : 4.0', planB: 'ปัจจัยสงครามยังหนุน เน้นตั้งรับฝั่ง Buy เป็นหลัก' }
-                ],
-                experts: [
-                    { name: 'AI-SMC "Nexus"', avatar: '🎯', style: 'Smart Money Concepts', signal: 'BULLISH', text: 'ทิ้งไส้กวาด Equal Lows $2,380 แล้วพุ่งกลับทันที มีแรงซื้อจากสถาบันและปัจจัยสงครามรองรับ', support: '$2,385', resist: '$2,430', planB: 'หากราคาลงมาหลุด $2,375 ให้รอกระทบแนวรับถัดไป $2,350 ก่อนพิจารณาออเดอร์ใหม่' },
-                    { name: 'AI-Quant "Alpha"', avatar: '📊', style: 'Momentum & EMA Cross', signal: 'BEARISH', text: 'เกิด Bearish Divergence บน RSI H4 ชัดเจน เตือนระวังแรงขายพักตัวย่อลงมาหา EMA 200', support: '$2,370', resist: '$2,425', planB: 'หาก RSI สามารถเบรกเส้น Trendline Divergence ได้ ให้ยกเลิกฝั่ง Short ทันที' },
-                    { name: 'AI-Scalp "Flash"', avatar: '⚡', style: 'Scalping Orderflow', signal: 'BEARISH', text: 'M15 เกิด Double Top สั้นๆ มีแรง Sell Order Flow เข้ามา เหมาะกับการเก็งกำไรย่อตัวสั้น', support: '$2,395', resist: '$2,415', planB: 'เน้นเข้าไวเคลียร์ไว ห้ามถือออเดอร์ข้ามช่วงประกาศตัวเลขข่าวสำคัญ' },
-                    { name: 'AI-Macro "Titan"', avatar: '🐘', style: 'Structural Swing D1/W1', signal: 'BULLISH', text: 'ปัจจัยภูมิรัฐศาสตร์ร้อนแรง และ Fed จ่อลดดอกเบี้ย ภาพใหญ่ทองคำยังมีโอกาสทำ All-Time High', support: '$2,350', resist: '$2,480', planB: 'ถือฝั่ง Buy ระยะยาว ตราบใดที่ราคายังไม่ปิดหลุดแนวรับใหญ่ $2,330' }
-                ]
-            },
-            'DXY': {
-                symbol: 'DXY INDEX',
-                tvSymbol: 'CAPITALCOM:DXY',
-                biasText: '80% BEARISH',
-                biasWidth: '20%',
-                desc: 'ดัชนีดอลลาร์อยู่ในเทรนด์ขาลงชัดเจน หนุนสินทรัพย์เสี่ยงและทองคำ',
-                defaultEntry: 104.50,
-                defaultSL: 105.00,
-                correlations: [
-                    { pair: 'GOLD (XAU)', val: '-0.88', color: 'var(--accent-red)', desc: 'ตรงข้ามแรงมาก' },
-                    { pair: 'BTCUSDT', val: '-0.82', color: 'var(--accent-red)', desc: 'ตรงข้ามแรง' },
-                    { pair: 'EUR/USD', val: '-0.95', color: 'var(--accent-red)', desc: 'ตรงข้ามโดยตรง' }
-                ],
-                srScores: [
-                    { price: '103.50', type: 'SUPPORT', typeClass: 'type-support', score: 86, scoreText: '86/100 (STRONG)', barColor: 'var(--accent-green)', confluences: '• Yearly Major Support Level<br>• Oversold RSI Bounce Zone<br>• Demand Order Block (Daily)' },
-                    { price: '104.80', type: 'RESISTANCE', typeClass: 'type-resistance', score: 94, scoreText: '94/100 (VERY STRONG)', barColor: 'var(--accent-red)', confluences: '• Bearish Order Block (Daily)<br>• EMA 50 & EMA 200 Rejection Confluence<br>• Unfilled Fair Value Gap' }
-                ],
-                patternStats: [
-                    { name: 'Daily Bearish Structure Break (BOS)', winrate: '76.8%', winrateColor: 'var(--accent-green)', samples: '190 ครั้ง', avgRR: '1 : 2.8', ev: '+1.8R ต่อการเทรด' }
-                ],
-                mtf: [
-                    { tf: 'M15 (Scalp)', signal: 'BULLISH', class: 'color:var(--accent-green)' },
-                    { tf: 'H1 (Daytrade)', signal: 'BEARISH', class: 'color:var(--accent-red)' },
-                    { tf: 'H4 (Swing)', signal: 'BEARISH', class: 'color:var(--accent-red)' },
-                    { tf: 'D1 (Trend)', signal: 'BEARISH', class: 'color:var(--accent-red)' },
-                    { tf: 'W1 (Macro)', signal: 'BEARISH', class: 'color:var(--accent-red)' }
-                ],
-                mtfBadge: '🔴 HIGH CONVICTION SELL (4/5 TF Align)',
-                cheatSheet: [
-                    { name: '🎯 AI-SMC', signal: 'SELL', entry: '104.50 - 104.70', sl: '105.00', tp: '103.50', rrr: '1 : 3.3', planB: 'ทะลุ 105.00 -> ดอลลาร์เริ่มแข็งค่า ให้ระวังการย่อของทองคำและ BTC' },
-                    { name: '📊 AI-Quant', signal: 'SELL', entry: '104.40', sl: '104.85', tp: '103.80', rrr: '1 : 2.4', planB: 'EMA 20 ตัดขึ้น EMA 50 H1 -> ปิดการ Sell ทันที' },
-                    { name: '⚡ AI-Scalp', signal: 'BUY', entry: '104.00', sl: '103.80', tp: '104.35', rrr: '1 : 1.7', planB: 'เป็นการเล่นสวนเทรนด์หลัก ต้องตั้ง SL แคบเสมอ' },
-                    { name: '🐘 AI-Macro', signal: 'SELL', entry: '104.80', sl: '105.60', tp: '102.50', rrr: '1 : 2.8', planB: 'เน้นถือสถานะตามเทรนด์ขาลงระดับสัปดาห์' }
-                ],
-                experts: [
-                    { name: 'AI-SMC "Nexus"', avatar: '🎯', style: 'Smart Money Concepts', signal: 'BEARISH', text: 'หลุด BOS ขาลงชัดเจนบน D1 เด้งขึ้นมาเพียงเพื่อ Fill FVG แล้วมีแรงกดลงต่อตามโครงสร้าง', support: '103.50', resist: '104.80', planB: 'หากเบรกทะลุ 105.00 ขึ้นไปได้ จะเกิด CHoCH ขาขึ้นรอบใหม่ ให้ยกเลิกฝั่ง Short' },
-                    { name: 'AI-Quant "Alpha"', avatar: '📊', style: 'Momentum & EMA Cross', signal: 'BEARISH', text: 'EMA 20 Cross ต่ำกว่า EMA 50 ทั้งบน H1 และ H4 โมเมนตัมฝั่งขายครองตลาดเด็ดขาด', support: '103.80', resist: '104.60', planB: 'หลีกเลี่ยงการเปิด Short บริเวณแนวรับ Oversold RSI ต่ำกว่า 30' },
-                    { name: 'AI-Scalp "Flash"', avatar: '⚡', style: 'Scalping Orderflow', signal: 'BULLISH', text: 'ระยะสั้นชนแนวรับจิตวิทยา 104.00 มี Bullish Pinbar ลุ้น Rebound สั้นๆ', support: '104.00', resist: '104.35', planB: 'เข้าเทรดด้วย Volume น้อยลง 50% เนื่องจากเป็นการสวนเทรนด์หลัก' },
-                    { name: 'AI-Macro "Titan"', avatar: '🐘', style: 'Structural Swing D1/W1', signal: 'BEARISH', text: 'แนวโน้มการลดดอกเบี้ยของ Fed กดดันดอลลาร์ในระยะยาว ไร้ปัจจัยหนุนแข็งค่า', support: '102.50', resist: '105.50', planB: 'มองเป้าหมายการลงถัดไปที่ Major Support 102.50' }
-                ]
+        // Risk & Position Calculator Logic
+        function calculateRisk() {
+            const balance = parseFloat(document.getElementById('balance').value) || 0;
+            const riskPercent = parseFloat(document.getElementById('riskPercent').value) || 0;
+            const stopLoss = parseFloat(document.getElementById('stopLoss').value) || 1;
+            const assetType = document.getElementById('assetType').value;
+
+            const riskAmount = balance * (riskPercent / 100);
+            let lotSize = 0;
+
+            if (assetType === 'gold' || assetType === 'forex') {
+                // Standard 1 Lot = $10 per Pip
+                lotSize = riskAmount / (stopLoss * 10);
+            } else if (assetType === 'btc') {
+                // BTC Position size
+                lotSize = riskAmount / stopLoss;
             }
-        };
 
-        function loadTradingViewWidget(tvSymbol) {
-            document.getElementById('tradingview_widget_container').innerHTML = '';
-            new TradingView.widget({
-                "autosize": true,
-                "symbol": tvSymbol,
-                "interval": "60",
-                "timezone": "Asia/Bangkok",
-                "theme": "dark",
-                "style": "1",
-                "locale": "th",
-                "toolbar_bg": "#151924",
-                "enable_publishing": false,
-                "allow_symbol_change": true,
-                "container_id": "tradingview_widget_container"
-            });
+            document.getElementById('resLot').innerText = lotSize.toFixed(2) + " Lot";
+            document.getElementById('resAmount').innerText = "$" + riskAmount.toFixed(2);
         }
 
-        function calculatePosition() {
-            const balance = parseFloat(document.getElementById('calc-balance').value) || 0;
-            const riskPct = parseFloat(document.getElementById('calc-risk-pct').value) || 0;
-            const entry = parseFloat(document.getElementById('calc-entry').value) || 0;
-            const sl = parseFloat(document.getElementById('calc-sl').value) || 0;
-
-            const maxRiskUSD = balance * (riskPct / 100);
-            const slDist = Math.abs(entry - sl);
-
-            document.getElementById('res-risk-usd').innerText = `$${maxRiskUSD.toFixed(2)}`;
-            document.getElementById('res-sl-dist').innerText = `${slDist.toFixed(2)} Points`;
-
-            if (slDist > 0) {
-                const posSize = maxRiskUSD / slDist;
-                document.getElementById('res-pos-size').innerText = `${posSize.toFixed(3)} Units / Lot`;
-            } else {
-                document.getElementById('res-pos-size').innerText = `0.00 Units`;
-            }
-        }
-
-        function selectSymbol(sym) {
-            document.querySelectorAll('.sym-btn').forEach(btn => btn.classList.remove('active'));
-            if(sym === 'BTCUSDT') document.getElementById('btn-btc').classList.add('active');
-            if(sym === 'GOLD') document.getElementById('btn-gold').classList.add('active');
-            if(sym === 'DXY') document.getElementById('btn-dxy').classList.add('active');
-
-            document.getElementById('link-to-news').href = `news_dashboard.html?symbol=${sym}`;
-
-            const data = fullDatabase[sym] || fullDatabase['BTCUSDT'];
-
-            // Header & Bias
-            document.getElementById('active-sym-text').innerText = data.symbol;
-            document.getElementById('consensus-desc').innerText = data.desc;
-            document.getElementById('bias-percentage-text').innerText = data.biasText;
-            document.getElementById('gauge-fill-bar').style.width = data.biasWidth;
-
-            // Load TradingView
-            loadTradingViewWidget(data.tvSymbol);
-
-            // Pre-fill Calculator
-            document.getElementById('calc-entry').value = data.defaultEntry;
-            document.getElementById('calc-sl').value = data.defaultSL;
-            calculatePosition();
-
-            // Correlation Matrix
-            const corrContainer = document.getElementById('corr-container');
-            corrContainer.innerHTML = '';
-            data.correlations.forEach(c => {
-                corrContainer.innerHTML += `
-                    <div class="corr-item">
-                        <div style="font-size:0.72rem; color:var(--text-muted);">${c.pair}</div>
-                        <div class="corr-val" style="color:${c.color};">${c.val}</div>
-                        <div style="font-size:0.68rem; color:var(--text-muted);">${c.desc}</div>
-                    </div>
-                `;
-            });
-
-            // NEW: S&R Score Injection
-            const srContainer = document.getElementById('sr-score-container');
-            srContainer.innerHTML = '';
-            data.srScores.forEach(sr => {
-                srContainer.innerHTML += `
-                    <div class="sr-card">
-                        <div class="sr-header">
-                            <span class="sr-type ${sr.typeClass}">${sr.type}</span>
-                            <span class="sr-price">${sr.price}</span>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span style="font-size:0.75rem; color:var(--text-muted);">Strength Score</span>
-                            <span class="sr-score-badge">${sr.scoreText}</span>
-                        </div>
-                        <div class="sr-progress-bg">
-                            <div class="sr-progress-bar" style="width: ${sr.score}%; background: ${sr.barColor};"></div>
-                        </div>
-                        <div class="sr-confluences">${sr.confluences}</div>
-                    </div>
-                `;
-            });
-
-            // NEW: Pattern Backtest Stats Injection
-            const patternContainer = document.getElementById('pattern-stats-container');
-            patternContainer.innerHTML = '';
-            data.patternStats.forEach(p => {
-                patternContainer.innerHTML += `
-                    <div class="stat-card">
-                        <div class="stat-name">${p.name}</div>
-                        <div class="stat-winrate-box">
-                            <span class="stat-winrate-val" style="color:${p.winrateColor};">${p.winrate}</span>
-                            <span style="font-size:0.75rem; color:var(--text-muted);">Win Rate</span>
-                        </div>
-                        <div class="stat-details">
-                            <div>• ตัวอย่างข้อมูลย้อนหลัง: <strong>${p.samples}</strong></div>
-                            <div>• ค่าเฉลี่ย RRR: <strong>${p.avgRR}</strong></div>
-                            <div>• ค่าความคุ้มค่า (EV): <strong style="color:var(--accent-green);">${p.ev}</strong></div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            // MTF Matrix
-            document.getElementById('mtf-status-badge').innerText = data.mtfBadge;
-            const mtfContainer = document.getElementById('mtf-container');
-            mtfContainer.innerHTML = '';
-            data.mtf.forEach(m => {
-                mtfContainer.innerHTML += `
-                    <div class="mtf-card">
-                        <div class="mtf-tf">${m.tf}</div>
-                        <div class="mtf-signal" style="${m.class}">${m.signal}</div>
-                    </div>
-                `;
-            });
-
-            // Cheat Sheet
-            const cheatBody = document.getElementById('cheat-sheet-body');
-            cheatBody.innerHTML = '';
-            data.cheatSheet.forEach(row => {
-                const color = row.signal === 'BUY' ? 'var(--accent-green)' : (row.signal === 'SELL' ? 'var(--accent-red)' : 'var(--accent-amber)');
-                cheatBody.innerHTML += `
-                    <tr>
-                        <td><strong>${row.name}</strong></td>
-                        <td><span style="color:${color}; font-weight:700;">${row.signal}</span></td>
-                        <td>${row.entry}</td>
-                        <td style="color:var(--accent-red);">${row.sl}</td>
-                        <td style="color:var(--accent-green);">${row.tp}</td>
-                        <td><strong>${row.rrr}</strong></td>
-                        <td style="color:var(--text-muted); font-size:0.75rem;">${row.planB}</td>
-                    </tr>
-                `;
-            });
-
-            // Experts Cards
-            const expContainer = document.getElementById('experts-container');
-            expContainer.innerHTML = '';
-            data.experts.forEach(exp => {
-                const badgeColor = exp.signal === 'BULLISH' ? 'var(--accent-green)' : (exp.signal === 'BEARISH' ? 'var(--accent-red)' : 'var(--accent-amber)');
-                expContainer.innerHTML += `
-                    <div class="expert-card">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                            <div style="display:flex; gap:10px; align-items:center;">
-                                <span style="font-size:1.4rem;">${exp.avatar}</span>
-                                <div>
-                                    <div style="font-weight:700; font-size:0.9rem; color:#fff;">${exp.name}</div>
-                                    <div style="font-size:0.72rem; color:var(--text-muted);">${exp.style}</div>
-                                </div>
-                            </div>
-                            <span style="color:${badgeColor}; font-weight:700; font-size:0.75rem; border:1px solid ${badgeColor}; padding:2px 8px; border-radius:4px; height:fit-content;">${exp.signal}</span>
-                        </div>
-                        <p style="font-size:0.8rem; line-height:1.4; color:var(--text-main); margin-bottom:12px;">${exp.text}</p>
-                        <div style="background:var(--bg-card); padding:8px; border-radius:6px; font-size:0.75rem; display:flex; justify-content:space-between; margin-bottom:8px;">
-                            <span>แนวรับ: <strong style="color:var(--accent-green);">${exp.support}</strong></span>
-                            <span>แนวต้าน: <strong style="color:var(--accent-red);">${exp.resist}</strong></span>
-                        </div>
-                        <div class="plan-b-box">
-                            <strong style="color:var(--accent-red);">⚠️ Invalidation & Plan B:</strong> ${exp.planB}
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const sym = urlParams.get('symbol') || 'BTCUSDT';
-            selectSymbol(sym);
-        });
+        // Auto Run on Load
+        window.addEventListener('DOMContentLoaded', calculateRisk);
     </script>
 </body>
 </html>
