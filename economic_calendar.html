@@ -7,6 +7,8 @@
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root {
@@ -45,7 +47,7 @@
 
         .panel-box { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
 
-        /* Event Tabs Bar */
+        /* Event Filter Tabs */
         .event-tabs { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; scrollbar-width: thin; }
         .event-tab-btn {
             background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted);
@@ -61,13 +63,10 @@
         .data-card-title { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
         .data-card-val { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: 700; }
 
-        /* Volatility Box */
-        .volatility-box {
-            background: linear-gradient(135deg, rgba(41, 98, 255, 0.1), rgba(139, 92, 246, 0.1));
-            border: 1px solid var(--accent-blue); border-radius: 12px; padding: 20px; margin-bottom: 20px;
-        }
-        .vol-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 12px; }
-        .vol-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; }
+        /* Chart Layout Grid */
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px; }
+        @media(max-width: 1024px) { .charts-grid { grid-template-columns: 1fr; } }
+        .chart-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; position: relative; height: 320px; }
 
         /* Asset Impact Grid */
         .asset-impact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 20px; }
@@ -94,21 +93,19 @@
                 <a href="news_dashboard.html" class="nav-btn"><i class="fa-solid fa-newspaper"></i> ศูนย์ข่าว Asset News</a>
             </div>
             <div style="font-size: 0.85rem; font-weight: 600; color: var(--accent-cyan); display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-bolt"></i> QUANT VOLATILITY ENGINE ACTIVE
+                <i class="fa-solid fa-chart-line"></i> QUANT VOLATILITY & PRICE PROJECTION ENGINE
             </div>
         </header>
 
-        <!-- Event Filter Tabs (รวม 6 ข่าวหลักระดับ High Impact) -->
+        <!-- Event Filter Tabs -->
         <div class="event-tabs">
             <button class="event-tab-btn active" onclick="switchEvent('cpi', this)"><i class="fa-solid fa-fire" style="color:var(--accent-red);"></i> US CPI (เงินเฟ้อ)</button>
             <button class="event-tab-btn" onclick="switchEvent('fomc', this)"><i class="fa-solid fa-building-columns" style="color:var(--accent-amber);"></i> FOMC Rate (ดอกเบี้ย Fed)</button>
             <button class="event-tab-btn" onclick="switchEvent('nfp', this)"><i class="fa-solid fa-users" style="color:var(--accent-blue);"></i> Non-Farm Payrolls (จ้างงาน)</button>
             <button class="event-tab-btn" onclick="switchEvent('pce', this)"><i class="fa-solid fa-chart-pie" style="color:var(--accent-purple);"></i> Core PCE (เงินเฟ้อ Fed)</button>
-            <button class="event-tab-btn" onclick="switchEvent('gdp', this)"><i class="fa-solid fa-chart-line" style="color:var(--accent-green);"></i> US GDP (เติบโตเศรษฐกิจ)</button>
-            <button class="event-tab-btn" onclick="switchEvent('retail', this)"><i class="fa-solid fa-cart-shopping" style="color:var(--accent-cyan);"></i> Retail Sales (ยอดค้าปลีก)</button>
         </div>
 
-        <!-- Section 1: Event Summary Numbers -->
+        <!-- Event Key Data Numbers -->
         <div class="panel-box">
             <div style="margin-bottom:16px;">
                 <h1 id="event-title" style="font-size: 1.4rem; color: #fff;">US CPI YoY (Consumer Price Index)</h1>
@@ -135,7 +132,32 @@
             </div>
         </div>
 
-        <!-- Section 2: Instant Asset Impact Preview -->
+        <!-- NEW SECTION: Interactive Visual Charts (Historical Volatility + Scenario Projection) -->
+        <section class="panel-box">
+            <h3 style="font-size:1rem; color:#fff; display:flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-chart-area" style="color:var(--accent-purple);"></i> Visual Quant Analytics: สถิติระยะวิ่งย้อนหลัง & กราฟคาดการณ์ตามตัวเลข
+            </h3>
+            
+            <div class="charts-grid">
+                <!-- Chart 1: Historical Volatility 12 Releases -->
+                <div class="chart-card">
+                    <div style="font-size:0.82rem; font-weight:700; color:#fff; margin-bottom:8px;">
+                        <i class="fa-solid fa-bars-staggered" style="color:var(--accent-cyan);"></i> สถิติระยะวิ่งทองคำ Gold (Pips) ย้อนหลัง 12 ครั้งล่าสุด
+                    </div>
+                    <canvas id="histVolChart"></canvas>
+                </div>
+
+                <!-- Chart 2: Scenario Projection Path -->
+                <div class="chart-card">
+                    <div style="font-size:0.82rem; font-weight:700; color:#fff; margin-bottom:8px;">
+                        <i class="fa-solid fa-route" style="color:var(--accent-green);"></i> กราฟคาดการณ์เส้นทางราคา Gold (XAUUSD Target Path)
+                    </div>
+                    <canvas id="projectionChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Instant Asset Impact Preview -->
         <section class="panel-box">
             <h3 style="font-size:1rem; color:#fff; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
                 <i class="fa-solid fa-crosshairs" style="color:var(--accent-red);"></i> ผลกระทบทันทีหลังประกาศตัวเลข (Instant Asset Bias)
@@ -145,25 +167,13 @@
             </div>
         </section>
 
-        <!-- Section 3: Volatility Statistics & Estimated Target Prices -->
-        <section class="volatility-box">
-            <h3 style="font-size:1rem; color:#fff; display:flex; align-items:center; gap:8px;">
-                <i class="fa-solid fa-chart-line" style="color:var(--accent-blue);"></i> สถิติการวิ่งเฉลี่ยย้อนหลัง & คาดการณ์ระยะแกว่งตัว (Expected Price Target Range)
-            </h3>
-            <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">คำนวณจากสถิติความผันผวน 12 ครั้งหลังสุด ในช่วง 1-4 ชั่วโมงแรกหลังประกาศข่าว</p>
-            
-            <div class="vol-grid" id="volatility-container">
-                <!-- Injected via JS -->
-            </div>
-        </section>
-
-        <!-- Section 4: Extended Institutional Analysis -->
+        <!-- Section: Extended Institutional Analysis (2026 Context) -->
         <section class="panel-box">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap;">
                 <h3 style="font-size:1rem; color:#fff; display:flex; align-items:center; gap:8px;">
-                    <i class="fa-solid fa-landmark" style="color:var(--accent-amber);"></i> มุมมองและแบบจำลองราคาจากสถาบันการเงินยักษ์ใหญ่ (Institutional Models)
+                    <i class="fa-solid fa-landmark" style="color:var(--accent-amber);"></i> มุมมองและแบบจำลองราคาจากสถาบันการเงินยักษ์ใหญ่ (2026 Institutional Outlook)
                 </h3>
-                <span style="font-size:0.78rem; color:var(--text-muted);">อัปเดตข้อมูลจากสำนักวิเคราะห์หลัก</span>
+                <span style="font-size:0.78rem; color:var(--text-muted);">อัปเดตข้อมูลตามทิศทางนโยบาย Fed ล่าสุด</span>
             </div>
             
             <div class="inst-grid" id="inst-container">
@@ -171,7 +181,7 @@
             </div>
         </section>
 
-        <!-- Section 5: Scenarios & Target Price Levels -->
+        <!-- Section: Scenarios & Target Price Levels -->
         <section class="panel-box">
             <h3 style="font-size:1rem; color:#fff; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
                 <i class="fa-solid fa-diagram-project" style="color:var(--accent-cyan);"></i> 3 ฉากทัศน์ความน่าจะเป็น & เป้าหมายราคาสินทรัพย์ (Scenario & Target Levels)
@@ -183,31 +193,39 @@
     </div>
 
     <script>
+        // Global Chart Instances
+        let histVolChartInstance = null;
+        let projChartInstance = null;
+
         const macroData = {
             'cpi': {
                 title: 'US CPI YoY (Consumer Price Index)',
                 date: 'กำหนดการประกาศ: พุธนี้ เวลา 19:30 น. | ผลกระทบ: 🔴 HIGH VOLATILITY',
                 prev: '3.3%', consensus: '3.1%', aiForecast: '3.0%', confidence: '86%',
                 
+                // Chart 1: 12 Past Releases Volatility (Pips for Gold)
+                histVolData: [280, 320, 240, 390, 210, 300, 350, 260, 310, 340, 290, 330],
+                histLabels: ['T-12','T-11','T-10','T-9','T-8','T-7','T-6','T-5','T-4','T-3','T-2','T-1'],
+
+                // Chart 2: Scenario Projection Price Paths
+                projLabels: ['ก่อนประกาศ', '15 น.', '1 ชม.', '4 ชม.'],
+                projPaths: {
+                    bullish: [2418, 2435, 2448, 2460], // If CPI < 3.0%
+                    neutral: [2418, 2422, 2415, 2425], // If CPI = 3.1%
+                    bearish: [2418, 2390, 2375, 2362]  // If CPI > 3.2%
+                },
+
                 instantImpact: [
                     { asset: 'GOLD (XAUUSD)', status: '🟢 BULLISH FAVORABLE', detail: 'เงินเฟ้อชะลอตัวกดดัน Bond Yield ดันราคาทองคำทะลุแนวต้านแรกทันที' },
                     { asset: 'BITCOIN (BTC)', status: '🟢 BULLISH RISK-ON', detail: 'สภาพคล่องไหลเข้าสินทรัพย์เสี่ยง หาก CPI ออกมา < 3.1%' },
-                    { asset: 'DXY INDEX', status: '🔴 BEARISH PRESSURE', detail: 'ดอลลาร์โดนเทขายจากคาดการณ์ Fed ลดดอกเบี้ยในรอบถัดไป' }
-                ],
-
-                volatilityStats: [
-                    { asset: 'GOLD (XAUUSD)', avgMove: '220 - 350 Pips ($22 - $35)', targetUp: '$2,435 - $2,450', targetDown: '$2,380 - $2,365' },
-                    { asset: 'BITCOIN (BTC)', avgMove: '2.5% - 4.8% ($1,800 - $3,200)', targetUp: '$68,500 - $70,000', targetDown: '$63,200 - $61,800' },
-                    { asset: 'DXY INDEX', avgMove: '0.60 - 0.95 Points', targetUp: '105.20', targetDown: '103.40' }
+                    { asset: 'DXY INDEX', status: '🔴 BEARISH PRESSURE', detail: 'ดอลลาร์โดนเทขายจากคาดการณ์ Fed ปรับลดดอกเบี้ยตามเป้าหมาย' }
                 ],
 
                 institutions: [
-                    { name: 'Goldman Sachs', forecast: '3.1%', stance: 'BEARISH GOLD SHORT-TERM', comment: 'มองว่าราคาพลังงานที่ย่อตัวช่วยดัน CPI ลง แต่ภาคบริการยังตึงตัว คาดตลาดอาจผันผวนสองทางหลังประกาศ', badge: 'rgba(242,54,69,0.2); color:var(--accent-red)' },
-                    { name: 'JPMorgan Chase', forecast: '3.0%', stance: 'VERY BULLISH GOLD & BTC', comment: 'ประเมินว่าค่าเช่าบ้าน (Shelter Inflation) ชะลอลงชัดเจน หากออก 3.0% จะเปิดทางให้ Fed ลดดอกเบี้ย 2 ครั้งปีนี้', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' },
-                    { name: 'Morgan Stanley', forecast: '3.2%', stance: 'NEUTRAL / CAUTIOUS', comment: 'เตือนภัย Tail Risk: ราคาตั๋วเครื่องบินและประกันภัยอาจเด้งขึ้น ทำให้ CPI แตะ 3.2% และดอลลาร์รีบาวด์แรง', badge: 'rgba(255,152,0,0.2); color:var(--accent-amber)' },
-                    { name: 'Bank of America', forecast: '3.0%', stance: 'BULLISH BOND & GOLD', comment: 'ดัชนีการบริโภคผ่านบัตรเครดิต BofA ชะลอตัว ชี้ว่าตัวเลขมีโอกาสหลุด 3.1% สูง', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' },
-                    { name: 'Citi Group', forecast: '3.1%', stance: 'NEUTRAL', comment: 'มองว่าตลาดรับรู้ตัวเลข 3.1% ไปแล้ว อาจเกิดภาวะ Buy the rumor, Sell the fact', badge: 'rgba(255,152,0,0.2); color:var(--accent-amber)' },
-                    { name: 'UBS', forecast: '2.9%', stance: 'EXTREMELY BULLISH RISK ASSETS', comment: 'โมเดล UBS ชี้ว่าเงินเฟ้อต่ำกว่าคาดแน่นอน เป็นจุดสะสมทองคำและบิทคอยน์รอบใหญ่', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' }
+                    { name: 'Goldman Sachs', forecast: '3.1%', stance: 'BEARISH GOLD SHORT-TERM', comment: 'ประเมินภาคบริการยังมีความตึงตัว คาดว่า FOMC จะคงท่าทีระมัดระวังในการปรับเปลี่ยนอัตราดอกเบี้ย', badge: 'rgba(242,54,69,0.2); color:var(--accent-red)' },
+                    { name: 'JPMorgan Chase', forecast: '3.0%', stance: 'VERY BULLISH GOLD & BTC', comment: 'ชี้ว่าอัตราเงินเฟ้อที่ชะลอตัวจะเปิดทางให้คณะกรรมการ Fed ผ่อนคลายนโยบายการเงินตามแผนปี 2026', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' },
+                    { name: 'Morgan Stanley', forecast: '3.2%', stance: 'NEUTRAL / CAUTIOUS', comment: 'เตือนภัยปัจจัยฤดูกาลที่อาจส่งผลให้ตัวเลขCPI เด้งชั่วคราว ดันดอลลาร์รีบาวด์สั้นๆ', badge: 'rgba(255,152,0,0.2); color:var(--accent-amber)' },
+                    { name: 'Bank of America', forecast: '3.0%', stance: 'BULLISH BOND & GOLD', comment: 'ดัชนีการใช้จ่ายภาคประชาชนบ่งชี้ว่าเงินเฟ้อผ่านจุดสูงสุดแล้ว ชัดเจนตามกรอบนโยบาย Fed', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' }
                 ],
 
                 scenarios: [
@@ -218,34 +236,36 @@
             },
 
             'fomc': {
-                title: 'FOMC Interest Rate Decision & Fed Statement (ดอกเบี้ย Fed)',
-                date: 'กำหนดการประกาศ: พฤหัสบดี เวลา 01:00 น. | แถลงข่าว Powell 01:30 น. | ผลกระทบ: 💥 EXTREME VOLATILITY',
+                title: 'FOMC Interest Rate Decision & Fed Press Conference (ดอกเบี้ย Fed)',
+                date: 'กำหนดการประกาศ: พฤหัสบดี เวลา 01:00 น. | แถลงข่าวประธาน Fed 01:30 น. | ผลกระทบ: 💥 EXTREME VOLATILITY',
                 prev: '5.25%', consensus: '5.00%', aiForecast: '5.00%', confidence: '91%',
 
-                instantImpact: [
-                    { asset: 'GOLD (XAUUSD)', status: '🟢/💥 EXTREME BULLISH', detail: 'การเริ่มวงจลดอกเบี้ยขาลง (Rate Cut Cycle) จะจุดชนวน Rally ครั้งใหญ่ในตลาดทองคำ' },
-                    { asset: 'BITCOIN (BTC)', status: '🟢 EXTREME RISK-ON', detail: 'สภาพคล่องทั่วโลกโดนปลดล็อก ดัน BTC พุ่งทดสอบ All-Time High' },
-                    { asset: 'DXY INDEX', status: '🔴 CRASH / BEARISH', detail: 'ดอลลาร์ร่วงหลุดแนวรับสำคัญหลายปีทันทีที่ Fed ส่งสัญญาณ Dovish' }
-                ],
+                histVolData: [420, 510, 380, 490, 450, 530, 410, 480, 520, 460, 500, 550],
+                histLabels: ['T-12','T-11','T-10','T-9','T-8','T-7','T-6','T-5','T-4','T-3','T-2','T-1'],
 
-                volatilityStats: [
-                    { asset: 'GOLD (XAUUSD)', avgMove: '350 - 550 Pips ($35 - $55)', targetUp: '$2,465 - $2,490', targetDown: '$2,350 - $2,330' },
-                    { asset: 'BITCOIN (BTC)', avgMove: '4.0% - 7.5% ($2,800 - $5,000)', targetUp: '$71,000 - $73,500', targetDown: '$61,000 - $59,000' },
-                    { asset: 'DXY INDEX', avgMove: '1.00 - 1.60 Points', targetUp: '105.80', targetDown: '102.50' }
+                projLabels: ['ก่อนแถลง', '15 น.', '1 ชม.', '4 ชม.'],
+                projPaths: {
+                    bullish: [2418, 2445, 2470, 2490], // Dovish Cut
+                    neutral: [2418, 2425, 2430, 2435], // Moderate
+                    bearish: [2418, 2380, 2355, 2330]  // Hawkish Hold
+                },
+
+                instantImpact: [
+                    { asset: 'GOLD (XAUUSD)', status: '🟢/💥 EXTREME BULLISH', detail: 'การปรับลดดอกเบี้ยนโยบายจะจุดชนวน Rally ครั้งใหญ่ในตลาดทองคำคำนวนตาม Dot Plot' },
+                    { asset: 'BITCOIN (BTC)', status: '🟢 EXTREME RISK-ON', detail: 'สภาพคล่องการเงินระบบสถาบันทะลักเข้าสินทรัพย์ดิจิทัล' },
+                    { asset: 'DXY INDEX', status: '🔴 CRASH / BEARISH', detail: 'ดอลลาร์ร่วงหลุดแนวรับสำคัญทันทีหลังคณะกรรมการ FOMC ส่งสัญญาณ Dovish' }
                 ],
 
                 institutions: [
-                    { name: 'Goldman Sachs', forecast: 'ลด 0.25%', stance: 'DOVISH CUT / BULLISH GOLD', comment: 'คาดการณ์ Fed ปรับลดดอกเบี้ยครั้งแรก พร้อมส่งสัญญาณ Pivot ชัดเจนใน Dot Plot', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' },
-                    { name: 'JPMorgan Chase', forecast: 'ลด 0.25%', stance: 'VERY BULLISH CRYPTO & METALS', comment: ' Powell จะยืนยันความก้าวหน้าด้านเงินเฟ้อ เปิดประตูการลดดอกเบี้ยต่อเนื่องในไตรมาส 4', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' },
-                    { name: 'Morgan Stanley', forecast: 'คงดอกเบี้ย', stance: 'HAWKISH HOLD / SHORT BULLISH USD', comment: 'มองว่า Fed อาจดึงเชิงรอข้อมูลอีก 1 เดือน ทำให้อาจเห็น Sell-off ชั่วคราวในสินทรัพย์เสี่ยง', badge: 'rgba(242,54,69,0.2); color:var(--accent-red)' },
-                    { name: 'Barclays', forecast: 'ลด 0.25%', stance: 'BULLISH RISK ASSETS', comment: 'การลดดอกเบี้ยรอบนี้เน้นป้องกันการถดถอยของตลาดแรงงาน (Insurance Cut)', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' },
-                    { name: 'Deutsche Bank', forecast: 'ลด 0.25%', stance: 'NEUTRAL TO BULLISH', comment: 'จับตาช่วง Q&A ของ Powell หากเน้นเรื่อง Labor Market ดอลลาร์ร่วงหนักแน่นอน', badge: 'rgba(0,184,212,0.2); color:var(--accent-cyan)' }
+                    { name: 'Goldman Sachs', forecast: 'ลด 0.25%', stance: 'DOVISH CUT / BULLISH GOLD', comment: 'คาดการณ์ประธาน Fed และคณะกรรมการจะส่งสัญญาณเข้าสู่วงจลดอกเบี้ยผ่อนคลายอย่างเป็นทางการ', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' },
+                    { name: 'JPMorgan Chase', forecast: 'ลด 0.25%', stance: 'VERY BULLISH CRYPTO & METALS', comment: 'แถลงการณ์ของ Fed จะเน้นย้ำความพร้อมในการดูแลตลาดแรงงาน หนุนสินทรัพย์เสี่ยงพุ่งทะยาน', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' },
+                    { name: 'Morgan Stanley', forecast: 'คงดอกเบี้ย', stance: 'HAWKISH HOLD / SHORT BULLISH USD', comment: 'มองว่าคณะกรรมการอาจต้องการดูตัวเลขตลาดแรงงานอีกระยะ ทำให้ตลาดผันผวนย่อตัวสั้นๆ', badge: 'rgba(242,54,69,0.2); color:var(--accent-red)' }
                 ],
 
                 scenarios: [
-                    { name: 'Scenario 1: ลด 0.25% + Dovish Tone (ตามคาด)', prob: '60% PROBABILITY', color: 'var(--accent-green)', targets: 'GOLD: $2,460 | BTC: $70,500 | DXY: 103.00' },
-                    { name: 'Scenario 2: ลด 0.50% (Big Cut / Panic)', prob: '25% PROBABILITY', color: 'var(--accent-cyan)', targets: 'GOLD: $2,490 | BTC: $73,000 | DXY: 102.20' },
-                    { name: 'Scenario 3: คงดอกเบี้ย (Surprise Hawkish)', prob: '15% PROBABILITY', color: 'var(--accent-red)', targets: 'GOLD: $2,350 | BTC: $60,500 | DXY: 105.80' }
+                    { name: 'Scenario 1: ลด 0.25% + ส่งสัญญาณ Dovish', prob: '60% PROBABILITY', color: 'var(--accent-green)', targets: 'GOLD: $2,460 | BTC: $70,500 | DXY: 103.00' },
+                    { name: 'Scenario 2: ลด 0.50% (Big Cut)', prob: '25% PROBABILITY', color: 'var(--accent-cyan)', targets: 'GOLD: $2,490 | BTC: $73,000 | DXY: 102.20' },
+                    { name: 'Scenario 3: คงดอกเบี้ย (Hawkish Hold)', prob: '15% PROBABILITY', color: 'var(--accent-red)', targets: 'GOLD: $2,350 | BTC: $60,500 | DXY: 105.80' }
                 ]
             },
 
@@ -254,22 +274,25 @@
                 date: 'กำหนดการประกาศ: ศุกร์แรกของเดือน เวลา 19:30 น. | ผลกระทบ: 🔴 HIGH VOLATILITY',
                 prev: '206K', consensus: '175K', aiForecast: '160K', confidence: '80%',
 
-                instantImpact: [
-                    { asset: 'GOLD (XAUUSD)', status: '🟢 BULLISH FAVORABLE', detail: 'ตลาดแรงงานชะลอตัวจะเร่งให้ Fed ลดดอกเบี้ย ดันทองคำขึ้น' },
-                    { asset: 'BITCOIN (BTC)', status: '🟡/🟢 NEUTRAL TO BULLISH', detail: 'ผันผวนช่วงแรก ก่อนปรับตัวขึ้นตามสภาพคล่อง' },
-                    { asset: 'DXY INDEX', status: '🔴 BEARISH PRESSURE', detail: 'ดอลลาร์ร่วงหลุดแนวรับสำคัญหากจ้างงานหลุด 150K' }
-                ],
+                histVolData: [210, 260, 190, 310, 240, 280, 230, 290, 270, 250, 220, 280],
+                histLabels: ['T-12','T-11','T-10','T-9','T-8','T-7','T-6','T-5','T-4','T-3','T-2','T-1'],
 
-                volatilityStats: [
-                    { asset: 'GOLD (XAUUSD)', avgMove: '180 - 280 Pips ($18 - $28)', targetUp: '$2,430', targetDown: '$2,385' },
-                    { asset: 'BITCOIN (BTC)', avgMove: '2.0% - 3.5%', targetUp: '$67,800', targetDown: '$63,500' },
-                    { asset: 'DXY INDEX', avgMove: '0.50 - 0.80 Points', targetUp: '104.90', targetDown: '103.60' }
+                projLabels: ['ก่อนประกาศ', '15 น.', '1 ชม.', '4 ชม.'],
+                projPaths: {
+                    bullish: [2418, 2430, 2440, 2448],
+                    neutral: [2418, 2415, 2420, 2422],
+                    bearish: [2418, 2395, 2382, 2375]
+                },
+
+                instantImpact: [
+                    { asset: 'GOLD (XAUUSD)', status: '🟢 BULLISH FAVORABLE', detail: 'ตลาดแรงงานที่ชะลอตัวลงจะหนุนแรงคาดการณ์การผ่อนคลายนโยบาย Fed' },
+                    { asset: 'BITCOIN (BTC)', status: '🟢 NEUTRAL TO BULLISH', detail: 'ผันผวนกรอบกว้างก่อนปรับตัวตามทิศทาง Bond Yield' },
+                    { asset: 'DXY INDEX', status: '🔴 BEARISH PRESSURE', detail: 'ดอลลาร์ย่อตัวลงเมื่ออัตราว่างงานปรับเพิ่มขึ้น' }
                 ],
 
                 institutions: [
-                    { name: 'Goldman Sachs', forecast: '185K', stance: 'NEUTRAL', comment: 'การจ้างงานยังทรงตัวดี ไม่ได้ย่ำแย่จนเกิด Recession', badge: 'rgba(255,152,0,0.2); color:var(--accent-amber)' },
-                    { name: 'Citi Group', forecast: '150K', stance: 'VERY BULLISH GOLD', comment: 'มองว่าจ้างงานชะลอตัวลงลึกกว่าที่คิด กดดันดอลลาร์อ่วม', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' },
-                    { name: 'JPMorgan', forecast: '165K', stance: 'BULLISH RISK ASSETS', comment: 'แรงงานโตแบบ Soft Landing ชะลอตัวกำลังดี เหมาะกับสินทรัพย์เสี่ยง', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' }
+                    { name: 'Citi Group', forecast: '150K', stance: 'VERY BULLISH GOLD', comment: 'การจ้างงานเริ่มเข้าสู่ภาวะ Soft Landing ชัดเจน หนุนทองคำทำนิวไฮ', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' },
+                    { name: 'Goldman Sachs', forecast: '185K', stance: 'NEUTRAL', comment: 'ตัวเลขจ้างงานยังรักษาระดับได้ ไม่เกิดภาวะเศรษฐกิจถดถอยรุนแรง', badge: 'rgba(255,152,0,0.2); color:var(--accent-amber)' }
                 ],
 
                 scenarios: [
@@ -279,91 +302,117 @@
             },
 
             'pce': {
-                title: 'US Core PCE Price Index YoY (เงินเฟ้อตัวโปรดของ Fed)',
+                title: 'US Core PCE Price Index YoY (เงินเฟ้อหลัก Fed)',
                 date: 'กำหนดการประกาศ: ศุกร์สิ้นเดือน เวลา 19:30 น. | ผลกระทบ: 🔴 HIGH VOLATILITY',
                 prev: '2.6%', consensus: '2.5%', aiForecast: '2.4%', confidence: '88%',
 
-                instantImpact: [
-                    { asset: 'GOLD (XAUUSD)', status: '🟢 BULLISH STRONG', detail: 'หาก Core PCE ย่อลงเหลือ 2.4% จะเป็นการยืนยันความสำเร็จของ Fed ดันทองทำ ATH' },
-                    { asset: 'BITCOIN (BTC)', status: '🟢 BULLISH RISK-ON', detail: 'เงินไหลออกจากดอลลาร์เข้าสู่คริปโตอย่างต่อเนื่อง' },
-                    { asset: 'DXY INDEX', status: '🔴 BEARISH DOWNTREND', detail: 'ดอลลาร์ซึมลงต่อเนื่อง' }
-                ],
+                histVolData: [180, 220, 160, 240, 200, 210, 190, 230, 210, 250, 190, 230],
+                histLabels: ['T-12','T-11','T-10','T-9','T-8','T-7','T-6','T-5','T-4','T-3','T-2','T-1'],
 
-                volatilityStats: [
-                    { asset: 'GOLD (XAUUSD)', avgMove: '150 - 230 Pips ($15 - $23)', targetUp: '$2,440', targetDown: '$2,390' },
-                    { asset: 'BITCOIN (BTC)', avgMove: '2.0% - 3.8%', targetUp: '$68,200', targetDown: '$64,000' },
-                    { asset: 'DXY INDEX', avgMove: '0.40 - 0.70 Points', targetUp: '104.70', targetDown: '103.50' }
+                projLabels: ['ก่อนประกาศ', '15 น.', '1 ชม.', '4 ชม.'],
+                projPaths: {
+                    bullish: [2418, 2432, 2442, 2450],
+                    neutral: [2418, 2420, 2418, 2422],
+                    bearish: [2418, 2400, 2388, 2380]
+                },
+
+                instantImpact: [
+                    { asset: 'GOLD (XAUUSD)', status: '🟢 BULLISH STRONG', detail: 'ดัชนี PCE ซึ่งเป็นมาตรวัดหลักของ Fed หากลดลงตามคาดจะสร้าง Sentiment เชิงบวกอย่างมาก' },
+                    { asset: 'BITCOIN (BTC)', status: '🟢 BULLISH RISK-ON', detail: 'เงินทุนหมุนเวียนเข้าสินทรัพย์เสี่ยงจาก Yield ที่ปรับลง' },
+                    { asset: 'DXY INDEX', status: '🔴 BEARISH DOWNTREND', detail: 'ดอลลาร์โดนกดดันต่อเนื่อง' }
                 ],
 
                 institutions: [
-                    { name: 'Morgan Stanley', forecast: '2.5%', stance: 'NEUTRAL', comment: 'ตัวเลขสอดคล้องกับเส้นทางสู่เป้าหมาย 2.0% ของ Fed', badge: 'rgba(255,152,0,0.2); color:var(--accent-amber)' },
-                    { name: 'Bank of America', forecast: '2.4%', stance: 'VERY BULLISH GOLD', comment: 'ภาคบริการย่อตัวชัดเจน หนุนการลดดอกเบี้ยทันที', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' }
+                    { name: 'Bank of America', forecast: '2.4%', stance: 'VERY BULLISH GOLD', comment: 'การย่อตัวของ PCE สอดคล้องกับกรอบเงินเฟ้อเป้าหมาย 2% ของ Fed ในระยะยาว', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' }
                 ],
 
                 scenarios: [
                     { name: 'Scenario 1: ออกหลุด (< 2.4%)', prob: '45% PROBABILITY', color: 'var(--accent-green)', targets: 'GOLD: $2,445 | BTC: $69,000 | DXY: 103.20' },
                     { name: 'Scenario 2: ออกตามคาด (2.5%)', prob: '45% PROBABILITY', color: 'var(--accent-amber)', targets: 'GOLD: $2,420 | BTC: $66,500 | DXY: 104.00' }
                 ]
-            },
-
-            'gdp': {
-                title: 'US Advance GDP QoQ (อัตราการเติบโตทางเศรษฐกิจ)',
-                date: 'กำหนดการประกาศ: พฤหัสบดี เวลา 19:30 น. | ผลกระทบ: 🟠 MEDIUM-HIGH VOLATILITY',
-                prev: '2.8%', consensus: '2.6%', aiForecast: '2.5%', confidence: '82%',
-
-                instantImpact: [
-                    { asset: 'GOLD (XAUUSD)', status: '🟡/🟢 NEUTRAL TO BULLISH', detail: 'GDP ชะลอตัวแบบ Soft Landing ช่วยให้ Fed ไม่ต้องคงดอกเบี้ยสูงนาน' },
-                    { asset: 'BITCOIN (BTC)', status: '🟢 BULLISH STOCKS & BTC', detail: 'เศรษฐกิจไม่ถดถอยหนัก เป็นผลดีต่อสินทรัพย์เสี่ยง' },
-                    { asset: 'DXY INDEX', status: '🔴 BEARISH SLIGHT', detail: 'ดอลลาร์ย่อตัวอ่อนๆ' }
-                ],
-
-                volatilityStats: [
-                    { asset: 'GOLD (XAUUSD)', avgMove: '120 - 180 Pips ($12 - $18)', targetUp: '$2,425', targetDown: '$2,395' },
-                    { asset: 'BITCOIN (BTC)', avgMove: '1.5% - 2.8%', targetUp: '$67,500', targetDown: '$64,500' },
-                    { asset: 'DXY INDEX', avgMove: '0.30 - 0.50 Points', targetUp: '104.60', targetDown: '103.80' }
-                ],
-
-                institutions: [
-                    { name: 'Goldman Sachs', forecast: '2.7%', stance: 'BULLISH US ECONOMY', comment: 'เศรษฐกิจสหรัฐฯ ยังคงแข็งแกร่งกว่ากลุ่มประเทศพัฒนาแล้วอื่นๆ', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' },
-                    { name: 'UBS', forecast: '2.4%', stance: 'DOVISH / BULLISH METALS', comment: 'เศรษฐกิจเริ่มตึงตัวจากดอกเบี้ยสูง ส่งผลดีต่อการสะสมทองคำ', badge: 'rgba(0,184,212,0.2); color:var(--accent-cyan)' }
-                ],
-
-                scenarios: [
-                    { name: 'Scenario 1: GDP ชะลอตัว (2.0% - 2.5%)', prob: '50% PROBABILITY', color: 'var(--accent-green)', targets: 'GOLD: $2,428 | BTC: $67,200 | DXY: 103.90' },
-                    { name: 'Scenario 2: GDP โตแกร่ง (> 2.8%)', prob: '30% PROBABILITY', color: 'var(--accent-red)', targets: 'GOLD: $2,390 | BTC: $64,800 | DXY: 104.80' }
-                ]
-            },
-
-            'retail': {
-                title: 'US Core Retail Sales MoM (ยอดค้าปลีกสหรัฐฯ)',
-                date: 'กำหนดการประกาศ: กลางเดือน เวลา 19:30 น. | ผลกระทบ: 🟠 MEDIUM VOLATILITY',
-                prev: '0.4%', consensus: '0.3%', aiForecast: '0.2%', confidence: '84%',
-
-                instantImpact: [
-                    { asset: 'GOLD (XAUUSD)', status: '🟢 BULLISH FAVORABLE', detail: 'ยอดค้าปลีกแผ่วชี้ถึงกำลังซื้อผู้บริโภคที่ลดลง ดันทองคำขึ้น' },
-                    { asset: 'BITCOIN (BTC)', status: '🟡 NEUTRAL', detail: 'กระทบกระแสเงินทุนระยะสั้นจำกัด' },
-                    { asset: 'DXY INDEX', status: '🔴 BEARISH', detail: 'ดอลลาร์อ่อนค่าลงชั่วคราว' }
-                ],
-
-                volatilityStats: [
-                    { asset: 'GOLD (XAUUSD)', avgMove: '100 - 160 Pips ($10 - $16)', targetUp: '$2,420', targetDown: '$2,398' },
-                    { asset: 'BITCOIN (BTC)', avgMove: '1.2% - 2.2%', targetUp: '$66,800', targetDown: '$65,000' },
-                    { asset: 'DXY INDEX', avgMove: '0.25 - 0.45 Points', targetUp: '104.50', targetDown: '103.90' }
-                ],
-
-                institutions: [
-                    { name: 'Barclays', forecast: '0.2%', stance: 'BULLISH BONDS', comment: 'ผู้บริโภคเริ่มระมัดระวังการ spending หนุนแนวคิดดอกเบี้ยขาลง', badge: 'rgba(8,153,129,0.2); color:var(--accent-green)' }
-                ],
-
-                scenarios: [
-                    { name: 'Scenario 1: ยอดค้าปลีกหดตัว (< 0.1%)', prob: '40% PROBABILITY', color: 'var(--accent-green)', targets: 'GOLD: $2,425 | BTC: $67,000 | DXY: 103.80' },
-                    { name: 'Scenario 2: ยอดค้าปลีกพุ่ง (> 0.5%)', prob: '25% PROBABILITY', color: 'var(--accent-red)', targets: 'GOLD: $2,395 | BTC: $65,200 | DXY: 104.60' }
-                ]
             }
         };
 
+        // Render & Update Visual Charts
+        function renderCharts(data) {
+            // Chart 1: Historical Volatility Bar Chart
+            const ctx1 = document.getElementById('histVolChart').getContext('2d');
+            if (histVolChartInstance) histVolChartInstance.destroy();
+
+            histVolChartInstance = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: data.histLabels,
+                    datasets: [{
+                        label: 'ระยะวิ่งจริง (Pips)',
+                        data: data.histVolData,
+                        backgroundColor: 'rgba(139, 92, 246, 0.6)',
+                        borderColor: '#8b5cf6',
+                        borderWidth: 1.5,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#d1d4dc', font: { family: 'Prompt' } } } },
+                    scales: {
+                        x: { ticks: { color: '#787b86' }, grid: { color: '#2a2e39' } },
+                        y: { ticks: { color: '#787b86' }, grid: { color: '#2a2e39' } }
+                    }
+                }
+            });
+
+            // Chart 2: Scenario Projection Paths
+            const ctx2 = document.getElementById('projectionChart').getContext('2d');
+            if (projChartInstance) projChartInstance.destroy();
+
+            projChartInstance = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: data.projLabels,
+                    datasets: [
+                        {
+                            label: '🟢 ต่ำกว่าคาด (Bullish Gold)',
+                            data: data.projPaths.bullish,
+                            borderColor: '#089981',
+                            backgroundColor: 'rgba(8, 153, 129, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: '🟠 ตามคาด (Neutral)',
+                            data: data.projPaths.neutral,
+                            borderColor: '#ff9800',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0.3
+                        },
+                        {
+                            label: '🔴 สูงกว่าคาด (Bearish Gold)',
+                            data: data.projPaths.bearish,
+                            borderColor: '#f23645',
+                            backgroundColor: 'rgba(242, 54, 69, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#d1d4dc', font: { family: 'Prompt' } } } },
+                    scales: {
+                        x: { ticks: { color: '#787b86' }, grid: { color: '#2a2e39' } },
+                        y: { ticks: { color: '#787b86' }, grid: { color: '#2a2e39' } }
+                    }
+                }
+            });
+        }
+
         function switchEvent(evtKey, btnElement) {
-            // Update Active Tab Button
             document.querySelectorAll('.event-tab-btn').forEach(b => b.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
 
@@ -377,6 +426,9 @@
             document.getElementById('val-ai').innerText = data.aiForecast;
             document.getElementById('val-confidence').innerText = data.confidence;
 
+            // Render Charts
+            renderCharts(data);
+
             // Render Instant Impact Cards
             const impactBox = document.getElementById('instant-impact-container');
             impactBox.innerHTML = '';
@@ -386,20 +438,6 @@
                         <div style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">${i.asset}</div>
                         <div style="font-size:0.95rem; font-weight:700; margin:6px 0; color:var(--accent-cyan);">${i.status}</div>
                         <div style="font-size:0.82rem; color:var(--text-main); line-height:1.4;">${i.detail}</div>
-                    </div>
-                `;
-            });
-
-            // Render Volatility & Target Range Statistics
-            const volBox = document.getElementById('volatility-container');
-            volBox.innerHTML = '';
-            data.volatilityStats.forEach(v => {
-                volBox.innerHTML += `
-                    <div class="vol-card">
-                        <div style="font-size:0.85rem; font-weight:700; color:#fff;">${v.asset}</div>
-                        <div style="font-size:0.78rem; color:var(--accent-amber); margin:4px 0;">ระยะวิ่งเฉลี่ย: <strong>${v.avgMove}</strong></div>
-                        <div style="font-size:0.78rem; color:var(--accent-green);">เป้าหมายฝั่งขึ้น (Bullish Target): ${v.targetUp}</div>
-                        <div style="font-size:0.78rem; color:var(--accent-red);">เป้าหมายฝั่งลง (Bearish Target): ${v.targetDown}</div>
                     </div>
                 `;
             });
@@ -438,7 +476,7 @@
             });
         }
 
-        // Auto Load CPI on start
+        // Auto Initial Load
         window.addEventListener('DOMContentLoaded', () => { 
             const firstTab = document.querySelector('.event-tab-btn');
             switchEvent('cpi', firstTab); 
